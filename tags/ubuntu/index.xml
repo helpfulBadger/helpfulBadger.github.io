@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ubuntu on Helpful Badger&#39;s Blog</title>
+    <link>https://helpfulbadger.github.io/tags/ubuntu/</link>
+    <description>Recent content in ubuntu on Helpful Badger&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 06 Jun 2020 13:27:14 -0400</lastBuildDate>
+    
+	<atom:link href="https://helpfulbadger.github.io/tags/ubuntu/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Learning About Cloud Images</title>
+      <link>https://helpfulbadger.github.io/blog/learning-about-cloud-images/</link>
+      <pubDate>Sat, 06 Jun 2020 13:27:14 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/blog/learning-about-cloud-images/</guid>
+      <description>Photo by eberhard grossgasteiger on Unsplash
+Learning About Cloud Images here is some text</description>
+    </item>
+    
+  </channel>
+</rss>

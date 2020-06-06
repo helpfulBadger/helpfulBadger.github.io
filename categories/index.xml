@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on Helpful Badger&#39;s Blog</title>
+    <link>https://helpfulbadger.github.io/categories/</link>
+    <description>Recent content in Categories on Helpful Badger&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 06 Jun 2020 13:27:14 -0400</lastBuildDate>
+    
+	<atom:link href="https://helpfulbadger.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>cloud</title>
+      <link>https://helpfulbadger.github.io/categories/cloud/</link>
+      <pubDate>Sat, 06 Jun 2020 13:27:14 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/categories/cloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>virtual machine</title>
+      <link>https://helpfulbadger.github.io/categories/virtual-machine/</link>
+      <pubDate>Sat, 06 Jun 2020 13:27:14 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/categories/virtual-machine/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>syntax</title>
+      <link>https://helpfulbadger.github.io/categories/syntax/</link>
+      <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/categories/syntax/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>themes</title>
+      <link>https://helpfulbadger.github.io/categories/themes/</link>
+      <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/categories/themes/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
