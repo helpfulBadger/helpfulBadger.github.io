@@ -2,32 +2,32 @@
 <html lang="en">
   <head>
   <meta charset="utf-8">
-<title>Learning About Cloud Images - Helpful Badger&#39;s Blog</title>
+<title>Using Envoy as a Front Proxy - Helpful Badger&#39;s Blog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="Learning About Cloud Images">
-<meta itemprop="description" content="Learning about Ubuntu Cloud Images by scripting them with Virtual Box.">
-<meta itemprop="datePublished" content="2020-06-06T13:27:14-04:00" />
-<meta itemprop="dateModified" content="2020-06-06T13:27:14-04:00" />
-<meta itemprop="wordCount" content="14">
-<meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/06/cloud_images_unsplash_small.jpg">
+<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="Using Envoy as a Front Proxy">
+<meta itemprop="description" content="Learn how to set up Envoy as a front proxy with docker">
+<meta itemprop="datePublished" content="2020-08-31T13:27:14-04:00" />
+<meta itemprop="dateModified" content="2020-08-31T13:27:14-04:00" />
+<meta itemprop="wordCount" content="381">
+<meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg">
 
 
 
-<meta itemprop="keywords" content="virtual machine,virtual box,cloud images,ubuntu," />
-<meta property="og:title" content="Learning About Cloud Images" />
-<meta property="og:description" content="Learning about Ubuntu Cloud Images by scripting them with Virtual Box." />
+<meta itemprop="keywords" content="Envoy,Service Mesh," />
+<meta property="og:title" content="Using Envoy as a Front Proxy" />
+<meta property="og:description" content="Learn how to set up Envoy as a front proxy with docker" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://helpfulbadger.github.io/blog/learning-about-cloud-images/" />
-<meta property="og:image" content="https://helpfulbadger.github.io/img/2020/06/cloud_images_unsplash_small.jpg" />
-<meta property="article:published_time" content="2020-06-06T13:27:14-04:00" />
-<meta property="article:modified_time" content="2020-06-06T13:27:14-04:00" />
+<meta property="og:url" content="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" />
+<meta property="og:image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg" />
+<meta property="article:published_time" content="2020-08-31T13:27:14-04:00" />
+<meta property="article:modified_time" content="2020-08-31T13:27:14-04:00" />
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/06/cloud_images_unsplash_small.jpg"/>
+<meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg"/>
 
-<meta name="twitter:title" content="Learning About Cloud Images"/>
-<meta name="twitter:description" content="Learning about Ubuntu Cloud Images by scripting them with Virtual Box."/>
+<meta name="twitter:title" content="Using Envoy as a Front Proxy"/>
+<meta name="twitter:description" content="Learn how to set up Envoy as a front proxy with docker"/>
 <link rel="stylesheet" href="/css/bundle.min.759e3848ea529eef056dab665b241e2af569e601ab80f68f8d4a4d002a155dd4.css" integrity="sha256-dZ44SOpSnu8FbatmWyQeKvVp5gGrgPaPjUpNACoVXdQ="><link rel="stylesheet" href="/css/add-on.css">
 </head>
 
@@ -103,37 +103,37 @@
 
   
     
-    <a href="//twitter.com/share?text=Learning%20About%20Cloud%20Images&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+    <a href="//twitter.com/share?text=Using%20Envoy%20as%20a%20Front%20Proxy&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
         <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
       </a>
   
 
   
-      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
         <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
         </a>
   
 
   
-    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f&amp;title=Learning%20About%20Cloud%20Images" target="_blank" rel="noopener" class="nav share-btn reddit">
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f&amp;title=Using%20Envoy%20as%20a%20Front%20Proxy" target="_blank" rel="noopener" class="nav share-btn reddit">
           <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
         </a>
   
 
   
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f&amp;title=Learning%20About%20Cloud%20Images" target="_blank" rel="noopener" class="nav share-btn linkedin">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f&amp;title=Using%20Envoy%20as%20a%20Front%20Proxy" target="_blank" rel="noopener" class="nav share-btn linkedin">
             <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
           </a>
   
 
   
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f&amp;description=Learning%20About%20Cloud%20Images" target="_blank" rel="noopener" class="nav share-btn pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f&amp;description=Using%20Envoy%20as%20a%20Front%20Proxy" target="_blank" rel="noopener" class="nav share-btn pinterest">
           <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
         </a>
   
 
   
-        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
           <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
         </a>
   
@@ -210,19 +210,19 @@
     <header>
   <div class="title">
     
-      <h2><a href="/blog/learning-about-cloud-images/">Learning About Cloud Images</a></h2>
+      <h2><a href="/blog/envoy_opa_1_front_proxy/">Using Envoy as a Front Proxy</a></h2>
     
     
-      <p>Learning about Ubuntu Cloud Images by scripting them with Virtual Box.</p>
+      <p>Learn how to set up Envoy as a front proxy with docker</p>
     
   </div>
   <div class="meta">
-    <time class="published" datetime="2020-06-06 13:27:14 -0400 EDT">
-      June 6, 2020
+    <time class="published" datetime="2020-08-31 13:27:14 -0400 EDT">
+      August 31, 2020
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>1 minute read</p>
+      <p>2 minute read</p>
     
   </div>
 </header>
@@ -235,37 +235,37 @@
 
   
     
-    <a href="//twitter.com/share?text=Learning%20About%20Cloud%20Images&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+    <a href="//twitter.com/share?text=Using%20Envoy%20as%20a%20Front%20Proxy&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
         <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
       </a>
   
 
   
-      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
         <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
         </a>
   
 
   
-    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f&amp;title=Learning%20About%20Cloud%20Images" target="_blank" rel="noopener" class="nav share-btn reddit">
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f&amp;title=Using%20Envoy%20as%20a%20Front%20Proxy" target="_blank" rel="noopener" class="nav share-btn reddit">
           <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
         </a>
   
 
   
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f&amp;title=Learning%20About%20Cloud%20Images" target="_blank" rel="noopener" class="nav share-btn linkedin">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f&amp;title=Using%20Envoy%20as%20a%20Front%20Proxy" target="_blank" rel="noopener" class="nav share-btn linkedin">
             <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
           </a>
   
 
   
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f&amp;description=Learning%20About%20Cloud%20Images" target="_blank" rel="noopener" class="nav share-btn pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f&amp;description=Using%20Envoy%20as%20a%20Front%20Proxy" target="_blank" rel="noopener" class="nav share-btn pinterest">
           <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
         </a>
   
 
   
-        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2flearning-about-cloud-images%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_1_front_proxy%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
           <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
         </a>
   
@@ -273,17 +273,33 @@
 
     </section>
     
-  <a href="/blog/learning-about-cloud-images/" class="image featured">
+  <a href="/blog/envoy_opa_1_front_proxy/" class="image featured">
     
-      <img src="https://helpfulbadger.github.io/img/2020/06/cloud_images_unsplash_small.jpg" alt="">
+      <img src="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg" alt="">
     
   </a>
 
 
     <div class="content">
-      <p>Photo by <a href="https://unsplash.com/@eberhardgross?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">eberhard grossgasteiger</a> on <a href="https://unsplash.com/images/nature/cloud?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></p>
-<h1 id="learning-about-cloud-images">Learning About Cloud Images</h1>
-<p>here is some text</p>
+      <p>Photo by <a href="https://unsplash.com/@mattserra13?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Mattia Serrani</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></p>
+<h1 id="using-envoy-as-a-front-proxy">Using Envoy as a Front Proxy</h1>
+<p><a href="https://www.envoyproxy.io/">Envoy</a> is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&rsquo;s own in a minimalist fashion.</p>
+<p>Envoy is just like any other proxy. It receives requests and forwards them to services that are located behind it. The 2 ways to deploy Envoy are:</p>
+<ol>
+<li>
+<p>Front Proxy - In a front proxy deployment Envoy is very similar to NGINX, HAProxy, or an Apache web server. The Envoy server has it&rsquo;s own IP address and is a separate server on the network from the services that it protects. Traffic comes in and get forwarded to a number of different services that are located behind it. Envoy supports a variety of methods for making routing decisions.</p>
+<ul>
+<li>One mechanism is to use path based routing to determine the service of interest. For instance a request coming in as: <code>/service1/some/other/stuff</code> can use the first uri path element as a routing key. <code>service1</code> can be used to route requests to service 1. Additionally, <code>service2</code> in <code>/service2/my/applications/path</code> can be used to route the request to a set of servers that support service 2. The path can be rewritten as it goes through envoy to trim off the service routing prefix.</li>
+<li>Another mechanism is to use Server Name Indication (SNI) which is a TLS extension to determine where to forward a request. Using this technique, <code>service1.com/some/other/stuff</code> would use the server name to route to the <code>service1</code> services. Additionally, <code>service2.com/my/applications/path</code> would use service2.com to route the request to <code>service2</code>.
+<img class="special-img-class" src="/img/2020/08/Envoy-front proxy-front-proxy.svg" /><br>
+The diagram above shows the front proxy approach.</li>
+</ul>
+</li>
+<li>
+<p>Sidecar Proxy - In a sidecar deployment, the Envoy server is located at the same IP address as each service that it protects. The Envoy server when deployed as as sidecar only has a single service instance behind it. The sidecar approach can intercept all inbound traffic and optionally all outbound traffic on behalf of the service instance. <a href="https://en.wikipedia.org/wiki/Iptables">IP Tables</a> rules are typically used to configure the operating system to capture and redirect this traffic to envoy. <img class="special-img-class" src="/img/2020/08/Envoy-front proxy-sidecar.svg" /><br>
+The diagram above shows the sidecar approach.</p>
+</li>
+</ol>
 
     </div>
     <footer>
@@ -295,7 +311,7 @@
         
           <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
         
-          <li><a class="article-terms-link" href="/categories/virtual-machine/">virtual machine</a></li>
+          <li><a class="article-terms-link" href="/categories/service-mesh/">service mesh</a></li>
         
       
     
@@ -306,13 +322,9 @@
     
       
         
-          <li><a class="article-terms-link" href="/tags/virtual-machine/">virtual machine</a></li>
+          <li><a class="article-terms-link" href="/tags/envoy/">Envoy</a></li>
         
-          <li><a class="article-terms-link" href="/tags/virtual-box/">virtual box</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/cloud-images/">cloud images</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/ubuntu/">ubuntu</a></li>
+          <li><a class="article-terms-link" href="/tags/service-mesh/">Service Mesh</a></li>
         
       
     
@@ -326,10 +338,8 @@
 
   <div class="pagination">
   
-    <a href="/blog/markdown-syntax/" class="button"><div class="previous"><div>Markdown Syntax Guide</div></div></a>
+    <a href="/blog/learning-about-cloud-images/" class="button"><div class="previous"><div>Learning About Cloud Images</div></div></a>
   
-  
-    <a href="/blog/envoy_opa_1_front_proxy/" class="button"><div class="next"><div>Using Envoy as a Front Proxy</div></div></a>
   
 </div>
 
