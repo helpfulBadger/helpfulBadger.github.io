@@ -18,7 +18,7 @@
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/</guid>
       <description>Photo by Mattia Serrani on Unsplash
-Using Envoy as a Front Proxy Envoy is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&amp;rsquo;s own in a minimalist fashion.
+Using Envoy as a Front Proxy Overview Envoy is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&amp;rsquo;s own in a minimalist fashion.
 Envoy is just like any other proxy.</description>
     </item>
     
