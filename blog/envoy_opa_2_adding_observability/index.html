@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+<title>Adding Observability Tools - Helpful Badger&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="Adding Observability Tools">
+<meta itemprop="description" content="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">
+<meta itemprop="datePublished" content="2020-09-01T15:59:54-04:00" />
+<meta itemprop="dateModified" content="2020-09-01T15:59:54-04:00" />
+<meta itemprop="wordCount" content="585">
+<meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg">
+
+
+
+<meta itemprop="keywords" content="Envoy,Service Mesh,Observability,elasticSearch,kibana," />
+<meta property="og:title" content="Adding Observability Tools" />
+<meta property="og:description" content="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" />
+<meta property="og:image" content="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg" />
+<meta property="article:published_time" content="2020-09-01T15:59:54-04:00" />
+<meta property="article:modified_time" content="2020-09-01T15:59:54-04:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg"/>
+
+<meta name="twitter:title" content="Adding Observability Tools"/>
+<meta name="twitter:description" content="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment"/>
+<link rel="stylesheet" href="/css/bundle.min.182747932867f43d8c875b59a0300848b838002d4008d4a5b8ddcc41a37c4cf7.css" integrity="sha256-GCdHkyhn9D2Mh1tZoDAISLg4AC1ACNSluN3MQaN8TPc="><link rel="stylesheet" href="/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="/" class="nav">
+        
+          
+            Blog
+          
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          
+            <a href="/" class="nav link"><i class='fa fa-home'></i> Home</a>
+          
+        
+      
+        
+          
+          
+            <a href="/about/" class="nav link"><i class='far fa-id-card'></i> About</a>
+          
+        
+      
+        
+          
+          
+            <a href="/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+          
+        
+      
+        
+          
+          
+            <a href="/categories/" class="nav link"><i class='fas fa-sitemap'></i> Categories</a>
+          
+        
+      
+      <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>
+      <a href="#search-input" class="nav search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>
+    </menu>
+    <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
+    <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
+    <a href="#lang-menu" class="nav lang-toggle" lang="en">en</a>
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
+  <menu id="lang-menu" class="flyout-menu menu">
+  <a href="#" lang="en" class="nav link active">English (en)</a>
+  
+    
+      
+    
+  
+</menu>
+
+  
+    <menu id="share-menu" class="flyout-menu menu">
+      <h1>Share Post</h1>
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=Adding%20Observability%20Tools&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f&amp;title=Adding%20Observability%20Tools" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f&amp;title=Adding%20Observability%20Tools" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f&amp;description=Adding%20Observability%20Tools" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </menu>
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" class="hidden-single-column">
+  <a href="/"><img src="https://helpfulbadger.github.io/img/main/unsplash_badger_small_2.png" class="circle" width="" alt="Helpful Badger in the wild" /></a>
+  <header>
+    <h1>Helpful Badger</h1>
+  </header>
+  <main>
+    <p>Imagining the possibilities</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="/blog/envoy_opa_2_adding_observability/">Adding Observability Tools</a></h2>
+    
+    
+      <p>Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment</p>
+    
+  </div>
+  <div class="meta">
+    <time class="published" datetime="2020-09-01 15:59:54 -0400 EDT">
+      September 1, 2020
+    </time>
+    <span class="author">Helpful Badger</span>
+    
+      <p>3 minute read</p>
+    
+  </div>
+</header>
+
+    <section id="socnet-share">
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=Adding%20Observability%20Tools&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f&amp;title=Adding%20Observability%20Tools" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f&amp;title=Adding%20Observability%20Tools" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f&amp;description=Adding%20Observability%20Tools" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_2_adding_observability%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </section>
+    
+  <a href="/blog/envoy_opa_2_adding_observability/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg" alt="">
+    
+  </a>
+
+
+    <div class="content">
+      <p><span>Photo by <a href="https://unsplash.com/@alexeckermann?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Alex Eckermann</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
+<h1 id="adding-log-aggregation-to-our-envoy-example">Adding Log Aggregation to our Envoy Example</h1>
+<p>This is the 2nd blog post in a series of getting started guides for using Envoy and Open Policy Agent to authorize API requests. Later on as we start to develop authorization rules it may be handy to have all of the logs aggregated and displayed in one place for your development and troubleshooting activies. In this article we will walk through how to setup the EFK stack to pull your logs together from all of the docker containers in your local development environment. All of the <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/02_front_proxy_kibana">source code for this getting started example</a> is located on github.</p>
+<h2 id="adding-efk-containers">Adding EFK containers</h2>
+<p>We will be using Fluent Bit in this example because it is lite weight and simpler to deal with than Logstash or full fledged FluentD. Below is a gist with a very basic configuration and no special optimizations. Lines 9 and 30 use the <code>depend_on</code> property to cause docker to start elasticSearch first and then the other containers that depend on elasticSearch.</p>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/7414ff8326c13f5ab2890e4a55c9edc3.js"></script>
+
+<h2 id="wiring-our-containers-into-efk">Wiring our containers into EFK</h2>
+<p>With the log aggregation containers added to our docker-compose file, we now need to wire them into the other containers in our environment. The gist below shows a couple of small changes that we needed to make to our compose file from Getting Started Guide #1. We added the property at line 14 below which expresses our dependency on elasticSeach. Additionally, we need to wire standard out and standard error from our containers to fluentBit. This is done through the logging properties on lines 17 and 27. The driver line tells docker which log driver to use and the tag help make it more clear which container is the source of the logs.</p>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/e701287a1847345c6997946a5b98787e.js"></script>
+
+<h1 id="taking-things-for-a-spin">Taking things for a spin</h1>
+<p>The demonstration script spins everything up for us. Just run <code>./demonstrate_front_proxy.sh</code> to get things going:</p>
+<ol>
+<li>It downloads and spins up all of our containers.</li>
+<li>Then it waits 30 seconds to give elasticSearch some time to get ready and some time for Kibana to know that elasticSearch is ready.</li>
+<li>A curl command sends Envoy a request to make sure the end-to-end flow is working.</li>
+<li>If that worked, proceed forward. If not wait a bit longer to make sure elasticSearch and Kibana are both ready.</li>
+<li>If you are running on Mac OS X then the next step will open a browser and take you to the page to setup your Kibana index. If it doesn&rsquo;t work, simply open your browser and go to <code>http://localhost:5601/app/kibana#/management/kibana/index_pattern?_g=()</code> you should see something like this:     <img class="special-img-class" src="/img/2020/08/Kibana_index_pattern_1.png" /><br></li>
+<li>I simply used <code>log*</code> as my index and clicked next. Which should bring up a screen to select the timestamp field name. <img class="special-img-class" src="/img/2020/08/Kibana_index_pattern_2.png" /><br> Select <code>@timestamp</code> and click create index.</li>
+<li>You should see some field information about your newly created index. <img class="special-img-class" src="/img/2020/08/Kibana_index_pattern_3.png" /><br></li>
+<li>The script then uses the Open command to navigate to the log search interface. If it doesn&rsquo;t work on your operating system then simply navigate to <code>http://localhost:5601/app/kibana#/discover</code>. You should see something like this with some log results already coming in.<img class="special-img-class" src="/img/2020/08/Kibana_results_coming_in.png" /><br></li>
+<li>If you have an interest, you may want to select the <code>container_name</code> and <code>log</code> columns to make it easier to read through the debug logs and results of your testing efforts.  <img class="special-img-class" src="/img/2020/08/Kibana_select_columns.png" /><br></li>
+<li>The script sends another request through envoy and you should be able to see the logs coming into EFK. <img class="special-img-class" src="/img/2020/08/Kibana_z_Envoy_request.png" /><br></li>
+<li>The script with then take down the environment.</li>
+</ol>
+<p>In the next getting started guide, we will add in Open Policy Agent and begin experimenting with a simple authorization rule.</p>
+
+    </div>
+    <footer>
+      <ul class="stats">
+  <li class="categories">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/service-mesh/">service mesh</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/observability/">Observability</a></li>
+        
+      
+    
+    </ul>
+  </li>
+  <li class="tags">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/tags/envoy/">Envoy</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/service-mesh/">Service Mesh</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/observability/">Observability</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/elasticsearch/">elasticSearch</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/kibana/">kibana</a></li>
+        
+      
+    
+    </ul>
+  </li>
+</ul>
+
+    </footer>
+  </article>
+  
+
+  <div class="pagination">
+  
+    <a href="/blog/envoy_opa_1_front_proxy/" class="button"><div class="previous"><div>Using Envoy as a Front Proxy</div></div></a>
+  
+  
+</div>
+
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>Recent posts</h1>
+      </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_2_adding_observability/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_2_adding_observability/">Adding Observability Tools</a></h2>
+          <time class="published" datetime="">September 1, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_1_front_proxy/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_1_front_proxy/">Using Envoy as a Front Proxy</a></h2>
+          <time class="published" datetime="">August 31, 2020</time>
+        </header>
+      </article>
+      
+      
+    </section>
+  
+
+  
+    
+      <section id="categories">
+        <header>
+          <h1><a href="/categories">Categories</a></h1>
+        </header>
+        <ul>
+          
+            
+          
+          
+          <li>
+            
+              <a href="/categories/cloud/">cloud<span class="count">2</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/service-mesh/">service-mesh<span class="count">2</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">1</span></a>
+            
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>About</h1>
+      </header>
+      <p>Sharing perspectives.</p>
+      <footer>
+        <a href="/about" class="button">Learn More</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+  
+  <p class="copyright">
+    
+      &copy; 2020
+      
+        Helpful Badger&#39;s Blog
+      
+    . <br>
+    Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://gohugo.io/' title='0.74.3' target='_blank' rel='noopener'>Hugo</a>
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="/js/bundle.min.a130f793c5bbd8f5902d41386b68a11988891ebc5f9a990f2176557ef014e758.js" integrity="sha256-oTD3k8W72PWQLUE4a2ihGYiJHrxfmpkPIXZVfvAU51g="></script>
+    <script src="/js/add-on.js"></script>
+    </div>
+  </body>
+</html>

@@ -6,24 +6,51 @@
     <description>Recent content in Tags on Helpful Badger&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 31 Aug 2020 13:27:14 -0400</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2020 15:59:54 -0400</lastBuildDate>
     
 	<atom:link href="https://helpfulbadger.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>elasticSearch</title>
+      <link>https://helpfulbadger.github.io/tags/elasticsearch/</link>
+      <pubDate>Tue, 01 Sep 2020 15:59:54 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/tags/elasticsearch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Envoy</title>
       <link>https://helpfulbadger.github.io/tags/envoy/</link>
-      <pubDate>Mon, 31 Aug 2020 13:27:14 -0400</pubDate>
+      <pubDate>Tue, 01 Sep 2020 15:59:54 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/tags/envoy/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>kibana</title>
+      <link>https://helpfulbadger.github.io/tags/kibana/</link>
+      <pubDate>Tue, 01 Sep 2020 15:59:54 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/tags/kibana/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Observability</title>
+      <link>https://helpfulbadger.github.io/tags/observability/</link>
+      <pubDate>Tue, 01 Sep 2020 15:59:54 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/tags/observability/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Service Mesh</title>
       <link>https://helpfulbadger.github.io/tags/service-mesh/</link>
-      <pubDate>Mon, 31 Aug 2020 13:27:14 -0400</pubDate>
+      <pubDate>Tue, 01 Sep 2020 15:59:54 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/tags/service-mesh/</guid>
       <description></description>
