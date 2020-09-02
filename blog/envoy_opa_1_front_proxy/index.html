@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to set up Envoy as a front proxy with docker">
 <meta itemprop="datePublished" content="2020-08-31T13:27:14-04:00" />
 <meta itemprop="dateModified" content="2020-08-31T13:27:14-04:00" />
-<meta itemprop="wordCount" content="1448">
+<meta itemprop="wordCount" content="1534">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg">
 
 
@@ -222,7 +222,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>7 minute read</p>
+      <p>8 minute read</p>
     
   </div>
 </header>
@@ -283,6 +283,14 @@
     <div class="content">
       <p>Photo by <a href="https://unsplash.com/@mattserra13?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Mattia Serrani</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></p>
 <h1 id="using-envoy-as-a-front-proxy">Using Envoy as a Front Proxy</h1>
+<p>This is the 1st Envory &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to deliver a very powerful authorization service by the end of the series.</p>
+<p>Here is a list of the Getting Started Guides that are currently available.</p>
+<h2 id="getting-started-guides">Getting Started Guides</h2>
+<ol>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
+</ol>
 <h2 id="overview">Overview</h2>
 <p><a href="https://www.envoyproxy.io/">Envoy</a> is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&rsquo;s own in a minimalist fashion.</p>
 <p>Envoy is just like any other proxy. It receives requests and forwards them to services that are located behind it. The 2 ways to deploy Envoy are:</p>
@@ -397,6 +405,23 @@ The diagram above shows the sidecar approach.</p>
       <article class="mini-post">
         <section>
           
+  <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_3_adding_open_policy_agent/">Plugging Open Policy Agent into Envoy</a></h2>
+          <time class="published" datetime="">September 1, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
   <a href="/blog/envoy_opa_2_adding_observability/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg" alt="">
@@ -445,17 +470,22 @@ The diagram above shows the sidecar approach.</p>
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">2</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">3</span></a>
             
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">2</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">3</span></a>
             
           
           <li>
             
-              <a href="/categories/observability/">observability<span class="count">1</span></a>
+              <a href="/categories/observability/">observability<span class="count">2</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/security/">security<span class="count">1</span></a>
             
           
           </li>

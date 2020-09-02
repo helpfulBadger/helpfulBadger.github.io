@@ -6,10 +6,21 @@
     <description>Recent content in service mesh on Helpful Badger&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 01 Sep 2020 15:59:54 -0400</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2020 17:34:13 -0400</lastBuildDate>
     
 	<atom:link href="https://helpfulbadger.github.io/categories/service-mesh/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Plugging Open Policy Agent into Envoy</title>
+      <link>https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/</link>
+      <pubDate>Tue, 01 Sep 2020 17:34:13 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/</guid>
+      <description>Photo by Kutan Ural on Unsplash
+Envoy &amp;amp; Open Policy Agent This is the 3rd Envory &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to build a very powerful authorization services by the end of the series.
+Here is a list of the Getting Started Guides that are currently available.</description>
+    </item>
     
     <item>
       <title>Adding Observability Tools</title>
@@ -18,7 +29,7 @@
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/</guid>
       <description>Photo by Alex Eckermann on Unsplash
-Adding Log Aggregation to our Envoy Example This is the 2nd blog post in a series of getting started guides for using Envoy and Open Policy Agent to authorize API requests. Later on as we start to develop authorization rules it may be handy to have all of the logs aggregated and displayed in one place for your development and troubleshooting activies. In this article we will walk through how to setup the EFK stack to pull your logs together from all of the docker containers in your local development environment.</description>
+Envoy &amp;amp; Open Policy Agent Adding Log Aggregation to our Envoy Example This is the 2nd Envory &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to deliver a very powerful authorization service by the end of the series.</description>
     </item>
     
     <item>
@@ -28,8 +39,8 @@ Adding Log Aggregation to our Envoy Example This is the 2nd blog post in a serie
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/</guid>
       <description>Photo by Mattia Serrani on Unsplash
-Using Envoy as a Front Proxy Overview Envoy is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&amp;rsquo;s own in a minimalist fashion.
-Envoy is just like any other proxy.</description>
+Using Envoy as a Front Proxy This is the 1st Envory &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to deliver a very powerful authorization service by the end of the series.
+Here is a list of the Getting Started Guides that are currently available.</description>
     </item>
     
   </channel>

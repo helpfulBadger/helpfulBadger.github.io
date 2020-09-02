@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">
 <meta itemprop="datePublished" content="2020-09-01T15:59:54-04:00" />
 <meta itemprop="dateModified" content="2020-09-01T15:59:54-04:00" />
-<meta itemprop="wordCount" content="585">
+<meta itemprop="wordCount" content="751">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg">
 
 
@@ -222,7 +222,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>3 minute read</p>
+      <p>4 minute read</p>
     
   </div>
 </header>
@@ -282,8 +282,20 @@
 
     <div class="content">
       <p><span>Photo by <a href="https://unsplash.com/@alexeckermann?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Alex Eckermann</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
-<h1 id="adding-log-aggregation-to-our-envoy-example">Adding Log Aggregation to our Envoy Example</h1>
-<p>This is the 2nd blog post in a series of getting started guides for using Envoy and Open Policy Agent to authorize API requests. Later on as we start to develop authorization rules it may be handy to have all of the logs aggregated and displayed in one place for your development and troubleshooting activies. In this article we will walk through how to setup the EFK stack to pull your logs together from all of the docker containers in your local development environment. All of the <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/02_front_proxy_kibana">source code for this getting started example</a> is located on github.</p>
+<h1 id="envoy--open-policy-agent">Envoy &amp; Open Policy Agent</h1>
+<h2 id="adding-log-aggregation-to-our-envoy-example">Adding Log Aggregation to our Envoy Example</h2>
+<p>This is the 2nd Envory &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to deliver a very powerful authorization service by the end of the series.</p>
+<p>While our solution is still very simple, it is a great time to show how to make our solution observable with log aggregation. This makes it easier to think about how to scale and productionize our solution.  As we start to develop and apply authorization rules at scale it will be handy to have all of the logs aggregated and displayed in one place for development and troubleshooting activies. In this article we will walk through how to setup the EFK stack to pull your logs together from all of the docker containers in your local development environment. All of the <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/02_front_proxy_kibana">source code for this getting started example</a> is located on github.</p>
+<p>Here is a list of the Getting Started Guides that are currently available.</p>
+<h2 id="getting-started-guides">Getting Started Guides</h2>
+<ol>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
+</ol>
+<h1 id="solution-overview">Solution Overview</h1>
+<p>The solution that we will build in this blog is shown below. We will send docker logs into an EFK stack that is also running inside docker. Each of the containers in our solution simply send logs to Standard out and / or Standard Error. No agents nor other special software is requirements are imposed on the observered applications.</p>
+<p><img class="special-img-class" src="/img/2020/08/Envoy-front proxy-Observability_1.svg" /><br></p>
 <h2 id="adding-efk-containers">Adding EFK containers</h2>
 <p>We will be using Fluent Bit in this example because it is lite weight and simpler to deal with than Logstash or full fledged FluentD. Below is a gist with a very basic configuration and no special optimizations. Lines 9 and 30 use the <code>depend_on</code> property to cause docker to start elasticSearch first and then the other containers that depend on elasticSearch.</p>
 <script type="application/javascript" src="https://gist.github.com/helpfulBadger/7414ff8326c13f5ab2890e4a55c9edc3.js"></script>
@@ -357,6 +369,8 @@
     <a href="/blog/envoy_opa_1_front_proxy/" class="button"><div class="previous"><div>Using Envoy as a Front Proxy</div></div></a>
   
   
+    <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="button"><div class="next"><div>Plugging Open Policy Agent into Envoy</div></div></a>
+  
 </div>
 
 
@@ -367,6 +381,23 @@
       <header>
         <h1>Recent posts</h1>
       </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_3_adding_open_policy_agent/">Plugging Open Policy Agent into Envoy</a></h2>
+          <time class="published" datetime="">September 1, 2020</time>
+        </header>
+      </article>
       
       <article class="mini-post">
         <section>
@@ -419,17 +450,22 @@
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">2</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">3</span></a>
             
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">2</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">3</span></a>
             
           
           <li>
             
-              <a href="/categories/observability/">observability<span class="count">1</span></a>
+              <a href="/categories/observability/">observability<span class="count">2</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/security/">security<span class="count">1</span></a>
             
           
           </li>

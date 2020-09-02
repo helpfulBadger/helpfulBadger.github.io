@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+<title>Plugging Open Policy Agent into Envoy - Helpful Badger&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="Plugging Open Policy Agent into Envoy">
+<meta itemprop="description" content="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">
+<meta itemprop="datePublished" content="2020-09-01T17:34:13-04:00" />
+<meta itemprop="dateModified" content="2020-09-01T17:34:13-04:00" />
+<meta itemprop="wordCount" content="1486">
+<meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg">
+
+
+
+<meta itemprop="keywords" content="Envoy,Service Mesh,OPA,Open Policy Agent," />
+<meta property="og:title" content="Plugging Open Policy Agent into Envoy" />
+<meta property="og:description" content="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" />
+<meta property="og:image" content="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg" />
+<meta property="article:published_time" content="2020-09-01T17:34:13-04:00" />
+<meta property="article:modified_time" content="2020-09-01T17:34:13-04:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg"/>
+
+<meta name="twitter:title" content="Plugging Open Policy Agent into Envoy"/>
+<meta name="twitter:description" content="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules"/>
+<link rel="stylesheet" href="/css/bundle.min.182747932867f43d8c875b59a0300848b838002d4008d4a5b8ddcc41a37c4cf7.css" integrity="sha256-GCdHkyhn9D2Mh1tZoDAISLg4AC1ACNSluN3MQaN8TPc="><link rel="stylesheet" href="/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="/" class="nav">
+        
+          
+            Blog
+          
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          
+            <a href="/" class="nav link"><i class='fa fa-home'></i> Home</a>
+          
+        
+      
+        
+          
+          
+            <a href="/about/" class="nav link"><i class='far fa-id-card'></i> About</a>
+          
+        
+      
+        
+          
+          
+            <a href="/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+          
+        
+      
+        
+          
+          
+            <a href="/categories/" class="nav link"><i class='fas fa-sitemap'></i> Categories</a>
+          
+        
+      
+      <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>
+      <a href="#search-input" class="nav search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>
+    </menu>
+    <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
+    <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
+    <a href="#lang-menu" class="nav lang-toggle" lang="en">en</a>
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
+  <menu id="lang-menu" class="flyout-menu menu">
+  <a href="#" lang="en" class="nav link active">English (en)</a>
+  
+    
+      
+    
+  
+</menu>
+
+  
+    <menu id="share-menu" class="flyout-menu menu">
+      <h1>Share Post</h1>
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=Plugging%20Open%20Policy%20Agent%20into%20Envoy&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f&amp;title=Plugging%20Open%20Policy%20Agent%20into%20Envoy" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f&amp;title=Plugging%20Open%20Policy%20Agent%20into%20Envoy" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f&amp;description=Plugging%20Open%20Policy%20Agent%20into%20Envoy" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </menu>
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" class="hidden-single-column">
+  <a href="/"><img src="https://helpfulbadger.github.io/img/main/unsplash_badger_small_2.png" class="circle" width="" alt="Helpful Badger in the wild" /></a>
+  <header>
+    <h1>Helpful Badger</h1>
+  </header>
+  <main>
+    <p>Imagining the possibilities</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="/blog/envoy_opa_3_adding_open_policy_agent/">Plugging Open Policy Agent into Envoy</a></h2>
+    
+    
+      <p>Learn how to use Open Policy Agent with Envoy for more powerful authorization rules</p>
+    
+  </div>
+  <div class="meta">
+    <time class="published" datetime="2020-09-01 17:34:13 -0400 EDT">
+      September 1, 2020
+    </time>
+    <span class="author">Helpful Badger</span>
+    
+      <p>7 minute read</p>
+    
+  </div>
+</header>
+
+    <section id="socnet-share">
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=Plugging%20Open%20Policy%20Agent%20into%20Envoy&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f&amp;title=Plugging%20Open%20Policy%20Agent%20into%20Envoy" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f&amp;title=Plugging%20Open%20Policy%20Agent%20into%20Envoy" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f&amp;description=Plugging%20Open%20Policy%20Agent%20into%20Envoy" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_3_adding_open_policy_agent%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </section>
+    
+  <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg" alt="">
+    
+  </a>
+
+
+    <div class="content">
+      <p><span>Photo by <a href="https://unsplash.com/@kutanural?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Kutan Ural</a> on <a href="https://unsplash.com/s/photos/guard-door?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
+<h1 id="envoy--open-policy-agent">Envoy &amp; Open Policy Agent</h1>
+<p>This is the 3rd Envory &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to build a very powerful authorization services by the end of the series.</p>
+<p>Here is a list of the Getting Started Guides that are currently available.</p>
+<h2 id="getting-started-guides">Getting Started Guides</h2>
+<ol>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
+</ol>
+<h2 id="envoys-external-authorization-api">Envoy&rsquo;s External Authorization API</h2>
+<p>Envoy has the capability to call out to an external authorization service. There are 2 protocols supported. The authorization service can be either a RESTful API endpoint or using Envoy&rsquo;s new gRPC protocol. Envoy sends all of the request details to the authorization service including the method, URI, parameters, headers, and request body. The authorization service simply needs to return 200 OK to permit the request to go through.</p>
+<p>In this example we will be using a pre-built Open Policy Agent container that already understands Envoy&rsquo;s authorization protocol.</p>
+<h2 id="open-policy-agent-overview">Open Policy Agent Overview</h2>
+<p>The Open Policy Agent site describes it very succinctly</p>
+<p>The <a href="https://www.openpolicyagent.org/">Open Policy Agent (OPA)</a> is an open source, general-purpose policy engine. OPA provides a declarative language that let’s you specify policy as code and APIs to offload policy decision-making from your software. OPA to enforce policies in microservices, Kubernetes, CI/CD pipelines, API gateways, or nearly any other software.</p>
+<p>OPA focuses exclusively on making policy decisions and not on policy enforcement. OPA pairs with Envoy for policy enforcement. OPA can run as:</p>
+<ul>
+<li>A standalone service accessible via an API</li>
+<li>A library that can be compiled into your code</li>
+</ul>
+<p>It has an extremely flexible programming model:</p>
+<p><img class="special-img-class" src="/img/2020/08/Policy_Authoring.png" /><br></p>
+<p>Additionally, the company behind OPA, Styra, offers control plane products to author policies and manage a fleet of OPA instances.</p>
+<p>OPA decouples policy decision-making from policy enforcement. When your software needs to make policy decisions it queries OPA and supplies structured data (e.g., JSON) as input. OPA accepts arbitrary structured data as input.</p>
+<p>OPA generates policy decisions by evaluating the query input against policies and data. OPA expresses policies in a language called Rego. OPA has exploded in popularity and has become a Cloud Native Computing Foundation incubating project. Typical use cases are deciding:</p>
+<ul>
+<li>Which users can access which resources</li>
+<li>Which subnets egress traffic is allowed</li>
+<li>Which clusters a workload can be deployed to</li>
+<li>Which registries binaries can be downloaded from</li>
+<li>Which OS capabilities a container can execute with</li>
+<li>The time of day the system can be accessed</li>
+</ul>
+<p>Policy decisions are not limited to simple yes/no or allow/deny answers. Policies can generate any arbitrary structured data as output.</p>
+<p>This getting started example is based on <a href="https://www.openpolicyagent.org/docs/latest/envoy-authorization/">this OPA tutorial</a> using docker-compose instead of Kubernetes.</p>
+<h1 id="solution-overview">Solution Overview</h1>
+<p>In this getting started example we take the super simple envoy environment we created in getting started episode 1 and add the simplest possible authorization rule using Open Policy Agent.</p>
+<p><img class="special-img-class" src="/img/2020/08/Envoy-front proxy-OPA_GS3.svg" /><br></p>
+<h2 id="docker-compose">Docker Compose</h2>
+<p>This is the same docker compose file as our initial getting started example with a few modifications. At line 15 in our docker-compose file, we added a reference to our Open Policy Agent container. This is a special verison of the Open Policy Agent containers on dockerhub. This version is designed to integrate with Envoy and has an API exposed the complies with Envoy&rsquo;s gRPC specification. There are also some other things to take notice of:</p>
+<ul>
+<li>Debug level logging is set on line 21</li>
+<li>The gRPC service for Envoy is configured on line 23</li>
+<li>The logs are sent to the console for a log aggregation solution to pickup (or not) on line 24</li>
+</ul>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/8405aa13b6f33100edd8f2ec2ae97a79.js"></script>
+
+<h2 id="envoy-config-changes">Envoy Config Changes</h2>
+<p>There are a few things that we need to add to the envoy configuration to enable external authorization:</p>
+<ul>
+<li>We added an external authorization configuration at line 24.</li>
+<li>failure_mode_allow on line 26 determines whether envoy fails open or closed when the authorization service fails.</li>
+<li>with_request_body determines if the request body is sent to the authorization service.</li>
+<li>max_request_bytes determines how large of a request body Envoy will permit.</li>
+<li>allow_partial_message determines if a partial body is sent or not when a buffer maximum is reached.</li>
+<li>The grpc_service object on line 30 specifies how to reach the Open Policy Agent endpoint to make an authorization decision.</li>
+</ul>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/5df3e9e86d2c2bd9ccd7bcfdb8439122.js"></script>
+
+<h2 id="rego-opas-policy-language">Rego: OPA&rsquo;s Policy Language</h2>
+<p>There are a lot of other examples of how to write Rego policies on other sites. This walkthrough of Rego is targeted specifically to using it to make Envoy decisions:</p>
+<ul>
+<li>The package statement on the first line determines where the policy is located in OPA. When a policy decision is requested, the package name is used as the prefix used to locate the named decision.</li>
+<li>The import statement on line 3 navigates the heavily nested data structure that Envoy sends us and gives us a shorter alias to refer to a particular section of the input.</li>
+<li>On line 5 we have a rule named <code>allow</code> and we set it&rsquo;s default value to and object that Envoy is expecting.
+<ul>
+<li>The allowed property determines if the request is permitted to go through or not.</li>
+<li>The headers property allows us to set headers on either the forwarded request (if approved) or on the rejected request (if denied)</li>
+<li>The body property can be used to communicate error message details to the requestor. It has no affect on requests approved for forwarding</li>
+<li>The http_status property can be set on any rejected requests to any value as desired</li>
+</ul>
+</li>
+<li>The next section starting at line 12 specifies the logic for approving the request to move forward
+<ul>
+<li>On line 12 the allow rule is set to the value of the response variable that we define in the body of the rule</li>
+<li>Line 13 is the only condition we have defined for approval of the request. The request method simply needs to be a POST.</li>
+<li>If true then we set the response to the values on lines 15 and 16.</li>
+</ul>
+</li>
+</ul>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/cd6c55261fa2b84d1cebbb797332281d.js"></script>
+
+<h2 id="input-data-sent-from-envoy">Input data sent from Envoy</h2>
+<p>Now we dive into the details of the input data structure sent from Envoy.</p>
+<ul>
+<li>Line 3 is an object that describes the IP address and Port that the request is going to</li>
+<li>Line 16 is the request object itself. The unmarshalled body is present along with:
+<ul>
+<li>request headers</li>
+<li>hostname where the original request was sent</li>
+<li>a unique request ID assigned by Envoy</li>
+<li>request method</li>
+<li>unparsed path</li>
+<li>protocol</li>
+<li>request size</li>
+</ul>
+</li>
+<li>Line 43 is a object that describes the IP address and port where the request originated</li>
+<li>Line 56 is where Envoy has already done some work for us to parse the request body (if it was configured to be forwarded)</li>
+<li>Line 60 and 63 are the parsed path and query parameters respectively</li>
+<li>Finally, line 71 let&rsquo;s us know whether we have the complete request body or not</li>
+</ul>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/9c367ca3d8214f8edd4706b04863a38c.js"></script>
+
+<h2 id="reviewing-the-request-flow-in-envoys-logs">Reviewing the Request Flow in Envoy&rsquo;s Logs</h2>
+<p>In debug mode, we have a lot of rich information that Envoy logs for us to help us determine what may be going wrong as we develop our system.</p>
+<ul>
+<li>Line 1 shows our request first coming in</li>
+<li>The next several lines show us the request headers</li>
+<li>Line 12 let&rsquo;s us know that envoy is buffering the request until it reaches the buffer limit that we set</li>
+<li>Line 15 and 16 show us that Envoy forwarded the request to our authorization service and got an approval to forward the request</li>
+<li>The remainder of the logs show envoy forwarding the request to its destination and then back to the calling client</li>
+</ul>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/fcb65af0cf9d7814883cec2f5bc1259c.js"></script>
+
+<h2 id="reviewing-opas-decision-log">Reviewing OPA&rsquo;s Decision Log</h2>
+<p>The open policy agent decision logs include the input that we just reviewed and some other information that we can use for debugging, troubleshoot or audit logging. The interesting parts that we haven&rsquo;t reviewed yet:</p>
+<ul>
+<li>The decision ID on line 2 can be matched against other OPA log entries related to this decision</li>
+<li>Line 75 has the labels that show which Envoy instance the request came from</li>
+<li>Line 80 is an object that contains the performance metrics for the decision</li>
+<li>Line 88 shows the response that OPA sent back to Envoy</li>
+</ul>
+<script type="application/javascript" src="https://gist.github.com/helpfulBadger/2bdfa1c8324e975fe8ed9acf1f4ab14a.js"></script>
+
+<h1 id="taking-this-solution-for-a-spin">Taking this solution for a spin</h1>
+<p>Now that we know what we are looking at, we can run this example by executing the script <code>./demonstrate_opa_integration.sh</code></p>
+<ol>
+<li>The script starts the envoy front proxy, HTTPBIN and Open Policy Agent</li>
+<li>Next it shows the docker container status to make sure everything is up and running.</li>
+<li>Curl is used to issue a request that should get approved, forwarded to HTTPBin and the display the results</li>
+<li>The opa decision logs are then shown to let you explore the information available for development debugging and troubleshooting</li>
+<li>To make sure we show both outcomes the next request should fail our simple authorization rule check.</li>
+<li>The decision logs are shown again</li>
+<li>Finally the example is brought down and cleaned up.</li>
+</ol>
+<p>In the next getting started guide we will explore Open Policy Agent&rsquo;s command line interface and unit testing support.</p>
+
+    </div>
+    <footer>
+      <ul class="stats">
+  <li class="categories">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/service-mesh/">service mesh</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/observability/">Observability</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/security/">Security</a></li>
+        
+      
+    
+    </ul>
+  </li>
+  <li class="tags">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/tags/envoy/">Envoy</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/service-mesh/">Service Mesh</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/opa/">OPA</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/open-policy-agent/">Open Policy Agent</a></li>
+        
+      
+    
+    </ul>
+  </li>
+</ul>
+
+    </footer>
+  </article>
+  
+
+  <div class="pagination">
+  
+    <a href="/blog/envoy_opa_2_adding_observability/" class="button"><div class="previous"><div>Adding Observability Tools</div></div></a>
+  
+  
+</div>
+
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>Recent posts</h1>
+      </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_3_adding_open_policy_agent/">Plugging Open Policy Agent into Envoy</a></h2>
+          <time class="published" datetime="">September 1, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_2_adding_observability/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_2_adding_observability/">Adding Observability Tools</a></h2>
+          <time class="published" datetime="">September 1, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_1_front_proxy/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_1_front_proxy/">Using Envoy as a Front Proxy</a></h2>
+          <time class="published" datetime="">August 31, 2020</time>
+        </header>
+      </article>
+      
+      
+    </section>
+  
+
+  
+    
+      <section id="categories">
+        <header>
+          <h1><a href="/categories">Categories</a></h1>
+        </header>
+        <ul>
+          
+            
+          
+          
+          <li>
+            
+              <a href="/categories/cloud/">cloud<span class="count">3</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/service-mesh/">service-mesh<span class="count">3</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">2</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/security/">security<span class="count">1</span></a>
+            
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>About</h1>
+      </header>
+      <p>Sharing perspectives.</p>
+      <footer>
+        <a href="/about" class="button">Learn More</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+  
+  <p class="copyright">
+    
+      &copy; 2020
+      
+        Helpful Badger&#39;s Blog
+      
+    . <br>
+    Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://gohugo.io/' title='0.74.3' target='_blank' rel='noopener'>Hugo</a>
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="/js/bundle.min.a130f793c5bbd8f5902d41386b68a11988891ebc5f9a990f2176557ef014e758.js" integrity="sha256-oTD3k8W72PWQLUE4a2ihGYiJHrxfmpkPIXZVfvAU51g="></script>
+    <script src="/js/add-on.js"></script>
+    </div>
+  </body>
+</html>
