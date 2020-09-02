@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to set up Envoy as a front proxy with docker">
 <meta itemprop="datePublished" content="2020-08-31T13:27:14-04:00" />
 <meta itemprop="dateModified" content="2020-08-31T13:27:14-04:00" />
-<meta itemprop="wordCount" content="1534">
+<meta itemprop="wordCount" content="1556">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg">
 
 
@@ -282,14 +282,16 @@
 
     <div class="content">
       <p>Photo by <a href="https://unsplash.com/@mattserra13?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Mattia Serrani</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></p>
-<h1 id="using-envoy-as-a-front-proxy">Using Envoy as a Front Proxy</h1>
-<p>This is the 1st Envory &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to deliver a very powerful authorization service by the end of the series.</p>
+<h1 id="getting-started-with-envoy--open-policy-agent-----01----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 01 &mdash;</h1>
+<h2 id="using-envoy-as-a-front-proxy">Using Envoy as a Front Proxy</h2>
+<p>This is the 1st Envory &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
 <h2 id="getting-started-guides">Getting Started Guides</h2>
 <ol>
 <li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
 <li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
 <li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></li>
 </ol>
 <h2 id="overview">Overview</h2>
 <p><a href="https://www.envoyproxy.io/">Envoy</a> is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&rsquo;s own in a minimalist fashion.</p>
@@ -315,39 +317,32 @@ The diagram above shows the sidecar approach.</p>
 <h2 id="building-an-envoy-front-proxy">Building an Envoy Front Proxy</h2>
 <p>The <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/01_front_proxy">code for the complete working example</a> can be found on Github. We will start with the Envoy docker images. The Envoy images are located on <a href="https://hub.docker.com/r/envoyproxy/envoy/tags">Dockerhub</a>. We will use <code>docker-compose</code> to build some configurability into our Envoy environment.</p>
 <h3 id="dockerfile">Dockerfile</h3>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/474f08336d221b6756f38fedc02b9740.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/01_dockerfile.png" /></p>
 <p>The <code>entrypoint.sh</code> file is where the magic happens. We will configure environment variables in our docker-compose file to determine which service (<code>SERVICE_NAME</code>) Envoy routes to and the port (<code>SERVICE_PORT</code>) on that service. Additionally, we specify how much detail is captured in the logs by setting the <code>DEBUG_LEVEL</code> environment variable. As you can see from the script below on line 3, we replace those environment variables on the fly in Envoy&rsquo;s configuration file before starting Envoy.</p>
 <h3 id="entrypointsh">entrypoint.sh</h3>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/9810fb19874141e18619d0c2426fadde.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/01_entrypoint_sh.png" /></p>
 <p>Since we don&rsquo;t have a configuration file yet, we will cover that next. Envoy is very flexible and powerful. There is an enormous amount of expressiveness that the Envoy API and configuration files support. With this flexibility and power, Envoy configuration files can become quite complicated with a lot layers in the YAML hierarchy. Additionally, each feature has a lot of configuration parameters. The documentation can only cover so much of that functionality with an open source community of volunteers.</p>
 <p>One of the challenges that I have when reading through the documentation and trying to apply it, is that the documentation has a variety of YAML snippets. There are very few places that these YAML snippets are pulled together into a functioning example. There are a few examples in the source code examples directory but they are far from comprehensive. That leaves a lot of tinkering for engineers to figure out how to compose a functional configuration while interpretting sometimes unclear error messages on their way to the promised land. That is the entire reason that I am writting a series of getting started guides. These articles are intended to give folks a known to work starting point for Envoy authorization features and extensions like Open Policy Agent.</p>
 <p>The Envoy configuration starts with defining a listener as we can see starting on line 3. The first property is the address and port to accept traffic on (lines 3 through 6). The next property is a filter chain. Filter chains are very powerful and enable configuration for a wide variety of possible behaviors. This filter chain is as simple as it gets. It simply accepts any HTTP traffic with any URI pattern and routes it to the cluster named <code>service</code>.</p>
 <p>The <code>http_connection_manager</code> component does this for us. It&rsquo;s configuration starts on line 9 and extends to line 24. Execution order is determined by the order they are listed in the configuration file. The important part for this discussion begins on line 14 with the <code>route_config</code>. This sets up routing requests for any domain (line 18) and any request URI that begins with a slash (line 20) to go to the cluster named <code>service</code>. The cluster definitions are in a separate section to make them reusable destination across a variety of rules.</p>
 <h3 id="envoy-configuration-envoyyaml">Envoy Configuration (envoy.yaml)</h3>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/6776c186ec8e35b824222f5f57832279.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/01_Envoy_config.png" /></p>
 <p>The cluster definitions begin on line 25. We can see that there is only a single cluster defined. It has the name <code>service</code>, uses DNS to find server instances and uses round robin to direct traffic across multiple instances. The hostname is on line 32 and the port is on line 33. As we can see these are the environment variables that we will swap out with the entry.sh script.</p>
 <p>The last section of the configuration file tells Envoy where to listen for admin traffic. The admin gui is a handy little tool that we will not cover in this guide but is definitely worth poking around in to observe what is going on inside an individual Envoy instance.</p>
 <h3 id="docker-compose-configuration">Docker Compose Configuration</h3>
 <p>Now that we understand the Envoy configuration we can move on to understanding the rest of the simple environment that we are setting up. Line 4 shows the trigger that causes docker to build the Envoy container. Docker will only build the Envoy Dockerfile the first time it sees that an image does not exist. If you want to force rebuilding the Envoy container on subsequent runs add the <code>--build</code> parameter to your docker compose command.  We expose Envoy to the host network on lines 6 and 7 and provide the configuration file that we just created on line 9.</p>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/c2abd820fb9d41b65a64d5aeb5bdc38f.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/01_docker_compose.png" /></p>
 <p>The service to route to and port are defined on the environment variables on lines 12 and 13. Notice the name app matches the name of our final service on line 15. We are simply using HTTPBIN to reflect our request back to us.</p>
 <h2 id="running-and-trying-out-our-example">Running and Trying out our Example</h2>
-<p>The last step to getting our front proxy up is simply running the included script that demonstrates our example. The script explains what it is about to do to ensure you know what are about to see scrolling across your terminal screen. Line 8 starts our environment. Line 14 let&rsquo;s you check to make sure both containers are running before trying to send them a request.</p>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/99cd40f5e4a0f7c6f52e0f6ab384628d.js"></script>
-
+<p>The last step to getting our front proxy up is simply running the included script <code>test.sh</code> that demonstrates our example. The script explains what it is about to do to ensure you know what are about to see scrolling across your terminal screen. Line 8 starts our environment. Line 14 let&rsquo;s you check to make sure both containers are running before trying to send them a request.</p>
+<p><img class="special-img-class" src="/img/2020/08/01_Demo_script.png" /></p>
 <p>Line 19 simply calls Envoy with a curl command with the <code>--verbose</code> parameter set so that you can see the headers and request details. Then line 25 tears down the whole environment.</p>
 <h2 id="containers-up">Containers UP!!!!</h2>
 <p>If you have successfully started your environment then you should see something like this:</p>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/da12d55bdea21f53d1c21f43b75dde50.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/01_Containers_up.png" /></p>
 <h2 id="we-succeeded">We Succeeded!!!</h2>
 <p>You should see something like this if you successfully called HTTPBin through Envoy:</p>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/f3462263e846c7d203694cdd7393db2b.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/01_Curl_Response.png" /></p>
 <h1 id="congratulations">Congratulations</h1>
 <p>Congratulations, you have successully stood up your first Envoy instance and configured it to forward traffic! This is the simplest possible Envoy configuration :)  We don&rsquo;t have any security yet or any other features that Envoy is famous for. We will get to that in future articles. Feel free to use <a href="https://www.postman.com/">postman</a> to explore other request that you can send. Additionally, don&rsquo;t forget to explore Envoy&rsquo;s admin console by pointing your web browser to <a href="http://localhost:8001">http://localhost:8001</a></p>
 
@@ -401,6 +396,23 @@ The diagram above shows the sidecar approach.</p>
       <header>
         <h1>Recent posts</h1>
       </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_4_opa_cli/">Using the Open Policy Agent CLI</a></h2>
+          <time class="published" datetime="">September 2, 2020</time>
+        </header>
+      </article>
       
       <article class="mini-post">
         <section>
@@ -470,7 +482,7 @@ The diagram above shows the sidecar approach.</p>
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">3</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">4</span></a>
             
           
           <li>
@@ -485,7 +497,7 @@ The diagram above shows the sidecar approach.</p>
           
           <li>
             
-              <a href="/categories/security/">security<span class="count">1</span></a>
+              <a href="/categories/security/">security<span class="count">2</span></a>
             
           
           </li>

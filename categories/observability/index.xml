@@ -18,8 +18,7 @@
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/</guid>
       <description>Photo by Kutan Ural on Unsplash
-Envoy &amp;amp; Open Policy Agent This is the 3rd Envory &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to build a very powerful authorization services by the end of the series.
-Here is a list of the Getting Started Guides that are currently available.</description>
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 03 &amp;mdash; Plugging OPA into Envoy This is the 3rd Envory &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
     </item>
     
     <item>
@@ -29,7 +28,7 @@ Here is a list of the Getting Started Guides that are currently available.</desc
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/</guid>
       <description>Photo by Alex Eckermann on Unsplash
-Envoy &amp;amp; Open Policy Agent Adding Log Aggregation to our Envoy Example This is the 2nd Envory &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to deliver a very powerful authorization service by the end of the series.</description>
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 02 &amp;mdash; Adding Log Aggregation to our Envoy Example This is the 2nd Envory &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the goal of creating a very powerful authorization service by the end of the series.</description>
     </item>
     
   </channel>

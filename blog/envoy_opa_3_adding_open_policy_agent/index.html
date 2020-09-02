@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">
 <meta itemprop="datePublished" content="2020-09-01T17:34:13-04:00" />
 <meta itemprop="dateModified" content="2020-09-01T17:34:13-04:00" />
-<meta itemprop="wordCount" content="1486">
+<meta itemprop="wordCount" content="1506">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg">
 
 
@@ -222,7 +222,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>7 minute read</p>
+      <p>8 minute read</p>
     
   </div>
 </header>
@@ -282,14 +282,16 @@
 
     <div class="content">
       <p><span>Photo by <a href="https://unsplash.com/@kutanural?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Kutan Ural</a> on <a href="https://unsplash.com/s/photos/guard-door?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
-<h1 id="envoy--open-policy-agent">Envoy &amp; Open Policy Agent</h1>
-<p>This is the 3rd Envory &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide to build a very powerful authorization services by the end of the series.</p>
+<h1 id="getting-started-with-envoy--open-policy-agent-----03----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 03 &mdash;</h1>
+<h2 id="plugging-opa-into-envoy">Plugging OPA into Envoy</h2>
+<p>This is the 3rd Envory &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
 <h2 id="getting-started-guides">Getting Started Guides</h2>
 <ol>
 <li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
 <li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
 <li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
+<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></li>
 </ol>
 <h2 id="envoys-external-authorization-api">Envoy&rsquo;s External Authorization API</h2>
 <p>Envoy has the capability to call out to an external authorization service. There are 2 protocols supported. The authorization service can be either a RESTful API endpoint or using Envoy&rsquo;s new gRPC protocol. Envoy sends all of the request details to the authorization service including the method, URI, parameters, headers, and request body. The authorization service simply needs to return 200 OK to permit the request to go through.</p>
@@ -468,6 +470,8 @@
     <a href="/blog/envoy_opa_2_adding_observability/" class="button"><div class="previous"><div>Adding Observability Tools</div></div></a>
   
   
+    <a href="/blog/envoy_opa_4_opa_cli/" class="button"><div class="next"><div>Using the Open Policy Agent CLI</div></div></a>
+  
 </div>
 
 
@@ -478,6 +482,23 @@
       <header>
         <h1>Recent posts</h1>
       </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_4_opa_cli/">Using the Open Policy Agent CLI</a></h2>
+          <time class="published" datetime="">September 2, 2020</time>
+        </header>
+      </article>
       
       <article class="mini-post">
         <section>
@@ -547,7 +568,7 @@
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">3</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">4</span></a>
             
           
           <li>
@@ -562,7 +583,7 @@
           
           <li>
             
-              <a href="/categories/security/">security<span class="count">1</span></a>
+              <a href="/categories/security/">security<span class="count">2</span></a>
             
           
           </li>
