@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">
 <meta itemprop="datePublished" content="2020-09-01T15:59:54-04:00" />
 <meta itemprop="dateModified" content="2020-09-01T15:59:54-04:00" />
-<meta itemprop="wordCount" content="766">
+<meta itemprop="wordCount" content="782">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg">
 
 
@@ -298,13 +298,11 @@
 <p>The solution that we will build in this blog is shown below. We will send docker logs into an EFK stack that is also running inside docker. Each of the containers in our solution simply send logs to Standard out and / or Standard Error. No agents nor other special software is requirements are imposed on the observered applications.</p>
 <p><img class="special-img-class" src="/img/2020/08/Envoy-front proxy-Observability_1.svg" /><br></p>
 <h2 id="adding-efk-containers">Adding EFK containers</h2>
-<p>We will be using Fluent Bit in this example because it is lite weight and simpler to deal with than Logstash or full fledged FluentD. Below is a gist with a very basic configuration and no special optimizations. Lines 9 and 30 use the <code>depend_on</code> property to cause docker to start elasticSearch first and then the other containers that depend on elasticSearch.</p>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/7414ff8326c13f5ab2890e4a55c9edc3.js"></script>
-
+<p>We will be using Fluent Bit in this example because it is lite weight and simpler to deal with than Logstash or full fledged FluentD. Below is a very basic configuration with no special optimizations. Lines 18 - 49 add the EFK stack to our environment.  Lines 16 and 47 use the <code>depend_on</code> property to cause docker to start elasticSearch first and then Kiban and Fluent Bit that depend on elasticSearch.</p>
+<p><img class="special-img-class" src="/img/2020/08/02_compose_step_1.png" /><br></p>
 <h2 id="wiring-our-containers-into-efk">Wiring our containers into EFK</h2>
-<p>With the log aggregation containers added to our docker-compose file, we now need to wire them into the other containers in our environment. The gist below shows a couple of small changes that we needed to make to our compose file from Getting Started Guide #1. We added the property at line 14 below which expresses our dependency on elasticSeach. Additionally, we need to wire standard out and standard error from our containers to fluentBit. This is done through the logging properties on lines 17 and 27. The driver line tells docker which log driver to use and the tag help make it more clear which container is the source of the logs.</p>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/e701287a1847345c6997946a5b98787e.js"></script>
-
+<p>With the EFK log aggregation containers added to our docker-compose file, we now need to wire them into the other containers in our environment. The changes below show a couple of small changes that we needed to make to our compose file from where we left off in Getting Started Guide #1. We added the property at line 14 below which expresses our dependency on elasticSeach. Additionally, we need to wire standard out and standard error from our containers to Fluent Bit. This is done through the logging properties on lines 17 and 27. The driver line tells docker which log driver to use and the tag help make it more clear which container is the source of the logs.</p>
+<p><img class="special-img-class" src="/img/2020/08/02_compose_step_2.png" /><br></p>
 <h1 id="taking-things-for-a-spin">Taking things for a spin</h1>
 <p>The demonstration script spins everything up for us. Just run <code>./demonstrate_front_proxy.sh</code> to get things going:</p>
 <ol>

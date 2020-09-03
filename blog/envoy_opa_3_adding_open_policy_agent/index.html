@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">
 <meta itemprop="datePublished" content="2020-09-01T17:34:13-04:00" />
 <meta itemprop="dateModified" content="2020-09-01T17:34:13-04:00" />
-<meta itemprop="wordCount" content="1506">
+<meta itemprop="wordCount" content="1597">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg">
 
 
@@ -329,20 +329,18 @@
 <li>The gRPC service for Envoy is configured on line 23</li>
 <li>The logs are sent to the console for a log aggregation solution to pickup (or not) on line 24</li>
 </ul>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/8405aa13b6f33100edd8f2ec2ae97a79.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/03_compose_changes.png" /><br></p>
 <h2 id="envoy-config-changes">Envoy Config Changes</h2>
 <p>There are a few things that we need to add to the envoy configuration to enable external authorization:</p>
 <ul>
-<li>We added an external authorization configuration at line 24.</li>
+<li>We added an external authorization configuration at line 23.</li>
 <li>failure_mode_allow on line 26 determines whether envoy fails open or closed when the authorization service fails.</li>
 <li>with_request_body determines if the request body is sent to the authorization service.</li>
 <li>max_request_bytes determines how large of a request body Envoy will permit.</li>
 <li>allow_partial_message determines if a partial body is sent or not when a buffer maximum is reached.</li>
 <li>The grpc_service object on line 30 specifies how to reach the Open Policy Agent endpoint to make an authorization decision.</li>
 </ul>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/5df3e9e86d2c2bd9ccd7bcfdb8439122.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/03_Envoy_config.png" /><br></p>
 <h2 id="rego-opas-policy-language">Rego: OPA&rsquo;s Policy Language</h2>
 <p>There are a lot of other examples of how to write Rego policies on other sites. This walkthrough of Rego is targeted specifically to using it to make Envoy decisions:</p>
 <ul>
@@ -351,8 +349,8 @@
 <li>On line 5 we have a rule named <code>allow</code> and we set it&rsquo;s default value to and object that Envoy is expecting.
 <ul>
 <li>The allowed property determines if the request is permitted to go through or not.</li>
-<li>The headers property allows us to set headers on either the forwarded request (if approved) or on the rejected request (if denied)</li>
-<li>The body property can be used to communicate error message details to the requestor. It has no affect on requests approved for forwarding</li>
+<li>The headers property allows us to set headers on either the forwarded request (if approved) or on the rejected request (if denied). OPA does not marshal any REGO data types on your behalf. All header values must be specified as a string.</li>
+<li>The body property can be used to communicate error message details to the requestor. It has no affect on requests approved for forwarding. OPA does not marshal any REGO data types on your behalf. The body value must be specified as a string.</li>
 <li>The http_status property can be set on any rejected requests to any value as desired</li>
 </ul>
 </li>
@@ -364,13 +362,12 @@
 </ul>
 </li>
 </ul>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/cd6c55261fa2b84d1cebbb797332281d.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/03_rego_policy.png" /><br></p>
 <h2 id="input-data-sent-from-envoy">Input data sent from Envoy</h2>
 <p>Now we dive into the details of the input data structure sent from Envoy.</p>
 <ul>
 <li>Line 3 is an object that describes the IP address and Port that the request is going to</li>
-<li>Line 16 is the request object itself. The unmarshalled body is present along with:
+<li>Line 10 is the request object itself. The unmarshalled body is present along with:
 <ul>
 <li>request headers</li>
 <li>hostname where the original request was sent</li>
@@ -381,34 +378,34 @@
 <li>request size</li>
 </ul>
 </li>
-<li>Line 43 is a object that describes the IP address and port where the request originated</li>
-<li>Line 56 is where Envoy has already done some work for us to parse the request body (if it was configured to be forwarded)</li>
-<li>Line 60 and 63 are the parsed path and query parameters respectively</li>
-<li>Finally, line 71 let&rsquo;s us know whether we have the complete request body or not</li>
+<li>Line 34 is a object that describes the IP address and port where the request originated</li>
+<li>Line 45 is where Envoy has already done some work for us to parse the request body (if it was configured to be forwarded)</li>
+<li>Line 46 and 47 are the parsed path and query parameters respectively</li>
+<li>Finally, line 48 let&rsquo;s us know whether we have the complete request body or not</li>
 </ul>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/9c367ca3d8214f8edd4706b04863a38c.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/03_rego_input.png" /><br></p>
 <h2 id="reviewing-the-request-flow-in-envoys-logs">Reviewing the Request Flow in Envoy&rsquo;s Logs</h2>
 <p>In debug mode, we have a lot of rich information that Envoy logs for us to help us determine what may be going wrong as we develop our system.</p>
 <ul>
 <li>Line 1 shows our request first coming in</li>
 <li>The next several lines show us the request headers</li>
-<li>Line 12 let&rsquo;s us know that envoy is buffering the request until it reaches the buffer limit that we set</li>
-<li>Line 15 and 16 show us that Envoy forwarded the request to our authorization service and got an approval to forward the request</li>
+<li>Line 13-14 let&rsquo;s us know that envoy is buffering the request until it reaches the buffer limit that we set</li>
+<li>Line 16-20 show us that Envoy forwarded the request to our authorization service and got an approval to forward the request</li>
 <li>The remainder of the logs show envoy forwarding the request to its destination and then back to the calling client</li>
 </ul>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/fcb65af0cf9d7814883cec2f5bc1259c.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/03_envoy_log.png" /><br></p>
 <h2 id="reviewing-opas-decision-log">Reviewing OPA&rsquo;s Decision Log</h2>
 <p>The open policy agent decision logs include the input that we just reviewed and some other information that we can use for debugging, troubleshoot or audit logging. The interesting parts that we haven&rsquo;t reviewed yet:</p>
 <ul>
 <li>The decision ID on line 2 can be matched against other OPA log entries related to this decision</li>
-<li>Line 75 has the labels that show which Envoy instance the request came from</li>
-<li>Line 80 is an object that contains the performance metrics for the decision</li>
-<li>Line 88 shows the response that OPA sent back to Envoy</li>
+<li>Line 5 - Envoy sends us the destination of the request</li>
+<li>Line 7 - Envoy sends the request details. The unmarshalled body is only available if we setup the buffering and forwarding in the Envoy configuration.</li>
+<li>line 30 - Envoy also sends us the source IP address that it received the request from.</li>
+<li>Line 37 has the labels that show which Envoy instance the request came from</li>
+<li>Line 42 is an object that contains the performance metrics for the decision</li>
+<li>Line 50 shows the response that OPA sent back to Envoy</li>
 </ul>
-<script type="application/javascript" src="https://gist.github.com/helpfulBadger/2bdfa1c8324e975fe8ed9acf1f4ab14a.js"></script>
-
+<p><img class="special-img-class" src="/img/2020/08/03_OPA_decision_log.png" /><br></p>
 <h1 id="taking-this-solution-for-a-spin">Taking this solution for a spin</h1>
 <p>Now that we know what we are looking at, we can run this example by executing the script <code>./demonstrate_opa_integration.sh</code></p>
 <ol>

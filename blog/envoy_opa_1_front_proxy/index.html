@@ -334,9 +334,9 @@ The diagram above shows the sidecar approach.</p>
 <p><img class="special-img-class" src="/img/2020/08/01_docker_compose.png" /></p>
 <p>The service to route to and port are defined on the environment variables on lines 12 and 13. Notice the name app matches the name of our final service on line 15. We are simply using HTTPBIN to reflect our request back to us.</p>
 <h2 id="running-and-trying-out-our-example">Running and Trying out our Example</h2>
-<p>The last step to getting our front proxy up is simply running the included script <code>test.sh</code> that demonstrates our example. The script explains what it is about to do to ensure you know what are about to see scrolling across your terminal screen. Line 8 starts our environment. Line 14 let&rsquo;s you check to make sure both containers are running before trying to send them a request.</p>
+<p>The last step to getting our front proxy up is simply running the included script <code>test.sh</code> that demonstrates our example. The script explains what it is about to do to ensure you know what are about to see scrolling across your terminal screen. Line 3 starts our environment. Line 8 let&rsquo;s you check to make sure both containers are running before trying to send them a request.</p>
 <p><img class="special-img-class" src="/img/2020/08/01_Demo_script.png" /></p>
-<p>Line 19 simply calls Envoy with a curl command with the <code>--verbose</code> parameter set so that you can see the headers and request details. Then line 25 tears down the whole environment.</p>
+<p>Line 10 simply calls Envoy with a curl command with the <code>--verbose</code> parameter set so that you can see the headers and request details. Then line 12 tears down the whole environment.</p>
 <h2 id="containers-up">Containers UP!!!!</h2>
 <p>If you have successfully started your environment then you should see something like this:</p>
 <p><img class="special-img-class" src="/img/2020/08/01_Containers_up.png" /></p>
