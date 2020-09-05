@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to use Open Policy Agent Command Line Interface">
 <meta itemprop="datePublished" content="2020-09-02T07:48:50-04:00" />
 <meta itemprop="dateModified" content="2020-09-02T07:48:50-04:00" />
-<meta itemprop="wordCount" content="111">
+<meta itemprop="wordCount" content="1975">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png">
 
 
@@ -80,19 +80,11 @@
     </menu>
     <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
     <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
-    <a href="#lang-menu" class="nav lang-toggle" lang="en">en</a>
+    
     <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
   </nav>
   <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
-  <menu id="lang-menu" class="flyout-menu menu">
-  <a href="#" lang="en" class="nav link active">English (en)</a>
   
-    
-      
-    
-  
-</menu>
-
   
     <menu id="share-menu" class="flyout-menu menu">
       <h1>Share Post</h1>
@@ -222,7 +214,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>1 minute read</p>
+      <p>10 minute read</p>
     
   </div>
 </header>
@@ -282,16 +274,165 @@
 
     <div class="content">
       <h1 id="getting-started-with-envoy--open-policy-agent-----04----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 04 &mdash;</h1>
-<h1 id="using-the-open-policy-agent-command-line-interface">Using the Open Policy Agent Command Line Interface</h1>
+<h2 id="using-the-open-policy-agent-command-line-interface">Using the Open Policy Agent Command Line Interface</h2>
 <p>This is the 4th Envory &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
+<p>The source code for this getting started examples is located on Github. <span style="color:blue"> &mdash;&mdash;&gt;  <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/04_opa_cli">Envoy &amp; OPA GS # 4</a> </span></p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
 <h2 id="getting-started-guides">Getting Started Guides</h2>
 <ol>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
 </ol>
+<h2 id="installing-open-policy-agent-locally">Installing Open Policy Agent Locally</h2>
+<p>Intalling Open Policy Agent (OPA) is pretty simple. It is a very small executable and is entirely self contained with no other files required. Depending on your operating system, the command to install OPA is slightly different:</p>
+<ol>
+<li>Download the executable:</li>
+</ol>
+<ul>
+<li>Mac OSX: <pre><code>curl -L -o opa <a href="https://openpolicyagent.org/downloads/latest/opa_darwin_amd64">https://openpolicyagent.org/downloads/latest/opa_darwin_amd64</a></code></pre></li>
+<li>Linux  : <pre><code>curl -L -o opa <a href="https://openpolicyagent.org/downloads/latest/opa_linux_amd64">https://openpolicyagent.org/downloads/latest/opa_linux_amd64</a></code></pre></li>
+</ul>
+<ol start="2">
+<li>Give OPA permission to execute <pre><code>chmod 755 ./opa</code></pre></li>
+<li>Move OPA somewhere in your path <pre><code>mv opa /somewhere/in/path</code></pre></li>
+</ol>
+<h2 id="using-the-cli">Using the CLI</h2>
+<p>The Open Policy Agent command line interface is used for one of 3 different purposes:</p>
+<ol>
+<li>Using the OPA in interactive mode to write and evaluate REGO statements with realtime feedback after each statement</li>
+<li>Running policies by supplying a file for the input and another file with the policy to execute</li>
+<li>Starting OPA as a service to use it&rsquo;s API for decisioning</li>
+</ol>
+<h3 id="read-evaluate-print-loop-repl--interactive-playground">Read Evaluate Print Loop (REPL) &amp; Interactive Playground</h3>
+<p>Interactive mode is sometimes referred to as a read-evaluate-print-loop (REPL). OPA will wait and <em>read</em> in input from a user. It will then <em>evaluate</em> the input and <em>print</em> the results of the evaluation for the user to see. It then <em>loops</em> through these steps over again until one of the statements that needs to be evaluated is the exit statement.</p>
+<ul>
+<li>To start using the OPA interactively simply enter the command <code>opa run</code></li>
+<li>When you are ready to leave just enter the command <code>exit</code></li>
+</ul>
+<p>The Open Policy Agent web site has a nice tutorial for getting started with the REPL and interactively writing REGO policies. So, we won&rsquo;t repeat that here. It is located at <span style="color:blue"><a href="https://www.openpolicyagent.org/docs/latest/">https://www.openpolicyagent.org/docs/latest/</a></span>. The latest version of the getting started is an interactive notebook. So, you can edit the commands right on the web page and see the results.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_Interactive_notebook.png" /><br></p>
+<p>There is also an interactive playground located at <span style="color:blue"><a href="https://play.openpolicyagent.org/">https://play.openpolicyagent.org/</a></span> It can be used to accomplish the same thing that we will demonstrate below. However, you probably don&rsquo;t want to use these tools when you are writing your own policies. The logic of your policies may be confidential and proprietary and the data used in the policies may be confidential as well.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_OPA_playground.png" /><br></p>
+<h3 id="using-the-cli-to-evaluate-a-policy-with-some-test-data">Using the CLI to evaluate a policy with some test data</h3>
+<p><strong>The Rego Policy</strong></p>
+<p>For this getting started example we will use the same policy that we created for Getting Started #3. It simply checks the request method and allows the request through if the Method is a <code>GET</code> operation.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_rego_policy_d96fdc4ab8.png" /><br></p>
+<p><strong>An Allowed Input</strong></p>
+<p>We will also need to simulate an input that we expect will be allowed through. We are using the same data structure that Envoy sends us. Since we are only looking at the request Method, line 38 is only property that we are concerned about.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_allowed_input_5e6ed1079c.png" /><br></p>
+<p><strong>Run the command</strong></p>
+<p>To run the policy with the input that we just covered, we use the eval subcommand as part of the OPA cli. We then need to pass in a few parameters:</p>
+<ul>
+<li>-i specifies the name of the file that we want to use as input</li>
+<li>-d specifies the name of the file contains the REGO policy that we want to run</li>
+<li>The last parameter is the query that we want to run. This was implied for us in the previous lesson since it a default is already baked into the containers that we used. In the command line below, we see that the query is data.envoy.authz.allow</li>
+</ul>
+<pre><code>opa eval  -i ./data/allowed_input.json -d ./policies/policy.rego 'data.envoy.authz.allow'`</code></pre>
+<p>The supplied bash script can save you some typing and will also run both the <code>allowed example</code> and the <code>denied example</code>.</p>
+<ul>
+<li>
+<p>This script saves you from having to install OPA locally. It runs OPA in docker. <pre><code>./demonstrate_opa_cli_in_docker.sh</code></pre></p>
+</li>
+<li>
+<p>This script runs OPA locally.<pre><code>./demonstrate_local_opa_cli.sh</code></pre></p>
+</li>
+</ul>
+<p><strong>The results</strong></p>
+<p>After the command runs, you should see something like the image below. OPA returns a JSON Document with a results object and an array of processing results for expressions.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_allow_result_0f46582ced.png" /><br></p>
+<h3 id="using-the-cli-to-execute-rego-tests">Using the CLI to execute REGO Tests</h3>
+<p>Thankfully Open Policy Agent has a <span style="color:blue"><a href="https://www.openpolicyagent.org/docs/latest/policy-testing/">built in unit testing</a></span> capability. It is really easy to use and will give you confidence when you are managing a large set of rules and periodically make changes to them. Just name your test file the same name as your policy with <code>_test</code> added to the base filename. Test are written in Rego just like the policies. We need to specify the same package name <code>package envoy.authz</code> as the policy that we are testing. Each test is actually a rego rule. The rego rule name must begin with the word test. The rest of the name should be descriptive of the test and expected result. e.g. <code>test_get_allowed</code></p>
+<p>The body of the rule is of the form:</p>
+<ul>
+<li><code>rule to run in the policy under test</code> with input as <code>simulated test input</code></li>
+</ul>
+<p>Here is the test file that we have written to test our policy:</p>
+<p><img class="special-img-class" src="/img/2020/08/04_policy_test_rego_6064df80b9.png" /><br></p>
+<p>As you can see we simply drop in Envoy&rsquo;s JSON input that we are testing and the result we expect (either <code>allowed</code> or <code>not allowed</code>).  The highlighted property in each test data set shows the only value that we are looking for in our rules:</p>
+<ul>
+<li>The <code>allowed</code> test case has a GET method in the test data</li>
+<li>The <code>not allowed</code> test case has a POST which falls into the the set of <br> <code>all methods other than GET are not allowed</code></li>
+</ul>
+<h3 id="using-the-api-interactively-to-develop-policies">Using the API Interactively to Develop Policies</h3>
+<p>OPA policy agent also supports running as a service and accessing it via REST APIs. <span style="color:blue"><a href="https://www.openpolicyagent.org/docs/latest/rest-api/">Detailed API information</a></span> can be found on the Open Policy Agent web site. Here is a summary of the APIs.</p>
+<p><strong>Policy API for Creating, Updating or Deleting Policies</strong></p>
+<ul>
+<li>
+<pre><code>GET    /v1/policies      #--- List Policies </code></pre> 
+</li>
+<li>
+<pre><code>GET    /v1/policies/&ltid&gt #--- Get a specific Policy </code></pre> 
+</li>
+<li>
+<pre><code>PUT    /v1/policies/&ltid&gt #--- Create or Update a Policy </code></pre> 
+</li>
+<li>
+<pre><code>DELETE /v1/policies/&ltid&gt #--- Delete a policy </code></pre> 
+</li>
+</ul>
+<p><strong>Data API for Creating, Updating or Deleting Data and Getting Decisions</strong></p>
+<ul>
+<li>
+<pre><code>GET    /v1/data/{path:.+} #---  Get a Document </code></pre> 
+</li>
+<li>
+<pre><code>POST   /v1/data/{path:.+} #---  Get a Document (with Input e.g. get a decision). The input document `{ "input": ... }` is passed in the request body</code></pre> 
+</li>
+<li>
+<pre><code>PUT    /v1/data/{path:.+} #---  Create or Overwrite a Document </code></pre> 
+</li>
+<li>
+<pre><code>PATCH  /v1/data/{path:.+} #---  Patch a Document </code></pre> 
+</li>
+<li>
+<pre><code>DELETE /v1/data/{path:.+} #---  Delete a Document </code></pre> 
+</li>
+</ul>
+<p><strong>Tips when using the API</strong></p>
+<ul>
+<li>It is important to understand how the OPA document model works. The <span style="color:blue"><a href="https://www.openpolicyagent.org/docs/latest/philosophy/#how-does-opa-work">document model</a></span> is described on the Open Policy Agent web site.</li>
+<li>Attempting to delete everything by supplying the root path for the policy or data endpoint doesn&rsquo;t delete everything. This makes sense after thinking about it. It would be very easy to accidentally clear out an entire OPA engine and un-intentionally cause an outage if that was done in production.</li>
+<li>Even though all of the policies are visiable in the data endpoint when queried, they can&rsquo;t be created, deleted or modified using that endpoint. It is mearly a way of invoking the policy and getting a decision. (see the policy in the highlighted section below) <img class="special-img-class" src="/img/2020/08/04_get_all_data_ref.png" /><br></li>
+<li>Even though data and policies can be loaded in the same data document tree, it is confusing and not recommended (e.g. I deleted that data why is it still there? Oh, that&rsquo;s because it is a policy and can&rsquo;t be deleted by the data API):
+<ul>
+<li><code>/v1/data/{packagename}/{data document name}</code></li>
+<li><code>/v1/data/{packagename}/{policy rule name}</code></li>
+</ul>
+</li>
+<li>A clearer approach is to have a reference data and policy path like this:
+<ul>
+<li><code>/v1/data/reference/{data document path and name}</code></li>
+<li><code>/v1/data/app/{packagename}/{policy rule name}</code></li>
+</ul>
+</li>
+<li>The Policy API will store a policy with any provided key. However, it is loaded into the global data document based on its package name. Using the package name as the policy ID is an intuitive way to refer to policies. The policy ID field supports forward slashes.</li>
+<li>Be careful When assigning calculated or lookup values to a variable that you want to return in the result set. OPA will not return an undefined value in a property of a JSON document. An undefined value will fail the entire rule and cause OPA to return an empty object if no statically defined default is specified.</li>
+</ul>
+<h3 id="producing-reason-codes-with-rego">Producing Reason Codes with REGO</h3>
+<p>Sometimes it is desirable for debugging or for audit or regulatory purposes to capture a reason code for decision results (usually denial reason but sometime approval too ). The OPA playground has a pet shop app example. It can be found in <span style="color:blue"><a href="https://play.openpolicyagent.org/">the REGO playground</a></span>. Just select the attribute based access control example from the drop down menu.</p>
+<p>The example below is modified to provide approval reasons and other messages in the case of a denial to help understand why access was denied. Logical OR conditions are expressed by creating multiple rules with the same name. The first 4 allow rules below are various reasons to approve the access request. If any of these rules is true the response is set to a static object with the approval decision and the reason code. The 5th allow rule is intended fire only when all of the approval rules fail. It is intended to give us insight into why the access request was denied. So this rule tests to see if all of the other rules fail.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_setting_approval_reason_code.png" /><br></p>
+<p>To make sure the approval rules and deny rule don&rsquo;t get out of sync, they both point to named approval rules below.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_named_approval_rules.png" /><br></p>
+<p>The messaging section is similar to the logical OR approval rules above. However they are structured a little bit differently. The square brackets enable these rules to return an array / collection of results. Unlike other data types where an undefined value will cause the rule to fail, it will return an empty array if none of the rules triggers the population of a message.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_setting_other_messages.png" /><br></p>
+<p>With these changes we now have insight into the output of the rules. In the example below, we send in a request with an un-registered user. If more insight is needed there is also the option to add the <code>explain = full</code> parameter to see a trace of the rule execution. The response field shows the results with provenance, explanation, metrics, and the messages that indicate which rules failed.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_deny_unregistered_users.png" /><br></p>
+<p>The images below zoom in on the explaination returned. The highlighted sections shows the step by step rule execution and where the rule failures occurred. On the left hand side is a reference to the exact line number in the rego file where the rule failure occurred. Any rule that results in an &lsquo;undefined&rsquo; state is considered a failure.</p>
+<p><img class="special-img-class" src="/img/2020/08/04_explain_and_decision_reasons_1.png" /><br></p>
+<h4 id="exploring-the-opa-api-with-a-sample-postman-collection">Exploring the OPA API with a sample Postman collection</h4>
+<p>To make it easier to explore the OPA APIs, <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/04_opa_cli/OPA_Getting_Started.postman_collection.json">a postman collection pre-populated with the example data and policy</a></span> is included with the rest of the code in the github repository.</p>
+<p><strong>Uploading the Pet Store App ABAC Policy via Postman</strong></p>
+<p><img class="special-img-class" src="/img/2020/08/04_create_pet_store_app_policy.png" /><br></p>
+<p><strong>Uploading the Pet Store App Reference Data</strong></p>
+<p><img class="special-img-class" src="/img/2020/08/04_create_reference_data_in_OPA.png" /><br></p>
+<h4 id="exploring-the-opa-api-with-a-sample-bash-script">Exploring the OPA API with a sample bash script</h4>
+<p>If you don&rsquo;t already use Postman, another option to explore the OPA APIs that does not require a large install is to <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/04_opa_cli/demonstrate_opa_api_in_docker.sh">use the included bash script</a></span>. Simply run <code>demonstrate_opa_api_in_docker.sh</code></p>
+<p><img class="special-img-class" src="/img/2020/08/04_command_line_example.png" /><br></p>
+<h1 id="congratulations">Congratulations!</h1>
+<p>We have walked through how to use the OPA CLI, test REGO policies and use the OPA REST API. With the basics under your belt, we can move on to more sophisticated use cases such as Signed JSON Web Token (JWS) validation.</p>
 
     </div>
     <footer>

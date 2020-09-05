@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to set up Envoy as a front proxy with docker">
 <meta itemprop="datePublished" content="2020-08-31T13:27:14-04:00" />
 <meta itemprop="dateModified" content="2020-08-31T13:27:14-04:00" />
-<meta itemprop="wordCount" content="1556">
+<meta itemprop="wordCount" content="1575">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg">
 
 
@@ -80,19 +80,11 @@
     </menu>
     <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
     <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
-    <a href="#lang-menu" class="nav lang-toggle" lang="en">en</a>
+    
     <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
   </nav>
   <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
-  <menu id="lang-menu" class="flyout-menu menu">
-  <a href="#" lang="en" class="nav link active">English (en)</a>
   
-    
-      
-    
-  
-</menu>
-
   
     <menu id="share-menu" class="flyout-menu menu">
       <h1>Share Post</h1>
@@ -285,16 +277,17 @@
 <h1 id="getting-started-with-envoy--open-policy-agent-----01----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 01 &mdash;</h1>
 <h2 id="using-envoy-as-a-front-proxy">Using Envoy as a Front Proxy</h2>
 <p>This is the 1st Envory &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
+<p>The source code for this getting started examples is located on Github. <span style="color:blue"> &mdash;&mdash;&gt;  <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/01_front_proxy">Envoy &amp; OPA GS # 1</a> </span></p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
 <h2 id="getting-started-guides">Getting Started Guides</h2>
 <ol>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
 </ol>
 <h2 id="overview">Overview</h2>
-<p><a href="https://www.envoyproxy.io/">Envoy</a> is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&rsquo;s own in a minimalist fashion.</p>
+<p><span style="color:blue"><a href="https://www.envoyproxy.io/">Envoy</a></span> is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&rsquo;s own in a minimalist fashion.</p>
 <p>Envoy is just like any other proxy. It receives requests and forwards them to services that are located behind it. The 2 ways to deploy Envoy are:</p>
 <ol>
 <li>
@@ -307,7 +300,7 @@ The diagram above shows the front proxy approach.</li>
 </ul>
 </li>
 <li>
-<p>Sidecar Proxy - In a sidecar deployment, the Envoy server is located at the same IP address as each service that it protects. The Envoy server when deployed as as sidecar only has a single service instance behind it. The sidecar approach can intercept all inbound traffic and optionally all outbound traffic on behalf of the service instance. <a href="https://en.wikipedia.org/wiki/Iptables">IP Tables</a> rules are typically used to configure the operating system to capture and redirect this traffic to Envoy. <img class="special-img-class" src="/img/2020/08/Envoy-front proxy-sidecar.svg" /><br>
+<p>Sidecar Proxy - In a sidecar deployment, the Envoy server is located at the same IP address as each service that it protects. The Envoy server when deployed as as sidecar only has a single service instance behind it. The sidecar approach can intercept all inbound traffic and optionally all outbound traffic on behalf of the service instance. <span style="color:blue"><a href="https://en.wikipedia.org/wiki/Iptables">IP Tables</a></span> rules are typically used to configure the operating system to capture and redirect this traffic to Envoy. <img class="special-img-class" src="/img/2020/08/Envoy-front proxy-sidecar.svg" /><br>
 The diagram above shows the sidecar approach.</p>
 </li>
 </ol>
@@ -315,7 +308,7 @@ The diagram above shows the sidecar approach.</p>
 <p>The diagram below shows the environment that we are about to build and deploy locally.</p>
 <p><img class="special-img-class" src="/img/2020/08/Envoy-front proxy-envoy_in_docker.svg" /></p>
 <h2 id="building-an-envoy-front-proxy">Building an Envoy Front Proxy</h2>
-<p>The <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/01_front_proxy">code for the complete working example</a> can be found on Github. We will start with the Envoy docker images. The Envoy images are located on <a href="https://hub.docker.com/r/envoyproxy/envoy/tags">Dockerhub</a>. We will use <code>docker-compose</code> to build some configurability into our Envoy environment.</p>
+<p>The <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/01_front_proxy">code for the complete working example</a></span> can be found on Github. We will start with the Envoy docker images. The Envoy images are located on <span style="color:blue"><a href="https://hub.docker.com/r/envoyproxy/envoy/tags">Dockerhub</a></span>. We will use <code>docker-compose</code> to build some configurability into our Envoy environment.</p>
 <h3 id="dockerfile">Dockerfile</h3>
 <p><img class="special-img-class" src="/img/2020/08/01_dockerfile.png" /></p>
 <p>The <code>entrypoint.sh</code> file is where the magic happens. We will configure environment variables in our docker-compose file to determine which service (<code>SERVICE_NAME</code>) Envoy routes to and the port (<code>SERVICE_PORT</code>) on that service. Additionally, we specify how much detail is captured in the logs by setting the <code>DEBUG_LEVEL</code> environment variable. As you can see from the script below on line 3, we replace those environment variables on the fly in Envoy&rsquo;s configuration file before starting Envoy.</p>
@@ -344,7 +337,7 @@ The diagram above shows the sidecar approach.</p>
 <p>You should see something like this if you successfully called HTTPBin through Envoy:</p>
 <p><img class="special-img-class" src="/img/2020/08/01_Curl_Response.png" /></p>
 <h1 id="congratulations">Congratulations</h1>
-<p>Congratulations, you have successully stood up your first Envoy instance and configured it to forward traffic! This is the simplest possible Envoy configuration :)  We don&rsquo;t have any security yet or any other features that Envoy is famous for. We will get to that in future articles. Feel free to use <a href="https://www.postman.com/">postman</a> to explore other request that you can send. Additionally, don&rsquo;t forget to explore Envoy&rsquo;s admin console by pointing your web browser to <a href="http://localhost:8001">http://localhost:8001</a></p>
+<p>Congratulations, you have successully stood up your first Envoy instance and configured it to forward traffic! This is the simplest possible Envoy configuration :)  We don&rsquo;t have any security yet or any other features that Envoy is famous for. We will get to that in future articles. Feel free to use <span style="color:blue"><a href="https://www.postman.com/">postman</a></span> to explore other request that you can send. Additionally, don&rsquo;t forget to explore Envoy&rsquo;s admin console by pointing your web browser to <span style="color:blue"><a href="http://localhost:8001">http://localhost:8001</a></span></p>
 
     </div>
     <footer>

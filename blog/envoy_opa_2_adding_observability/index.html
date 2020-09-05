@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">
 <meta itemprop="datePublished" content="2020-09-01T15:59:54-04:00" />
 <meta itemprop="dateModified" content="2020-09-01T15:59:54-04:00" />
-<meta itemprop="wordCount" content="782">
+<meta itemprop="wordCount" content="789">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg">
 
 
@@ -80,19 +80,11 @@
     </menu>
     <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
     <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
-    <a href="#lang-menu" class="nav lang-toggle" lang="en">en</a>
+    
     <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
   </nav>
   <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
-  <menu id="lang-menu" class="flyout-menu menu">
-  <a href="#" lang="en" class="nav link active">English (en)</a>
   
-    
-      
-    
-  
-</menu>
-
   
     <menu id="share-menu" class="flyout-menu menu">
       <h1>Share Post</h1>
@@ -285,14 +277,15 @@
 <h1 id="getting-started-with-envoy--open-policy-agent-----02----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 02 &mdash;</h1>
 <h2 id="adding-log-aggregation-to-our-envoy-example">Adding Log Aggregation to our Envoy Example</h2>
 <p>This is the 2nd Envory &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the goal of creating a very powerful authorization service by the end of the series.</p>
-<p>While our solution is still very simple, it is a great time to show how to make our solution observable with log aggregation. This makes it easier to think about how to scale and productionize our solution.  As we start to develop and apply authorization rules at scale it will be handy to have all of the logs aggregated and displayed in one place for development and troubleshooting activies. In this article we will walk through how to setup the EFK stack to pull your logs together from all of the docker containers in your local development environment. All of the <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/02_front_proxy_kibana">source code for this getting started example</a> is located on github.</p>
+<p>While our solution is still very simple, it is a great time to show how to make our solution observable with log aggregation. This makes it easier to think about how to scale and productionize our solution.  As we start to develop and apply authorization rules at scale it will be handy to have all of the logs aggregated and displayed in one place for development and troubleshooting activies. In this article we will walk through how to setup the EFK stack to pull your logs together from all of the docker containers in your local development environment.</p>
+<p>All of the source code for this getting started example is located on github. <span style="color:blue"> &mdash;&mdash;&gt; <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/02_front_proxy_kibana">Envoy &amp; OPA GS # 2</a> </span></p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
 <h2 id="getting-started-guides">Getting Started Guides</h2>
 <ol>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
 </ol>
 <h1 id="solution-overview">Solution Overview</h1>
 <p>The solution that we will build in this blog is shown below. We will send docker logs into an EFK stack that is also running inside docker. Each of the containers in our solution simply send logs to Standard out and / or Standard Error. No agents nor other special software is requirements are imposed on the observered applications.</p>
@@ -310,12 +303,12 @@
 <li>Then it waits 30 seconds to give elasticSearch some time to get ready and some time for Kibana to know that elasticSearch is ready.</li>
 <li>A curl command sends Envoy a request to make sure the end-to-end flow is working.</li>
 <li>If that worked, proceed forward. If not wait a bit longer to make sure elasticSearch and Kibana are both ready.</li>
-<li>If you are running on Mac OS X then the next step will open a browser and take you to the page to setup your Kibana index. If it doesn&rsquo;t work, simply open your browser and go to <code>http://localhost:5601/app/kibana#/management/kibana/index_pattern?_g=()</code> you should see something like this:     <img class="special-img-class" src="/img/2020/08/Kibana_index_pattern_1.png" /><br></li>
-<li>I simply used <code>log*</code> as my index and clicked next. Which should bring up a screen to select the timestamp field name. <img class="special-img-class" src="/img/2020/08/Kibana_index_pattern_2.png" /><br> Select <code>@timestamp</code> and click create index.</li>
-<li>You should see some field information about your newly created index. <img class="special-img-class" src="/img/2020/08/Kibana_index_pattern_3.png" /><br></li>
-<li>The script then uses the Open command to navigate to the log search interface. If it doesn&rsquo;t work on your operating system then simply navigate to <code>http://localhost:5601/app/kibana#/discover</code>. You should see something like this with some log results already coming in.<img class="special-img-class" src="/img/2020/08/Kibana_results_coming_in.png" /><br></li>
-<li>If you have an interest, you may want to select the <code>container_name</code> and <code>log</code> columns to make it easier to read through the debug logs and results of your testing efforts.  <img class="special-img-class" src="/img/2020/08/Kibana_select_columns.png" /><br></li>
-<li>The script sends another request through envoy and you should be able to see the logs coming into EFK. <img class="special-img-class" src="/img/2020/08/Kibana_z_Envoy_request.png" /><br></li>
+<li>If you are running on Mac OS X then the next step will open a browser and take you to the page to setup your Kibana index. If it doesn&rsquo;t work, simply open your browser and go to <code>http://localhost:5601/app/kibana#/management/kibana/index_pattern?_g=()</code> you should see something like this:     <img class="special-img-class" src="/img/2020/08/02_Kibana_index_pattern_1.png" /><br></li>
+<li>I simply used <code>log*</code> as my index and clicked next. Which should bring up a screen to select the timestamp field name. <img class="special-img-class" src="/img/2020/08/02_Kibana_index_pattern_2.png" /><br> Select <code>@timestamp</code> and click create index.</li>
+<li>You should see some field information about your newly created index. <img class="special-img-class" src="/img/2020/08/02_Kibana_index_pattern_3.png" /><br></li>
+<li>The script then uses the Open command to navigate to the log search interface. If it doesn&rsquo;t work on your operating system then simply navigate to <code>http://localhost:5601/app/kibana#/discover</code>. You should see something like this with some log results already coming in.<img class="special-img-class" src="/img/2020/08/02_Kibana_results_coming_in.png" /><br></li>
+<li>If you have an interest, you may want to select the <code>container_name</code> and <code>log</code> columns to make it easier to read through the debug logs and results of your testing efforts.  <img class="special-img-class" src="/img/2020/08/02_Kibana_select_columns.png" /><br></li>
+<li>The script sends another request through envoy and you should be able to see the logs coming into EFK. <img class="special-img-class" src="/img/2020/08/02_Kibana_z_Envoy_request.png" /><br></li>
 <li>The script with then take down the environment.</li>
 </ol>
 <p>In the next getting started guide, we will add in Open Policy Agent and begin experimenting with a simple authorization rule.</p>

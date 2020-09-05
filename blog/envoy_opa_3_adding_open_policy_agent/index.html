@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">
 <meta itemprop="datePublished" content="2020-09-01T17:34:13-04:00" />
 <meta itemprop="dateModified" content="2020-09-01T17:34:13-04:00" />
-<meta itemprop="wordCount" content="1597">
+<meta itemprop="wordCount" content="1618">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg">
 
 
@@ -80,19 +80,11 @@
     </menu>
     <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
     <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
-    <a href="#lang-menu" class="nav lang-toggle" lang="en">en</a>
+    
     <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
   </nav>
   <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
-  <menu id="lang-menu" class="flyout-menu menu">
-  <a href="#" lang="en" class="nav link active">English (en)</a>
   
-    
-      
-    
-  
-</menu>
-
   
     <menu id="share-menu" class="flyout-menu menu">
       <h1>Share Post</h1>
@@ -285,20 +277,21 @@
 <h1 id="getting-started-with-envoy--open-policy-agent-----03----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 03 &mdash;</h1>
 <h2 id="plugging-opa-into-envoy">Plugging OPA into Envoy</h2>
 <p>This is the 3rd Envory &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
+<p>All of the source code for this getting started example is located on github. <span style="color:blue"> &mdash;&mdash;&gt; <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/03_opa_integration">Envoy &amp; OPA GS # 3</a> </span></p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
 <h2 id="getting-started-guides">Getting Started Guides</h2>
 <ol>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></li>
-<li><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
 </ol>
 <h2 id="envoys-external-authorization-api">Envoy&rsquo;s External Authorization API</h2>
 <p>Envoy has the capability to call out to an external authorization service. There are 2 protocols supported. The authorization service can be either a RESTful API endpoint or using Envoy&rsquo;s new gRPC protocol. Envoy sends all of the request details to the authorization service including the method, URI, parameters, headers, and request body. The authorization service simply needs to return 200 OK to permit the request to go through.</p>
 <p>In this example we will be using a pre-built Open Policy Agent container that already understands Envoy&rsquo;s authorization protocol.</p>
 <h2 id="open-policy-agent-overview">Open Policy Agent Overview</h2>
 <p>The Open Policy Agent site describes it very succinctly</p>
-<p>The <a href="https://www.openpolicyagent.org/">Open Policy Agent (OPA)</a> is an open source, general-purpose policy engine. OPA provides a declarative language that let’s you specify policy as code and APIs to offload policy decision-making from your software. OPA to enforce policies in microservices, Kubernetes, CI/CD pipelines, API gateways, or nearly any other software.</p>
+<p>The <span style="color:blue"><a href="https://www.openpolicyagent.org/">Open Policy Agent (OPA)</a></span> is an open source, general-purpose policy engine. OPA provides a declarative language that let’s you specify policy as code and APIs to offload policy decision-making from your software. OPA to enforce policies in microservices, Kubernetes, CI/CD pipelines, API gateways, or nearly any other software.</p>
 <p>OPA focuses exclusively on making policy decisions and not on policy enforcement. OPA pairs with Envoy for policy enforcement. OPA can run as:</p>
 <ul>
 <li>A standalone service accessible via an API</li>
@@ -318,7 +311,7 @@
 <li>The time of day the system can be accessed</li>
 </ul>
 <p>Policy decisions are not limited to simple yes/no or allow/deny answers. Policies can generate any arbitrary structured data as output.</p>
-<p>This getting started example is based on <a href="https://www.openpolicyagent.org/docs/latest/envoy-authorization/">this OPA tutorial</a> using docker-compose instead of Kubernetes.</p>
+<p>This getting started example is based on <span style="color:blue"><a href="https://www.openpolicyagent.org/docs/latest/envoy-authorization/">this OPA tutorial</a></span> using docker-compose instead of Kubernetes.</p>
 <h1 id="solution-overview">Solution Overview</h1>
 <p>In this getting started example we take the super simple envoy environment we created in getting started episode 1 and add the simplest possible authorization rule using Open Policy Agent.</p>
 <p><img class="special-img-class" src="/img/2020/08/Envoy-front proxy-OPA_GS3.svg" /><br></p>
@@ -329,7 +322,7 @@
 <li>The gRPC service for Envoy is configured on line 23</li>
 <li>The logs are sent to the console for a log aggregation solution to pickup (or not) on line 24</li>
 </ul>
-<p><img class="special-img-class" src="/img/2020/08/03_compose_changes.png" /><br></p>
+<p><img class="special-img-class" src="/img/2020/08/03_compose_changes_e790322fdb.png" /><br></p>
 <h2 id="envoy-config-changes">Envoy Config Changes</h2>
 <p>There are a few things that we need to add to the envoy configuration to enable external authorization:</p>
 <ul>
