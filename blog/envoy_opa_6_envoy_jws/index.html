@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+<title>JWS Signature Validation with Envoy - Helpful Badger&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="JWS Signature Validation with Envoy">
+<meta itemprop="description" content="Learn how to validate JWS signatures natively with Envoy">
+<meta itemprop="datePublished" content="2020-09-07T20:58:25-04:00" />
+<meta itemprop="dateModified" content="2020-09-07T20:58:25-04:00" />
+<meta itemprop="wordCount" content="744">
+<meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg">
+
+
+
+<meta itemprop="keywords" content="OPA,Open Policy Agent,JWS,Signatures," />
+<meta property="og:title" content="JWS Signature Validation with Envoy" />
+<meta property="og:description" content="Learn how to validate JWS signatures natively with Envoy" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" />
+<meta property="og:image" content="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg" />
+<meta property="article:published_time" content="2020-09-07T20:58:25-04:00" />
+<meta property="article:modified_time" content="2020-09-07T20:58:25-04:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg"/>
+
+<meta name="twitter:title" content="JWS Signature Validation with Envoy"/>
+<meta name="twitter:description" content="Learn how to validate JWS signatures natively with Envoy"/>
+<link rel="stylesheet" href="/css/bundle.min.182747932867f43d8c875b59a0300848b838002d4008d4a5b8ddcc41a37c4cf7.css" integrity="sha256-GCdHkyhn9D2Mh1tZoDAISLg4AC1ACNSluN3MQaN8TPc="><link rel="stylesheet" href="/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="/" class="nav">
+        
+          
+            Blog
+          
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          
+            <a href="/" class="nav link"><i class='fa fa-home'></i> Home</a>
+          
+        
+      
+        
+          
+          
+            <a href="/about/" class="nav link"><i class='far fa-id-card'></i> About</a>
+          
+        
+      
+        
+          
+          
+            <a href="/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+          
+        
+      
+        
+          
+          
+            <a href="/categories/" class="nav link"><i class='fas fa-sitemap'></i> Categories</a>
+          
+        
+      
+      <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>
+      <a href="#search-input" class="nav search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>
+    </menu>
+    <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
+    <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
+    
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
+  
+  
+    <menu id="share-menu" class="flyout-menu menu">
+      <h1>Share Post</h1>
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=JWS%20Signature%20Validation%20with%20Envoy&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20Envoy" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20Envoy" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f&amp;description=JWS%20Signature%20Validation%20with%20Envoy" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </menu>
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" class="hidden-single-column">
+  <a href="/"><img src="https://helpfulbadger.github.io/img/main/unsplash_badger_small_2.png" class="circle" width="" alt="Helpful Badger in the wild" /></a>
+  <header>
+    <h1>Helpful Badger</h1>
+  </header>
+  <main>
+    <p>Imagining the possibilities</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="/blog/envoy_opa_6_envoy_jws/">JWS Signature Validation with Envoy</a></h2>
+    
+    
+      <p>Learn how to validate JWS signatures natively with Envoy</p>
+    
+  </div>
+  <div class="meta">
+    <time class="published" datetime="2020-09-07 20:58:25 -0400 EDT">
+      September 7, 2020
+    </time>
+    <span class="author">Helpful Badger</span>
+    
+      <p>4 minute read</p>
+    
+  </div>
+</header>
+
+    <section id="socnet-share">
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=JWS%20Signature%20Validation%20with%20Envoy&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20Envoy" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20Envoy" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f&amp;description=JWS%20Signature%20Validation%20with%20Envoy" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_6_envoy_jws%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </section>
+    
+  <a href="/blog/envoy_opa_6_envoy_jws/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg" alt="">
+    
+  </a>
+
+
+    <div class="content">
+      <p><span>Photo by <a href="https://unsplash.com/@cytonn_photography?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Cytonn Photography</a> on <a href="https://unsplash.com/s/photos/signature?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
+<h1 id="getting-started-with-envoy--open-policy-agent-----06----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 06 &mdash;</h1>
+<h2 id="jws-signature-validation-with-envoy">JWS Signature Validation with Envoy</h2>
+<p>This is the 6th Envoy &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
+<p>The source code for this getting started examples is located on Github. <span style="color:blue"> &mdash;&mdash;&gt;  <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/06_envoy_validate_jws">Envoy &amp; OPA GS # 6</a> </span></p>
+<p>Here is a list of the Getting Started Guides that are currently available.</p>
+<h2 id="getting-started-guides">Getting Started Guides</h2>
+<ol>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
+</ol>
+<h2 id="introduction">Introduction</h2>
+<p>One of the HTTP filters available is the JSON Web Token filter. It is color coded in red below. You an specify any number of <code>providers</code>. For each provider the developer specifies the desired validation rules. In our case we have 3 tokens that we will be validating. For each we specify:</p>
+<ul>
+<li>The issuers and audiences that must be present. Just like with Open Policy Agent audiences, the requirement is that the specified audience is matches one of the audiences in the array.</li>
+<li>The <code>from_headers</code> property tells Envoy where to find the JWS</li>
+<li>The <code>forward</code> property specifies if the token should be forwarded to the protected API or if the header should be removed before forwarding. If the JWS tokens can be misused by the protected API then they should be removed.</li>
+<li>The <code>local_jwks</code> propery allows you to specify the JSON web keyset in the configuration. Another option is to retrieve them from an HTTP endpoint that hosts the key set.</li>
+</ul>
+<p>The configuration below shows the properties we just described in the color red.</p>
+<pre><code><strong>
+<span style="color:blue">static_resources</span>:
+  <span style="color:blue">listeners</span>:
+    - <span style="color:blue">address</span>:
+        <span style="color:blue">socket_address</span>:
+          <span style="color:blue">address</span>: 0.0.0.0
+          <span style="color:blue">port_value</span>: 80
+      <span style="color:blue">filter_chains</span>:
+          - <span style="color:blue">filters</span>:
+            - <span style="color:blue">name</span>: envoy.filters.network.http_connection_manager
+              <span style="color:blue">typed_config</span>:
+                <span style="color:blue">"@type"</span>: type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                <span style="color:blue">codec_type</span>: auto
+                <span style="color:blue">stat_prefix</span>: ingress_http
+                <span style="color:blue">route_config</span>:
+                  <span style="color:blue">name</span>: local_route
+                  <span style="color:blue">virtual_hosts</span>:
+                    - <span style="color:blue">name</span>: backend
+                      <span style="color:blue">domains</span>: ["*"]
+                      <span style="color:blue">routes</span>:
+                        - <span style="color:blue">match</span>: { <span style="color:blue">prefix</span>: "/" }
+                          <span style="color:blue">route</span>: { <span style="color:blue">cluster</span>: service }
+                <span style="color:blue">http_filters</span>:
+                  - <span style="color:red">name</span>: <span style="color:red">envoy.filters.http.jwt_authn</span>
+                    <span style="color:red">typed_config</span>:
+                      <span style="color:red">"@type"</span>: <span style="color:red">"type.googleapis.com/envoy.config.filter.http.jwt_authn.v2alpha.JwtAuthentication"</span>
+                      <span style="color:red">providers</span>:
+                        <span style="color:red">workforce_provider</span>:
+                          <span style="color:red">issuer</span>: <span style="color:red">workforceIdentity.example.com</span>
+                          <span style="color:red">audiences</span>:
+                          - <span style="color:red">apigateway.example.com</span>
+                          <span style="color:red">from_headers</span>:
+                          - <span style="color:red">name</span>: <span style="color:red">"actor-token"</span>
+                            <span style="color:red">value_prefix: ""</span>
+                          <span style="color:red">forward</span>: <span style="color:red">true</span>
+                          <span style="color:red">local_jwks</span>:
+                            <span style="color:red">inline_string</span>: <span style="color:red">"{\"keys\":[{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"APIGW-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"g3uF5OZrWsU6yKJhv0FQxhALlmNbw6_Wa9_exT3-eNA\",\"y\":\"lJbCP1oz0vDs6Dxd_3my5Ga5fLSXRDzQVbTTlt9pr98\"},{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"custIDP-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"HmVjNgoTIECfvja3E7WZX2H1OzXtvDhD5_SSMXGYxZU\",\"y\":\"ugCW-AoKaSyNqIbyNUgRWMJ8WY6s2W78YI2LdVVTGcY\"},{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"workforceIDP-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"_Vg3wsKsY9XH5E5aPn2SLUTUljgum2TXnDY7m73p2Ek\",\"y\":\"rSbvTXUdPnFpJq5zqgRLMMAQP8bJ7UcggP1ERkEibGI\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"APIGW-RS256\",\"alg\":\"RS256\",\"n\":\"thiAsWa8crD-RhGbAewoYjyWpgZpaFKHWqzqAM2iCJ94eQnSwFJJcFayOklSfKK8tUUYulG7FQijpdBLVzbilPtpYK8HjHoLZBLrvNPbEvwlMCVMDX5ttyn1lJV-6momFwuV6EJFnPMXJQU3KTX_QeFejiamxmYQsakyWxxDtTWJ1XAlvtIX3k0osQbFrLbF5SGIwAk9UBFlm2B_3M0lbqu6w8eOxgSc3z-Owd6maYu2Q43MZv-opjObHNfcc60o90iOO9pY5_qSkJt7Slf2cuKU6eOUjsoSCOgValKngogup_itt7LJkrt-ugFiwUITEt6V6MY1MHEw1RgM75N_iQ\",\"e\":\"AQAB\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"custIDP-RS256\",\"alg\":\"RS256\",\"n\":\"z6AtZ3MpSZ1dd-AFyfxk5stjIrbLa8GLSq0GPqZ5RciZIkv-ad-phosgPSDvG1Nx4pcZcENrXAdMA6v6FjRvdGT0EH9CU2vXTu5kCmGP1vV1WfzFdL3K-mswnEaT6-9bO4-m6SEmR3J3YV5QwFVvxIVJqFSmLIggl1PVCM0pXCYb6vkcacg24E-vh6J28LdZmQFqmWHrF7mOL59oz1Gx8ePOr4WnqhP991DeIpzgiofGAS7QQSiNQoKvtizITk3-kcpjWmdw0Zh32xmhsUCu4NKn8DjY2dJ2-WwcL3KK__E0WBJt3I97Nr-m88BSEVl3-P--fsRiEgIP1Co2ulGMbQ\",\"e\":\"AQAB\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"workforceIDP-RS256\",\"alg\":\"RS256\",\"n\":\"ucjZ1pagZuXL4GkFXzG7llZbhPUkl1GzG2vyE0YC3NCvgf2WS67KRH6ck_iMHsWraaPdEcbB8t6ftr0qEXC1ciwVc656Q4V4L_-pxWcD1XMfdiZoViaKyMlq1QzB55XgzM1g7cvgg6_rCmTEmTo3-LUvFd7HxpdHdkYz0U_EUmEB8amz3NxR3LaB-STyxnlsRDrIKmYqDNaPqArdn44INwkGeuJUir0ojw5gdbbazT1NIsuJb2y0zHXuu9ESnyKB8N40ydYe2ECxkdynOQaHt8tCKWhh3F32VwOOuZx34RuVSA_bQraGrduVBd05fEdsPUxq38f1-Z7I5YuokqE_Dw\",\"e\":\"AQAB\"}]}"</span>
+                        <span style="color:blue">consumer_provider</span>:
+                          <span style="color:blue">issuer</span>: customerIdentity.example.com
+                          <span style="color:blue">audiences</span>:
+                          - apigateway.example.com
+                          <span style="color:blue">from_headers</span>:
+                          - <span style="color:blue">name</span>: "subject-token"
+                            <span style="color:blue">value_prefix</span>: ""
+                          <span style="color:blue">forward</span>: true
+                          <span style="color:blue">local_jwks</span>:
+                            <span style="color:blue">inline_string</span>: "{\"keys\":[{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"APIGW-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"g3uF5OZrWsU6yKJhv0FQxhALlmNbw6_Wa9_exT3-eNA\",\"y\":\"lJbCP1oz0vDs6Dxd_3my5Ga5fLSXRDzQVbTTlt9pr98\"},{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"custIDP-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"HmVjNgoTIECfvja3E7WZX2H1OzXtvDhD5_SSMXGYxZU\",\"y\":\"ugCW-AoKaSyNqIbyNUgRWMJ8WY6s2W78YI2LdVVTGcY\"},{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"workforceIDP-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"_Vg3wsKsY9XH5E5aPn2SLUTUljgum2TXnDY7m73p2Ek\",\"y\":\"rSbvTXUdPnFpJq5zqgRLMMAQP8bJ7UcggP1ERkEibGI\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"APIGW-RS256\",\"alg\":\"RS256\",\"n\":\"thiAsWa8crD-RhGbAewoYjyWpgZpaFKHWqzqAM2iCJ94eQnSwFJJcFayOklSfKK8tUUYulG7FQijpdBLVzbilPtpYK8HjHoLZBLrvNPbEvwlMCVMDX5ttyn1lJV-6momFwuV6EJFnPMXJQU3KTX_QeFejiamxmYQsakyWxxDtTWJ1XAlvtIX3k0osQbFrLbF5SGIwAk9UBFlm2B_3M0lbqu6w8eOxgSc3z-Owd6maYu2Q43MZv-opjObHNfcc60o90iOO9pY5_qSkJt7Slf2cuKU6eOUjsoSCOgValKngogup_itt7LJkrt-ugFiwUITEt6V6MY1MHEw1RgM75N_iQ\",\"e\":\"AQAB\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"custIDP-RS256\",\"alg\":\"RS256\",\"n\":\"z6AtZ3MpSZ1dd-AFyfxk5stjIrbLa8GLSq0GPqZ5RciZIkv-ad-phosgPSDvG1Nx4pcZcENrXAdMA6v6FjRvdGT0EH9CU2vXTu5kCmGP1vV1WfzFdL3K-mswnEaT6-9bO4-m6SEmR3J3YV5QwFVvxIVJqFSmLIggl1PVCM0pXCYb6vkcacg24E-vh6J28LdZmQFqmWHrF7mOL59oz1Gx8ePOr4WnqhP991DeIpzgiofGAS7QQSiNQoKvtizITk3-kcpjWmdw0Zh32xmhsUCu4NKn8DjY2dJ2-WwcL3KK__E0WBJt3I97Nr-m88BSEVl3-P--fsRiEgIP1Co2ulGMbQ\",\"e\":\"AQAB\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"workforceIDP-RS256\",\"alg\":\"RS256\",\"n\":\"ucjZ1pagZuXL4GkFXzG7llZbhPUkl1GzG2vyE0YC3NCvgf2WS67KRH6ck_iMHsWraaPdEcbB8t6ftr0qEXC1ciwVc656Q4V4L_-pxWcD1XMfdiZoViaKyMlq1QzB55XgzM1g7cvgg6_rCmTEmTo3-LUvFd7HxpdHdkYz0U_EUmEB8amz3NxR3LaB-STyxnlsRDrIKmYqDNaPqArdn44INwkGeuJUir0ojw5gdbbazT1NIsuJb2y0zHXuu9ESnyKB8N40ydYe2ECxkdynOQaHt8tCKWhh3F32VwOOuZx34RuVSA_bQraGrduVBd05fEdsPUxq38f1-Z7I5YuokqE_Dw\",\"e\":\"AQAB\"}]}"
+                        <span style="color:blue">gateway_provider</span>:
+                          <span style="color:blue">issuer</span>: apigateway.example.com
+                          <span style="color:blue">audiences</span>:
+                          - apigateway.example.com
+                          <span style="color:blue">from_headers</span>:
+                          - <span style="color:blue">name</span>: "app-token"
+                            <span style="color:blue">value_prefix</span>: ""
+                          <span style="color:blue">forward</span>: true
+                          <span style="color:blue">local_jwks</span>:
+                            <span style="color:blue">inline_string</span>: "{\"keys\":[{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"APIGW-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"g3uF5OZrWsU6yKJhv0FQxhALlmNbw6_Wa9_exT3-eNA\",\"y\":\"lJbCP1oz0vDs6Dxd_3my5Ga5fLSXRDzQVbTTlt9pr98\"},{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"custIDP-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"HmVjNgoTIECfvja3E7WZX2H1OzXtvDhD5_SSMXGYxZU\",\"y\":\"ugCW-AoKaSyNqIbyNUgRWMJ8WY6s2W78YI2LdVVTGcY\"},{\"use\":\"sig\",\"kty\":\"EC\",\"kid\":\"workforceIDP-ES256\",\"crv\":\"P-256\",\"alg\":\"ES256\",\"x\":\"_Vg3wsKsY9XH5E5aPn2SLUTUljgum2TXnDY7m73p2Ek\",\"y\":\"rSbvTXUdPnFpJq5zqgRLMMAQP8bJ7UcggP1ERkEibGI\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"APIGW-RS256\",\"alg\":\"RS256\",\"n\":\"thiAsWa8crD-RhGbAewoYjyWpgZpaFKHWqzqAM2iCJ94eQnSwFJJcFayOklSfKK8tUUYulG7FQijpdBLVzbilPtpYK8HjHoLZBLrvNPbEvwlMCVMDX5ttyn1lJV-6momFwuV6EJFnPMXJQU3KTX_QeFejiamxmYQsakyWxxDtTWJ1XAlvtIX3k0osQbFrLbF5SGIwAk9UBFlm2B_3M0lbqu6w8eOxgSc3z-Owd6maYu2Q43MZv-opjObHNfcc60o90iOO9pY5_qSkJt7Slf2cuKU6eOUjsoSCOgValKngogup_itt7LJkrt-ugFiwUITEt6V6MY1MHEw1RgM75N_iQ\",\"e\":\"AQAB\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"custIDP-RS256\",\"alg\":\"RS256\",\"n\":\"z6AtZ3MpSZ1dd-AFyfxk5stjIrbLa8GLSq0GPqZ5RciZIkv-ad-phosgPSDvG1Nx4pcZcENrXAdMA6v6FjRvdGT0EH9CU2vXTu5kCmGP1vV1WfzFdL3K-mswnEaT6-9bO4-m6SEmR3J3YV5QwFVvxIVJqFSmLIggl1PVCM0pXCYb6vkcacg24E-vh6J28LdZmQFqmWHrF7mOL59oz1Gx8ePOr4WnqhP991DeIpzgiofGAS7QQSiNQoKvtizITk3-kcpjWmdw0Zh32xmhsUCu4NKn8DjY2dJ2-WwcL3KK__E0WBJt3I97Nr-m88BSEVl3-P--fsRiEgIP1Co2ulGMbQ\",\"e\":\"AQAB\"},{\"use\":\"sig\",\"kty\":\"RSA\",\"kid\":\"workforceIDP-RS256\",\"alg\":\"RS256\",\"n\":\"ucjZ1pagZuXL4GkFXzG7llZbhPUkl1GzG2vyE0YC3NCvgf2WS67KRH6ck_iMHsWraaPdEcbB8t6ftr0qEXC1ciwVc656Q4V4L_-pxWcD1XMfdiZoViaKyMlq1QzB55XgzM1g7cvgg6_rCmTEmTo3-LUvFd7HxpdHdkYz0U_EUmEB8amz3NxR3LaB-STyxnlsRDrIKmYqDNaPqArdn44INwkGeuJUir0ojw5gdbbazT1NIsuJb2y0zHXuu9ESnyKB8N40ydYe2ECxkdynOQaHt8tCKWhh3F32VwOOuZx34RuVSA_bQraGrduVBd05fEdsPUxq38f1-Z7I5YuokqE_Dw\",\"e\":\"AQAB\"}]}"
+                      <span style="color:orange">rules</span>:
+                        - <span style="color:orange">match</span>:
+                            <span style="color:orange">prefix</span>: <span style="color:orange">/</span>
+                          <span style="color:orange">requires</span>:
+                            <span style="color:orange">requires_all</span>:
+                              <span style="color:orange">requirements</span>:
+                                - <span style="color:orange">provider_name</span>: <span style="color:orange">workforce_provider</span>
+                                - <span style="color:orange">provider_name</span>: <span style="color:orange">consumer_provider</span>
+                                - <span style="color:orange">provider_name</span>: <span style="color:orange">gateway_provider</span>
+                  - <span style="color:blue">name</span>: envoy.filters.http.router
+                    <span style="color:blue">typed_config</span>: {}
+  <span style="color:blue">clusters</span>:
+    - <span style="color:blue">name</span>: service
+      <span style="color:blue">connect_timeout</span>: 0.25s
+      <span style="color:blue">type</span>: STRICT_DNS
+      <span style="color:blue">lb_policy</span>: round_robin
+      <span style="color:blue">load_assignment</span>:
+        <span style="color:blue">cluster_name</span>: service
+        <span style="color:blue">endpoints</span>:
+        - <span style="color:blue">lb_endpoints</span>:
+          - <span style="color:blue">endpoint</span>:
+              <span style="color:blue">address</span>:
+                <span style="color:blue">socket_address</span>:
+                  <span style="color:blue">address</span>: ${SERVICE_NAME}
+                  <span style="color:blue">port_value</span>: ${SERVICE_PORT}
+<span style="color:blue">admin</span>:
+  <span style="color:blue">access_log_path</span>: "/dev/null"
+  <span style="color:blue">address</span>:
+    <span style="color:blue">socket_address</span>:
+      <span style="color:blue">address</span>: 0.0.0.0
+      <span style="color:blue">port_value</span>: 8001
+</strong></code></pre>
+<p>The section in orange above is the rules section. It defines under what conditions to look for and validate a JWS. The match section defines what prefixes to look for. The slash will look for JWS tokens on every URI path. We can specify quite a few rules to determine how many and which tokens we require and under what circumstances. The <span style="color:blue"><a href="https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/http/jwt_authn/v2alpha/config.proto">Official JWT Auth documentation</a></span> specifies several other options on how to craft logic using and, or and any operations as well as other locations where JWS tokens can be located. There isn&rsquo;t as much control over what response to return to clients in the case of a failed authentication. OPA lets the developer change chose the HTTP Status code, include messages in the response body add headers etc. Envoy&rsquo;s built in feature simply returns an HTTP 401 Unauthorized response.</p>
+<p>To see this capability in action, simply run the <code>demonstrate_envoy_jws_validation.sh</code> script. The output is similar to the completed solution from the previous lesson. The script also dumps the Envoy logs to show the information that you have available to trouble shoot issues. Below is a screen shot of the log statements that show Envoy extracting the tokens, performing the validation and logging the result.</p>
+<p><img class="special-img-class" src="/img/2020/08/06_envoy_jws_log.png" /><br></p>
+<h1 id="conclusion">Conclusion</h1>
+<p>In this getting started example, we successfully validated 3 different JWS tokens in a single request and had flexibility to chose where the tokens were pulled from, how many tokens were required and under what conditions those tokens were needed. In our next getting started guide, we will use Open Policy Agent and our identity tokens to make some more sophisticated authorization decisions.</p>
+
+    </div>
+    <footer>
+      <ul class="stats">
+  <li class="categories">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/security/">Security</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/authentication/">Authentication</a></li>
+        
+      
+    
+    </ul>
+  </li>
+  <li class="tags">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/tags/opa/">OPA</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/open-policy-agent/">Open Policy Agent</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/jws/">JWS</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/signatures/">Signatures</a></li>
+        
+      
+    
+    </ul>
+  </li>
+</ul>
+
+    </footer>
+  </article>
+  
+
+  <div class="pagination">
+  
+    <a href="/blog/envoy_opa_5_opa_jws/" class="button"><div class="previous"><div>JWS Signature Validation with OPA</div></div></a>
+  
+  
+</div>
+
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>Recent posts</h1>
+      </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_6_envoy_jws/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_6_envoy_jws/">JWS Signature Validation with Envoy</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_5_opa_jws/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-XQaqV5qYcXg-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_4_opa_cli/">Using the Open Policy Agent CLI</a></h2>
+          <time class="published" datetime="">September 2, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_3_adding_open_policy_agent/">Plugging Open Policy Agent into Envoy</a></h2>
+          <time class="published" datetime="">September 1, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_2_adding_observability/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_2_adding_observability/">Adding Observability Tools</a></h2>
+          <time class="published" datetime="">September 1, 2020</time>
+        </header>
+      </article>
+      
+      
+        <footer>
+          <a href="/blog/" class="button">See more</a>
+        </footer>
+      
+    </section>
+  
+
+  
+    
+      <section id="categories">
+        <header>
+          <h1><a href="/categories">Categories</a></h1>
+        </header>
+        <ul>
+          
+            
+          
+          
+          <li>
+            
+              <a href="/categories/cloud/">cloud<span class="count">6</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/security/">security<span class="count">4</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/service-mesh/">service-mesh<span class="count">3</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/authentication/">authentication<span class="count">2</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">2</span></a>
+            
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>About</h1>
+      </header>
+      <p>Sharing perspectives.</p>
+      <footer>
+        <a href="/about" class="button">Learn More</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+  
+  <p class="copyright">
+    
+      &copy; 2020
+      
+        Helpful Badger&#39;s Blog
+      
+    . <br>
+    Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://gohugo.io/' title='0.74.3' target='_blank' rel='noopener'>Hugo</a>
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="/js/bundle.min.a130f793c5bbd8f5902d41386b68a11988891ebc5f9a990f2176557ef014e758.js" integrity="sha256-oTD3k8W72PWQLUE4a2ihGYiJHrxfmpkPIXZVfvAU51g="></script>
+    <script src="/js/add-on.js"></script>
+    </div>
+  </body>
+</html>

@@ -18,7 +18,7 @@
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/</guid>
       <description>Photo by Kutan Ural on Unsplash
-Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 03 &amp;mdash; Plugging OPA into Envoy This is the 3rd Envory &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 03 &amp;mdash; Plugging OPA into Envoy This is the 3rd Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
     </item>
     
     <item>
@@ -28,7 +28,7 @@ Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 03 &amp;mdash
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/</guid>
       <description>Photo by Alex Eckermann on Unsplash
-Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 02 &amp;mdash; Adding Log Aggregation to our Envoy Example This is the 2nd Envory &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the goal of creating a very powerful authorization service by the end of the series.</description>
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 02 &amp;mdash; Adding Log Aggregation to our Envoy Example This is the 2nd Envoy &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the goal of creating a very powerful authorization service by the end of the series.</description>
     </item>
     
     <item>
@@ -38,7 +38,7 @@ Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 02 &amp;mdash
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/</guid>
       <description>Photo by Mattia Serrani on Unsplash
-Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 01 &amp;mdash; Using Envoy as a Front Proxy This is the 1st Envory &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 01 &amp;mdash; Using Envoy as a Front Proxy This is the 1st Envoy &amp;amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
     </item>
     
   </channel>

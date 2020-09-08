@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to set up Envoy as a front proxy with docker">
 <meta itemprop="datePublished" content="2020-08-31T13:27:14-04:00" />
 <meta itemprop="dateModified" content="2020-08-31T13:27:14-04:00" />
-<meta itemprop="wordCount" content="1575">
+<meta itemprop="wordCount" content="1585">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg">
 
 
@@ -276,7 +276,7 @@
       <p>Photo by <a href="https://unsplash.com/@mattserra13?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Mattia Serrani</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></p>
 <h1 id="getting-started-with-envoy--open-policy-agent-----01----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 01 &mdash;</h1>
 <h2 id="using-envoy-as-a-front-proxy">Using Envoy as a Front Proxy</h2>
-<p>This is the 1st Envory &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
+<p>This is the 1st Envoy &amp; Open Policy Agent (OPA) Getting Started Guide. Each guide is intended to explore a single Envoy or OPA feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
 <p>The source code for this getting started examples is located on Github. <span style="color:blue"> &mdash;&mdash;&gt;  <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/01_front_proxy">Envoy &amp; OPA GS # 1</a> </span></p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
 <h2 id="getting-started-guides">Getting Started Guides</h2>
@@ -285,6 +285,8 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
 </ol>
 <h2 id="overview">Overview</h2>
 <p><span style="color:blue"><a href="https://www.envoyproxy.io/">Envoy</a></span> is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&rsquo;s own in a minimalist fashion.</p>
@@ -393,6 +395,40 @@ The diagram above shows the sidecar approach.</p>
       <article class="mini-post">
         <section>
           
+  <a href="/blog/envoy_opa_6_envoy_jws/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_6_envoy_jws/">JWS Signature Validation with Envoy</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_5_opa_jws/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-XQaqV5qYcXg-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
   <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
@@ -441,23 +477,10 @@ The diagram above shows the sidecar approach.</p>
         </header>
       </article>
       
-      <article class="mini-post">
-        <section>
-          
-  <a href="/blog/envoy_opa_1_front_proxy/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg" alt="">
-    
-  </a>
-
-
-        </section>
-        <header>
-          <h2><a href="/blog/envoy_opa_1_front_proxy/">Using Envoy as a Front Proxy</a></h2>
-          <time class="published" datetime="">August 31, 2020</time>
-        </header>
-      </article>
       
+        <footer>
+          <a href="/blog/" class="button">See more</a>
+        </footer>
       
     </section>
   
@@ -475,7 +498,12 @@ The diagram above shows the sidecar approach.</p>
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">4</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">6</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/security/">security<span class="count">4</span></a>
             
           
           <li>
@@ -485,12 +513,12 @@ The diagram above shows the sidecar approach.</p>
           
           <li>
             
-              <a href="/categories/observability/">observability<span class="count">2</span></a>
+              <a href="/categories/authentication/">authentication<span class="count">2</span></a>
             
           
           <li>
             
-              <a href="/categories/security/">security<span class="count">2</span></a>
+              <a href="/categories/observability/">observability<span class="count">2</span></a>
             
           
           </li>
