@@ -6,10 +6,20 @@
     <description>Recent content in JWS on Helpful Badger&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 07 Sep 2020 20:58:25 -0400</lastBuildDate>
+    <lastBuildDate>Mon, 07 Sep 2020 22:37:37 -0400</lastBuildDate>
     
 	<atom:link href="https://helpfulbadger.github.io/tags/jws/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Putting It All Together with Composite Authorization</title>
+      <link>https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/</link>
+      <pubDate>Mon, 07 Sep 2020 22:37:37 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/</guid>
+      <description>Photo by Thom Bradley on Unsplash
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 07 &amp;mdash; Learn how to Implement Application Specific Authorization Rules This is the 7th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
+    </item>
     
     <item>
       <title>JWS Signature Validation with Envoy</title>

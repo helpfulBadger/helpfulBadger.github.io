@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">
 <meta itemprop="datePublished" content="2020-09-01T15:59:54-04:00" />
 <meta itemprop="dateModified" content="2020-09-01T15:59:54-04:00" />
-<meta itemprop="wordCount" content="799">
+<meta itemprop="wordCount" content="806">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg">
 
 
@@ -288,6 +288,7 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
 </ol>
 <h1 id="solution-overview">Solution Overview</h1>
 <p>The solution that we will build in this blog is shown below. We will send docker logs into an EFK stack that is also running inside docker. Each of the containers in our solution simply send logs to Standard out and / or Standard Error. No agents nor other special software is requirements are imposed on the observered applications.</p>
@@ -379,6 +380,23 @@
       <article class="mini-post">
         <section>
           
+  <a href="/blog/envoy_opa_7_app_contracts/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_7_app_contracts/">Putting It All Together with Composite Authorization</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
   <a href="/blog/envoy_opa_6_envoy_jws/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg" alt="">
@@ -444,23 +462,6 @@
         </header>
       </article>
       
-      <article class="mini-post">
-        <section>
-          
-  <a href="/blog/envoy_opa_2_adding_observability/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/observatory-unsplash.jpg" alt="">
-    
-  </a>
-
-
-        </section>
-        <header>
-          <h2><a href="/blog/envoy_opa_2_adding_observability/">Adding Observability Tools</a></h2>
-          <time class="published" datetime="">September 1, 2020</time>
-        </header>
-      </article>
-      
       
         <footer>
           <a href="/blog/" class="button">See more</a>
@@ -482,22 +483,22 @@
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">6</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">7</span></a>
             
           
           <li>
             
-              <a href="/categories/security/">security<span class="count">4</span></a>
+              <a href="/categories/security/">security<span class="count">5</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/authentication/">authentication<span class="count">3</span></a>
             
           
           <li>
             
               <a href="/categories/service-mesh/">service-mesh<span class="count">3</span></a>
-            
-          
-          <li>
-            
-              <a href="/categories/authentication/">authentication<span class="count">2</span></a>
             
           
           <li>
