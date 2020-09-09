@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to Implement Application Specific Authorization Rules">
 <meta itemprop="datePublished" content="2020-09-07T22:37:37-04:00" />
 <meta itemprop="dateModified" content="2020-09-07T22:37:37-04:00" />
-<meta itemprop="wordCount" content="167">
+<meta itemprop="wordCount" content="279">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg">
 
 
@@ -214,7 +214,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>1 minute read</p>
+      <p>2 minute read</p>
     
   </div>
 </header>
@@ -291,6 +291,7 @@
 </ol>
 <h2 id="introduction">Introduction</h2>
 <p>In this example</p>
+<h3 id="examplecoms-apis">Example.com&rsquo;s APIs</h3>
 <pre><code>
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/account/*
@@ -298,11 +299,49 @@
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/order/*
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/paymentcard/*
 /<span style="color:brown"><strong>api</strong></span>/featureFlags
-/<span style="color:brown"><strong>api</strong></span>/order/*
-/<span style="color:brown"><strong>api</strong></span>/order/*/payment/*
+/<span style="color:brown"><strong>api</strong></span>/<span style="color:green"><strong>order</strong></span>/*
+/<span style="color:brown"><strong>api</strong></span>/<span style="color:green"><strong>order</strong></span>/*/payment/*
 /<span style="color:brown"><strong>api</strong></span>/product/*
 /<span style="color:brown"><strong>api</strong></span>/shipment/*
-</code><pre>
+</code></pre>
+<h3 id="api-endpoint-definition">API Endpoint Definition</h3>
+<pre><code>
+[
+    {<span style="color:blue"><strong>"id"</strong></span>:"001",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer"},
+    {<span style="color:blue"><strong>"id"</strong></span>:"002",<span style="color:blue"><strong>"method"</strong></span>:"POST",  <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer"},
+    {<span style="color:blue"><strong>"id"</strong></span>:"003",<span style="color:blue"><strong>"method"</strong></span>:"DELETE",<span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
+    {<span style="color:blue"><strong>"id"</strong></span>:"004",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
+    {<span style="color:blue"><strong>"id"</strong></span>:"005",<span style="color:blue"><strong>"method"</strong></span>:"POST",  <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
+    {<span style="color:blue"><strong>"id"</strong></span>:"006",<span style="color:blue"><strong>"method"</strong></span>:"PUT",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
+    {<span style="color:blue"><strong>"id"</strong></span>:"007",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*/account"},
+    {<span style="color:blue"><strong>"id"</strong></span>:"008",<span style="color:blue"><strong>"method"</strong></span>:"POST",  <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*/account"},
+...
+]
+</code></pre>
+<h3 id="client-application-api-contracts">Client Application API Contracts</h3>
+<pre><code>
+apiPermissions = {
+  <span style="color:blue"><strong>"app_123456"</strong></span>: [ <span style="color:green"><strong>
+      "001","004","007","010","012","015","018","021","024","027","031","034","037","040","043","046","049","052","055" </strong></span>
+      ],
+  <span style="color:blue"><strong>"app_000123"</strong></span>:[ <span style="color:green"><strong>
+    "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", 
+    "011", "012", "013", "014", "015", "016", "017", "018", "019", "020",
+    "021", "022", "023", "024", "025", "026", "027", "028", "029", "030",
+    "031", "032", "033", "034", "035", "036", "037", "038", "039", "040",
+    "041", "042", "043", "044", "045", "046", "047", "048", "049", "050",
+    "051", "052", "053", "054", "055", "056", "057" </strong></span>
+  ]
+}
+</code></pre>
+<h3 id="authorized-end-user-identity-providers--jws-issuers-for-each-client-application">Authorized End User Identity Providers / JWS Issuers for each Client Application</h3>
+<pre><code>
+idProviderPermissions = {
+  <span style="color:blue"><strong>"app_123456"</strong></span>:["customerIdentity.example.com"],
+  <span style="color:blue"><strong>"app_123456"</strong></span>:["workforceIdentity.example.com"]
+}
+</code></pre>
+
     </div>
     <footer>
       <ul class="stats">
