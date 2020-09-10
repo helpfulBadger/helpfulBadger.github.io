@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to Implement Application Specific Authorization Rules">
 <meta itemprop="datePublished" content="2020-09-07T22:37:37-04:00" />
 <meta itemprop="dateModified" content="2020-09-07T22:37:37-04:00" />
-<meta itemprop="wordCount" content="279">
+<meta itemprop="wordCount" content="877">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg">
 
 
@@ -214,7 +214,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>2 minute read</p>
+      <p>5 minute read</p>
     
   </div>
 </header>
@@ -289,9 +289,17 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
 </ol>
+<h1 id="draft-article-that-is-under-construction">Draft Article that is Under construction</h1>
 <h2 id="introduction">Introduction</h2>
-<p>In this example</p>
+<p>In this example we are going to simulate an ecommerce company called <code>Example.com</code> that has a published set of APIs and multiple client applications. Each client application has:</p>
+<ul>
+<li>Different access rights to each published API</li>
+<li>Different operations they are allowed to perform on the APIs that it has access to</li>
+<li>Different types of users that are allowed to use the application</li>
+</ul>
+<p>There are a lot of other rules that we will eventually be interested in implementing. However, this set of rules is complex enough to demonstrate how we can put together what we have learned so far into a little authorization system.</p>
 <h3 id="examplecoms-apis">Example.com&rsquo;s APIs</h3>
+<p>Here are Example.com&rsquo;s published APIs.</p>
 <pre><code>
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/account/*
@@ -304,7 +312,20 @@
 /<span style="color:brown"><strong>api</strong></span>/product/*
 /<span style="color:brown"><strong>api</strong></span>/shipment/*
 </code></pre>
+<ul>
+<li>The customer API, <code>/api/customer/*</code>, allows users manage customer profiles in our customer system of record.</li>
+<li>The accounts API, <code>/api/customer/*/account/*</code>, allows users to manage accounts for a specific customer in the system of record for accounts.</li>
+<li>The messages API, <code>/api/customer/*/messages/*</code>, allows users to send and receive messages related to a specific customer in the messaging system.</li>
+<li>The customer&rsquo;s order API, <code>/api/customer/*/order/*</code>, allows users to manage a customer&rsquo;s orders.</li>
+<li>The customer&rsquo;s payment card API, <code>/api/customer/*/paymentcard/*</code>, allows users to manage a customer&rsquo;s debit or credit cards.</li>
+<li>The feature flag API, <code>/api/featureFlags</code>, allows an application to retrieve the feature flags for the app e.g. which features are turned on or off and any customer specific features that are available or not.</li>
+<li>The order API, <code>/api/order/*</code>, allows users to get, create, update or delete orders for any customer.</li>
+<li>The order payments API, <code>/api/order/*/payment/*</code>, allows users to manage payments for any order. No shopping cart API is provided. An order in draft status is the equivalent of a shopping cart.</li>
+<li>The product API, <code>/api/product/*</code>, allows users to manage the products that are available for purchase.</li>
+<li>The shipment API, <code>/api/shipment/*</code>, allows users to manage shipment for an order.</li>
+</ul>
 <h3 id="api-endpoint-definition">API Endpoint Definition</h3>
+<p>As the basis for our security policies we need a data structure that contains all of possible actions that a user and client application can take. For this example, we define a URI pattern and a method being attempted on that URI as an <code>endpoint</code>. The <code>id</code> field uniquely identifies each endpoint and will be used in the process of actually specifying what endpoints an application has access to.</p>
 <pre><code>
 [
     {<span style="color:blue"><strong>"id"</strong></span>:"001",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer"},
@@ -319,6 +340,7 @@
 ]
 </code></pre>
 <h3 id="client-application-api-contracts">Client Application API Contracts</h3>
+<p>The next piece of data that we need to build our example authorization solution is a mapping between each client application and the endponts that it is allowed to access. The data structure below holds that information. The unique ID for each application is a <code>key</code> in this data structure and the value is an array of all of the endpoint IDs that the application has access to.</p>
 <pre><code>
 apiPermissions = {
   <span style="color:blue"><strong>"app_123456"</strong></span>: [ <span style="color:green"><strong>
@@ -335,10 +357,11 @@ apiPermissions = {
 }
 </code></pre>
 <h3 id="authorized-end-user-identity-providers--jws-issuers-for-each-client-application">Authorized End User Identity Providers / JWS Issuers for each Client Application</h3>
+<p>Just for fun and simplicity we want to make sure that a hacker has not found a way to use or simulate using an application that is intended for another type of user. So, the data structure below lists the identity providers that are permitted for each application. So, the data structure below means that <code>app_123456</code> is only allowed to be used by external customers. <code>app_000123</code> is intended only for use by employees and contractors of example.com (i.e. the workforce). This is a more powerful application that can take action on behalf of the company and on behalf of any of the company&rsquo;s customer. This is very coarse grained security. In a real application we would also put in a lot of user specific rights and access controls. In a later getting started guide we will show how we can start to layer OPA Policies, getting volatile data from external sources and other techniques to implement more realistic security policies.</p>
 <pre><code>
 idProviderPermissions = {
   <span style="color:blue"><strong>"app_123456"</strong></span>:["customerIdentity.example.com"],
-  <span style="color:blue"><strong>"app_123456"</strong></span>:["workforceIdentity.example.com"]
+  <span style="color:blue"><strong>"app_000123"</strong></span>:["workforceIdentity.example.com"]
 }
 </code></pre>
 
