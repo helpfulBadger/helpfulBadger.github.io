@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to Implement Application Specific Authorization Rules">
 <meta itemprop="datePublished" content="2020-09-07T22:37:37-04:00" />
 <meta itemprop="dateModified" content="2020-09-07T22:37:37-04:00" />
-<meta itemprop="wordCount" content="877">
+<meta itemprop="wordCount" content="3623">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg">
 
 
@@ -214,7 +214,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>5 minute read</p>
+      <p>18 minute read</p>
     
   </div>
 </header>
@@ -289,7 +289,6 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
 </ol>
-<h1 id="draft-article-that-is-under-construction">Draft Article that is Under construction</h1>
 <h2 id="introduction">Introduction</h2>
 <p>In this example we are going to simulate an ecommerce company called <code>Example.com</code> that has a published set of APIs and multiple client applications. Each client application has:</p>
 <ul>
@@ -300,8 +299,7 @@
 <p>There are a lot of other rules that we will eventually be interested in implementing. However, this set of rules is complex enough to demonstrate how we can put together what we have learned so far into a little authorization system.</p>
 <h3 id="examplecoms-apis">Example.com&rsquo;s APIs</h3>
 <p>Here are Example.com&rsquo;s published APIs.</p>
-<pre><code>
-/<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*
+<pre><code>/<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/account/*
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/messages/*
 /<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/order/*
@@ -326,8 +324,7 @@
 </ul>
 <h3 id="api-endpoint-definition">API Endpoint Definition</h3>
 <p>As the basis for our security policies we need a data structure that contains all of possible actions that a user and client application can take. For this example, we define a URI pattern and a method being attempted on that URI as an <code>endpoint</code>. The <code>id</code> field uniquely identifies each endpoint and will be used in the process of actually specifying what endpoints an application has access to.</p>
-<pre><code>
-[
+<pre><code>[
     {<span style="color:blue"><strong>"id"</strong></span>:"001",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer"},
     {<span style="color:blue"><strong>"id"</strong></span>:"002",<span style="color:blue"><strong>"method"</strong></span>:"POST",  <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer"},
     {<span style="color:blue"><strong>"id"</strong></span>:"003",<span style="color:blue"><strong>"method"</strong></span>:"DELETE",<span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
@@ -341,8 +338,7 @@
 </code></pre>
 <h3 id="client-application-api-contracts">Client Application API Contracts</h3>
 <p>The next piece of data that we need to build our example authorization solution is a mapping between each client application and the endponts that it is allowed to access. The data structure below holds that information. The unique ID for each application is a <code>key</code> in this data structure and the value is an array of all of the endpoint IDs that the application has access to.</p>
-<pre><code>
-apiPermissions = {
+<pre><code>apiPermissions = {
   <span style="color:blue"><strong>"app_123456"</strong></span>: [ <span style="color:green"><strong>
       "001","004","007","010","012","015","018","021","024","027","031","034","037","040","043","046","049","052","055" </strong></span>
       ],
@@ -358,12 +354,327 @@ apiPermissions = {
 </code></pre>
 <h3 id="authorized-end-user-identity-providers--jws-issuers-for-each-client-application">Authorized End User Identity Providers / JWS Issuers for each Client Application</h3>
 <p>Just for fun and simplicity we want to make sure that a hacker has not found a way to use or simulate using an application that is intended for another type of user. So, the data structure below lists the identity providers that are permitted for each application. So, the data structure below means that <code>app_123456</code> is only allowed to be used by external customers. <code>app_000123</code> is intended only for use by employees and contractors of example.com (i.e. the workforce). This is a more powerful application that can take action on behalf of the company and on behalf of any of the company&rsquo;s customer. This is very coarse grained security. In a real application we would also put in a lot of user specific rights and access controls. In a later getting started guide we will show how we can start to layer OPA Policies, getting volatile data from external sources and other techniques to implement more realistic security policies.</p>
-<pre><code>
-idProviderPermissions = {
+<pre><code>idProviderPermissions = {
   <span style="color:blue"><strong>"app_123456"</strong></span>:["customerIdentity.example.com"],
   <span style="color:blue"><strong>"app_000123"</strong></span>:["workforceIdentity.example.com"]
 }
 </code></pre>
+<h2 id="our-environment">Our Environment</h2>
+<p>In this example we have replaced our HTTPBin container as our ultimate destination with Hoverfly. <span style="color:blue"><a href="https://hoverfly.io/">Hoverfly</a></span> is a light-weight, super fast API mocking server that is API driven and highly extensible. This is used to simulate all of the APIs that we defined above. The API Mocks are defined in the <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/compose/hoverfly/config.json">config.json</a></span> file in the <code>compose\hoverfly</code> directory.</p>
+<p>The other change that we have made is a much more sophisticated and comprehensive set of tests using Newman. <span style="color:blue"><a href="https://learning.postman.com/docs/running-collections/using-newman-cli/command-line-integration-with-newman/">Newman</a></span> is a command line driven postman collection runner. Postman has a testing capability. This feature runs tests that are expressed in Javascript and uses a built in library of test functions. The <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/data/Envoy_OPA.postman_collection.json">Postman collection for Getting Started #7</a></span> with tests is included in this example in the data directory that</p>
+<p><img class="special-img-class" src="/img/2020/09/Envoy-front proxy-Hoverfly.svg" /><br></p>
+<h2 id="authorization-policies">Authorization Policies</h2>
+<p>User and system identity information is communicated as follows:</p>
+<ul>
+<li>We have some sort of access token in the Authorization header. What API gateway is in use and how it works is out of scope for this example.</li>
+<li>Some user authentication system that we are using (out of scope of this article) has produced evidence of authentication in the form of an JWS Identity Token and given this to our client application. The client application places the identity token in the <code>Actor-Token</code> header of the request.</li>
+<li>The API gateway, the client application itself or another system (out of scope of this article), has securely authenticated the client application and given it a JWS token to assert information in a tamper proof way about our client application.</li>
+</ul>
+<h3 id="stage-1---envoy-validates-jws-tokens">Stage 1 - Envoy validates JWS Tokens</h3>
+<p>These JWS tokens are validated by Envoy before they are ever sent to OPA. Envoy and OPA Getting Started Guide #5 showed us how to do this. Our Envoy.yaml file for this example has made one small change to the <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/envoy.yaml#L26-L56">JWT provider configurations</a></span>. In this example we need to be able to support a variety of different types of users. Since we have 2 different user types / token issuers, we create to different JWT Provider configurations (one for each identity provider). Both of them use the <code>from_headers:</code> parameter to specify the token source as the <code>Actor-Token</code> header.</p>
+<p>Because of this variability we had to change our logic for token validation and enforcement:</p>
+<p>The configuration snippet below is how we express this logic:</p>
+<ul>
+<li>The <code>match</code> object specifies that any URI must meet the requirements in the <code>requires</code> object</li>
+<li>The <code>requires</code> object specifies that a request must have:  <pre><code>(<span style="color:red"><u>a Gateway issued system identity token</u></span>) <strong>AND a user with</strong> ( <span style="color:blue"><u>a workforce Identity token</u></span> <strong>OR</strong> <span style="color:blue"><u>a Consumer Identity Token</u></span> ))</code></pre> NOTE: Scroll right as needed. The color coding above matches the translation to YAML configuration below.</li>
+</ul>
+<pre><code>                      rules:
+                        - match:
+                            prefix: /
+                          requires:
+                            <span style="color:red"><strong>requires_all</strong></span>:
+                              requirements:
+                                - <span style="color:red"><strong>provider_name</strong></span>: gateway_provider
+                                - <span style="color:blue"><strong>requires_any</strong></span>:
+                                    requirements:
+                                      - <span style="color:blue"><strong>provider_name</strong></span>: workforce_provider
+                                      - <span style="color:blue"><strong>provider_name</strong></span>: consumer_provider
+</code></pre>
+<ul>
+<li>The <code>requires_all</code> object specifies that all of the requirements in the <code>requirements</code> array must be true to pass.</li>
+<li>The <code>requirements</code> array contains a <code>provider_name</code> and a <code>requires_any</code> clause. If there were 3 or 4 elements in the array then all of the requirements would need to be true to pass. In this example we only have 2 requirements and one of those has sub-requirements.</li>
+<li>The <code>requires_any</code> object contains another <code>requirements</code> array. If any of the requirements in this array are true then the <code>requires_any</code> will also evaluate to true.</li>
+</ul>
+<h4 id="passing-envoys-dynamic-meta-data-to-opa">Passing Envoy&rsquo;s Dynamic Meta data to OPA</h4>
+<p>We can pass the validated JWS token body to Open Policy Agent by adding a couple of tags to Envoy&rsquo;s configuration. In the token definition section, we add the <code>payload_in_metadata</code> property and give the token a name. In the example below we&rsquo;ve given the token the name <code>actor_token</code>. See below for the configuration snippet.</p>
+<pre><code>                        workforce_provider:
+                          issuer: workforceIdentity.example.com
+                          audiences:
+                          - apigateway.example.com
+                          from_headers:
+                          - name: "actor-token"
+                            value_prefix: ""
+                          forward: true
+                          <span style="color:blue"><strong>payload_in_metadata: "actor_token"</strong></span>
+                          local_jwks:
+                            inline_string: "{\"keys\":[...]}" 
+</code></pre>
+<p>To pass this data to Open Policy Agent, in the <code>envoy.filters.http.ext_authz</code> section, add the array named <code>metadata_context_namespaces</code>. This array specifies the names of the Envoy dynamic metadata namespaces to forward to the OPA Authorization Service. See the configuration change highlighted in blue below.</p>
+<pre><code>                  - name: envoy.filters.http.ext_authz
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+                      failure_mode_allow: false
+                      grpc_service:
+                        google_grpc:
+                          target_uri: opa:9191
+                          stat_prefix: ext_authz
+                        timeout: 0.5s
+                      include_peer_certificate: true
+                      <span style="color:blue"><strong>metadata_context_namespaces:
+                      - envoy.filters.http.jwt_authn</strong></span>
+                  - name: envoy.filters.http.router
+                    typed_config: {}
+</code></pre>
+<p>These changes add some data to the <code>metadata_context</code>. For each dynamic metadata namespace added, it will add it&rsquo;s data under a key that matches the namespace name in the <code>filter_metadata</code> object. For this example it adds each token&rsquo;s payload in the <code>envoy.filters.http.jwt_authn</code> object underneath the <code>fields</code> object. As you can see from the example below, it adds a lot of extra hierarchy via nested objects that express data types to the original object. So, it may not be worth it to have Envoy forward the validated payload. For us configuring Envoy to forward the token and simply reading the token payload directly is less complicated.</p>
+<p>See the resultant <code>metadata_context</code> below for an example.</p>
+<pre><code>  "input": {
+    "attributes": {
+      "destination": { "...":"..." },
+      "metadata_context": {
+        <span style="color:blue"><strong>"filter_metadata": {
+          "envoy.filters.http.jwt_authn": {
+            "fields": {
+              "workforce_provider": {
+                "Kind": {
+                  "StructValue": {
+                    "fields": {
+                      "aud": {
+                        "Kind": {
+                          "ListValue": {
+                            "values": [
+                              { "Kind": { "StringValue": "apigateway.example.com"} },
+                              { "Kind": { "StringValue": "protected-stuff.example.com" } }
+                            ]
+                          }
+                        }
+                      },
+                      "auth_time": { "Kind": { "NumberValue": 1597676718 } },
+                      "azp": { "Kind": { "StringValue": "app_123456" } },
+                      "exp": { "Kind": { "NumberValue": 2735689600 } },
+                      "iat": { "Kind": { "NumberValue": 1597676718 } },
+                      "iss": { "Kind": { "StringValue": "workforceIdentity.example.com" } },
+                      "jti": { "Kind": { "StringValue": "mPPdwJ7Jrr2MQzS" } },
+                      "sub": { "Kind": { "StringValue": "workforceIdentity:406319" } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }</strong></span>
+      },
+      "request": {"...": "..."},
+      "source":  {"...": "..."}
+    },
+    "parsed_body": null,
+    "parsed_path": ["..."],
+    "parsed_query": {},
+    "truncated_body": false
+  }
+</code></pre>
+<h3 id="authorization-stage-2---open-policy-agent-policies">Authorization Stage 2 - Open Policy Agent Policies</h3>
+<h4 id="extracting-the-jws-token-payloads">Extracting the JWS Token Payloads</h4>
+<p>Since we also have the configuration setting <code>forward: true</code>, we can simply use OPA&rsquo;s built in capabilities to more easily access the data that we need from the tokens.</p>
+<ul>
+<li>The REGO snippets below show how we pull the tokens that we need out of the <code>actor-token</code> header and <code>app-token</code> header.</li>
+<li>Since we won&rsquo;t get to this point unless Envoy successfully validated the tokens, we can simply decode the payload. The <code>io.jwt.decode()</code> functions do that for us.</li>
+<li>We don&rsquo;t need the header and signature values so we tell OPA to discard those with underscores in the destructuring fragment <code>[ _, p, _ ]</code></li>
+<li>The payload is then stored in the <code>actor</code> and <code>app</code> variables</li>
+</ul>
+<p>See below for the REGO code.</p>
+<pre><code>import input.attributes.request.http.headers["actor-token"] as <span style="color:blue"><strong>actorToken</strong></span>
+import input.attributes.request.http.headers["app-token"] as <span style="color:red"><strong>appToken</strong></span>
+
+<span style="color:blue"><strong>actor</strong></span> = p {
+  [ _, p, _ ] := io.jwt.decode(<span style="color:blue"><strong>actorToken</strong></span>)	
+}
+
+<span style="color:red"><strong>app</strong></span>  = p {
+  [ _, p, _ ] :=  io.jwt.decode(<span style="color:red"><strong>appToken</strong></span>)
+}
+</code></pre>
+<h4 id="making-the-authorization-decision">Making the Authorization Decision</h4>
+<p>Next, we will move over to the punchline, the REGO rule that makes our authorization decision. As we can see from the rule below our rule defaults to <code>false</code> a.k.a. <code>deny</code> access. The next part of the rule says:</p>
+<ul>
+<li>IF the API is permitted for our client app</li>
+<li>AND the type of user is appropriate for the client app</li>
+<li>THEN set the decision to <code>true</code> a.k.a. <code>allow</code> the request to flow through.</li>
+</ul>
+<pre><code>default decision = false
+decision {
+  <span style="color:blue"><strong>apiPermittedForClient</strong></span>
+  <span style="color:red"><strong>userTypeAppropriateForClient</strong></span>
+}
+</code></pre>
+<h4 id="how-do-we-determine-if-the-api-is-permitted-for-the-client-application">How do we determine if the API is Permitted for the Client Application?</h4>
+<p>Now lets work backwards to see how we determine if these two conditions are true.</p>
+<p>Let&rsquo;s look at how <code>apiPermittedForClient</code> is defined. Its default value is false. To see if it should override this default value:</p>
+<ul>
+<li>The first section says that the API is permitted for the client application if the endpoint ID that we are calling is found in the array endpoints that our app is allowed to access.</li>
+<li><code>apiPermissions[ app.client_id ][_] == endpointID</code> means take every <code>[_]</code> element in the permissions array that matches our Client App&rsquo;s ID and see if it equals our endpointID.</li>
+</ul>
+<p>Determining our endpoint with our endpoint rule is a little more complicated:</p>
+<ul>
+<li>The series of rules effectively acts as progressive filters that reduces the search space with each statement</li>
+<li><code>some i</code> is used when we need to match a specific element in a dataset with some other specific value. This just declares our iterator and names it.</li>
+<li><code>endpoints[i].method == http_request.method</code> searches for a value for i where the method property of that array element equals the request method that we are decisioning. This statement effectively discards ~75% of our reference data and only keeps the array elements that match our request method.</li>
+<li><code>p := trim_right( http_request.path, &quot;/&quot;)  #strip trailing slash if present</code> sets <code>p</code> equal to the request path with any trailing slashes removed</li>
+<li>With the path now normalized, it should work in our REGEX expression search.</li>
+<li><code>glob.match( lower(endpoints[i].pattern), [&quot;/&quot;], lower(p) )</code> takes the lower case pattern from our reference data and the lower case path from our request and looks for any patterns in our reference array that match. Since the statement above discards ~75% of the reference array to satisfy that match criteria, this statement searches that space for any values of i where this statement is true too.</li>
+<li>Our magic variable i should only represent a single value at this point.</li>
+<li>So, now we want to pull back the endpoint id from the only reference data object that should match the statement <code>epID := endpoints[i].id</code> does this for us.</li>
+</ul>
+<p>See the REGO code below for how this section fits together.</p>
+<pre><code>default <span style="color:blue"><strong>apiPermittedForClient</strong></span> = false
+<span style="color:blue"><strong>apiPermittedForClient</strong></span> {
+  apiPermissions[ app.client_id ][_] == <span style="color:blue"><strong>endpointID</strong></span>
+}
+
+<span style="color:blue"><strong>endpointID</strong></span> = epID {
+  some i
+  endpoints[i].method == http_request.method
+  p := trim_right( http_request.path, "/")  #strip trailing slash if present
+  glob.match( lower(endpoints[i].pattern), ["/"], lower(p) )
+  epID := endpoints[i].id
+} else = "none"
+</code></pre>
+<h4 id="how-do-we-determine-if-the-type-of-user-is-permitted-for-the-client-application">How do we determine if the Type of User is Permitted for the Client Application?</h4>
+<p>Now, let&rsquo;s look at how <code>userTypeAppropriateForClient</code> is defined. Its default value is false. To see if it should override this default value:</p>
+<ul>
+<li>It uses our reference data object, <code>idProviderPermissions</code></li>
+<li>By using the client ID from the app token, <code>app.client_id</code>, it narrows down the dataset search</li>
+<li>The <code>[_]</code> fragment says: for any element in the array, see if one of the equals the issuer that we have in the actor token <code>actor.iss</code>.</li>
+</ul>
+<pre><code>default <span style="color:red"><strong>userTypeAppropriateForClient</strong></span> = false
+<span style="color:red"><strong>userTypeAppropriateForClient</strong></span> {
+  idProviderPermissions[ app.client_id ][_] == actor.iss
+}
+</code></pre>
+<h4 id="if-we-dont-have-a-match-how-do-we-communicate-reject-reasons">If we don&rsquo;t have a match, how do we communicate reject reasons?</h4>
+<p>Whether rejection reasons are returned to the user or not depends on the circumstances and security risks posed by providing this transparency. However, it still makes sense to log the reject reasons. This example shows you how to report back which rules failed and resulted in a denial of access.</p>
+<ul>
+<li>We do this by defining multiple messages array rules.</li>
+<li>For each occurrence, we put a single rule reference and statically define a message describes a matching failure reason. This is another reason why we defined single condition rules above. It allows us to test each individual rule to determine what the rejection reason was.</li>
+<li>In this first messages block we look for <code>not apiPermittedForClient</code>, this will result in a value of true if <code>apiPermittedForClient</code> is either <code>false</code> or <code>undefined</code>. It then adds the message defined in this block to the messages array.</li>
+<li>The same is true for the second messages rule block.</li>
+<li>This section will result in a messages array that has either 0, 1 or 2 elements.</li>
+</ul>
+<pre><code>messages[ msg ]{
+  <span style="color:blue"><strong>not apiPermittedForClient</strong></span>
+  msg := {
+    "id"  : "1",
+    "priority"  : "5",
+    "message" : "The requested API Endpoint is not permitted for the client application"
+  }
+}
+
+messages[ msg ]{
+  <span style="color:red"><strong>not userTypeAppropriateForClient</strong></span>
+  msg := {
+    "id"  : "2",
+    "priority"  : "5",
+    "message" : "The authenticated user type is not allowed for the client application"
+  }
+}
+</code></pre>
+<h4 id="now-lets-return-the-results-to-envoy">Now let&rsquo;s return the results to Envoy</h4>
+<p>Envoy is looking for results of the <code>allow</code> rule. The structure of our response is defined by the Envoy external authorization API contract. OPA is also a little bit finicky when assigning values. So we were very careful to make sure that there was no way that any of the variables in this section could end up as undefined. If anything is undefined in the object that we are trying to return, then this rule will fail and the entire result returned to Envoy will be undefined.</p>
+<ul>
+<li>Since we have setup a default value for the decision variable, it will always be either true or false</li>
+<li>Since Envoy validated our JWS tokens before our policy executed, the User and App tokens will always be valid. So, we hard coded the value of these headers to the string &ldquo;true&rdquo;. The header contract states that all headers must have strings as keys and strings as values.</li>
+<li>The endpointID has a default value of the string &ldquo;none&rdquo;. Since all of the IDs in our reference data are already strings, if there is a match in the reference data, the result here will always be a string.</li>
+<li>The body value must also be a string. So, we can&rsquo;t return any of the other mock data that we have here as an object. So first we declare it as an anonymous object then immediately pass it to the json marshaller. This will return a string. The json marshaller should be able to handle any numeric, null or undefined values for us and always return a string.</li>
+<li>With these guarantees, we can be confident that this block will always return a defined result to Envoy</li>
+</ul>
+<pre><code>allow = response {
+  response := {
+    "allowed": <span style="color:blue"><strong>decision</strong></span>,
+    "headers": {
+      "X-Authenticated-User": "true", 
+      "X-Authenticated-App": "true",
+      "Endpoint-ID": endpointID,
+      "Content-Type": "application/json"
+    },
+    "body" : <span style="color:blue"><strong>json.marshal</strong></span>(
+                      {
+                        "Authorized-User-Type": userTypeAppropriateForClient,
+                        "Authorized-Endpoint": apiPermittedForClient,
+                        "Authorization-Failures" : messages,
+                        "Requested-Path": http_request.path,
+                        "Requested-Method": http_request.method
+                      })
+  }
+} 
+</code></pre>
+<p>With that explanation behind us, you can <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/policy.rego">read through the entire policy in context on github</a></span>.</p>
+<h2 id="running-our-example-through-its-paces">Running our Example Through Its Paces</h2>
+<p>We use Postman and Newman to setup the tests for this getting started guide. There are some great tutorials on the Postman site that describe how to write test scripts.</p>
+<ol>
+<li><span style="color:blue"><a href="https://learning.postman.com/docs/writing-scripts/pre-request-scripts/">Writing Pre-request Scripts</a></span></li>
+<li><span style="color:blue"><a href="https://learning.postman.com/docs/writing-scripts/test-scripts/">Writing Test Scripts</a></span></li>
+<li><span style="color:blue"><a href="https://learning.postman.com/docs/writing-scripts/script-references/test-examples/">Test Script Examples</a></span></li>
+<li><span style="color:blue"><a href="https://learning.postman.com/docs/running-collections/working-with-data-files/">Working with Data Files</a></span></li>
+<li><span style="color:blue"><a href="https://learning.postman.com/docs/running-collections/using-newman-cli/command-line-integration-with-newman/">Running test from the command line with Newman</a></span></li>
+</ol>
+<p>This example is a lot more powerful than the others we have tackled in this series of getting started guides. As such it requires a lot more tests to see if it is functioning correctly. We have a <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/data/Envoy_OPA.postman_collection.json">postman collection</a></span> with 2 types of tests:</p>
+<ul>
+<li>Statically defined tests in the folder named <code>Static-Test-Cases</code></li>
+<li>Tests that use iteration data in all of the other folders</li>
+</ul>
+<h3 id="static-test-cases">Static Test Cases</h3>
+<p>This folder contains one templated request definition for every endpoint. That is 56 requests in total. This collection is simply to show how many endpoints even a simple web site requires to operate.
+We have created folder level scripts to set up data for our templates.</p>
+<p><strong>Folder level Pre-Request Script</strong></p>
+<p>The pre-request script simply sets the templated values for the request port and JWS tokens for the User and application. These statically defined values use the &ldquo;super app&rdquo; that has permission for all endpoints. The postman library provides the <code>pm.environment.set</code> command to set values in our template.</p>
+<pre><code><span style="color:blue"><strong>pm.environment.set</strong></span>("port", "8080");
+<span style="color:blue"><strong>pm.environment.set</strong></span>("ActorToken", "...")
+<span style="color:blue"><strong>pm.environment.set</strong></span>("AppToken", "...");
+</code></pre>
+<p><strong>Folder level Test Script</strong></p>
+<p>The test script simply checks for a successful response.</p>
+<pre><code><span style="color:blue"><strong>pm.test</strong></span>("response should be okay", function () {
+      <span style="color:blue"><strong>pm.response.to.be.success</strong></span>;
+      <span style="color:blue"><strong>pm.response.to.not.be.error</strong></span>;
+});
+</code></pre>
+<h3 id="iteration-data-based-tests">Iteration Data Based Tests</h3>
+<p>Postman / Newman loads each record in the array in our test data file into the template variables in our Postman collection. Each record has the following properties:</p>
+<ul>
+<li>Test case ID</li>
+<li>The App ID</li>
+<li>The Actor Token to use</li>
+<li>The Application token to use</li>
+<li>The host to send the request to</li>
+<li>The port on that host to send the request to</li>
+<li>The method to use in the request</li>
+<li>The URI to use in the request</li>
+<li>The pattern that this test exercises</li>
+<li>The expected result</li>
+</ul>
+<p>An example is shown below.</p>
+<pre><code>  {
+    <span style="color:blue"><strong>"id"</strong></span>: "001",
+    <span style="color:blue"><strong>"App"</strong></span>: "app_000123",
+    <span style="color:blue"><strong>"ActorToken"</strong></span>: "...",
+    <span style="color:blue"><strong>"AppToken"</strong></span>: "...",
+    <span style="color:blue"><strong>"host"</strong></span>: "localhost",
+    <span style="color:blue"><strong>"port"</strong></span>: "8080",
+    <span style="color:blue"><strong>"method"</strong></span>: "GET",
+    <span style="color:blue"><strong>"uri"</strong></span>: "/api/customer",
+    <span style="color:blue"><strong>"pattern"</strong></span>: "/api/customer",
+    <span style="color:blue"><strong>"expect"</strong></span>: 200
+  }
+</code></pre>
+<p>The post execution test only needs one piece of data from the record for our completion test. That is the <code>expect</code> value from the record. We get that using the <code>pm.iterationData.get</code> command.</p>
+<pre><code><span style="color:blue"><strong>var</strong></span> expect = <span style="color:blue"><strong>pm.iterationData.get</strong></span>("expect")
+
+<span style="color:blue"><strong>pm.test</strong></span>("GET response have return status: " + expect, function () {
+      <span style="color:blue"><strong>pm.response.to.have.status</strong></span>( <span style="color:blue"><strong>Number</strong></span>( expect) )
+});
+</code></pre>
+<p>There are 4 sets of templates and data files. You can run them all to test our permissions with the following command <pre><code>./demonstrate_user_and_api_contracts.sh </code></pre> in the example&rsquo;s based directory <code>07_opa_validate_method_uri</code>.</p>
+<h1 id="congratulations">Congratulations</h1>
+<p>We have just completed our first semi-realistic example. In future lessons we will layer on more features and refactor this example to show a more realistic deployment.</p>
 
     </div>
     <footer>
@@ -411,6 +722,8 @@ idProviderPermissions = {
     <a href="/blog/envoy_opa_6_envoy_jws/" class="button"><div class="previous"><div>JWS Signature Validation with Envoy</div></div></a>
   
   
+    <a href="/blog/envoy_opa_8_logs_and_taps/" class="button"><div class="next"><div>Configuring Envoy Logs and Taps</div></div></a>
+  
 </div>
 
 
@@ -421,6 +734,23 @@ idProviderPermissions = {
       <header>
         <h1>Recent posts</h1>
       </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_8_logs_and_taps/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_8_logs_and_taps/">Configuring Envoy Logs and Taps</a></h2>
+          <time class="published" datetime="">September 10, 2020</time>
+        </header>
+      </article>
       
       <article class="mini-post">
         <section>
@@ -490,23 +820,6 @@ idProviderPermissions = {
         </header>
       </article>
       
-      <article class="mini-post">
-        <section>
-          
-  <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/Royal-Guard-unsplash.jpg" alt="">
-    
-  </a>
-
-
-        </section>
-        <header>
-          <h2><a href="/blog/envoy_opa_3_adding_open_policy_agent/">Plugging Open Policy Agent into Envoy</a></h2>
-          <time class="published" datetime="">September 1, 2020</time>
-        </header>
-      </article>
-      
       
         <footer>
           <a href="/blog/" class="button">See more</a>
@@ -528,17 +841,17 @@ idProviderPermissions = {
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">7</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">8</span></a>
             
           
           <li>
             
-              <a href="/categories/security/">security<span class="count">5</span></a>
+              <a href="/categories/security/">security<span class="count">6</span></a>
             
           
           <li>
             
-              <a href="/categories/authentication/">authentication<span class="count">3</span></a>
+              <a href="/categories/authentication/">authentication<span class="count">4</span></a>
             
           
           <li>

@@ -2,20 +2,32 @@
 <html lang="en">
   <head>
   <meta charset="utf-8">
-<title>JWS - Helpful Badger&#39;s Blog</title>
+<title>Configuring Envoy Logs and Taps - Helpful Badger&#39;s Blog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="JWS">
-<meta itemprop="description" content="">
-<meta property="og:title" content="JWS" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://helpfulbadger.github.io/tags/jws/" />
-<meta property="og:updated_time" content="2020-09-10T10:36:36-04:00" />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="JWS"/>
-<meta name="twitter:description" content=""/>
+<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="Configuring Envoy Logs and Taps">
+<meta itemprop="description" content="Learn how to configure Envoy&#39;s access logs and taps for capturing full requests &amp; responses">
+<meta itemprop="datePublished" content="2020-09-10T10:36:36-04:00" />
+<meta itemprop="dateModified" content="2020-09-10T10:36:36-04:00" />
+<meta itemprop="wordCount" content="172">
+<meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg">
+
+
+
+<meta itemprop="keywords" content="OPA,Open Policy Agent,JWS,Signatures," />
+<meta property="og:title" content="Configuring Envoy Logs and Taps" />
+<meta property="og:description" content="Learn how to configure Envoy&#39;s access logs and taps for capturing full requests &amp; responses" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_and_taps/" />
+<meta property="og:image" content="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" />
+<meta property="article:published_time" content="2020-09-10T10:36:36-04:00" />
+<meta property="article:modified_time" content="2020-09-10T10:36:36-04:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg"/>
+
+<meta name="twitter:title" content="Configuring Envoy Logs and Taps"/>
+<meta name="twitter:description" content="Learn how to configure Envoy&#39;s access logs and taps for capturing full requests &amp; responses"/>
 <link rel="stylesheet" href="/css/bundle.min.182747932867f43d8c875b59a0300848b838002d4008d4a5b8ddcc41a37c4cf7.css" integrity="sha256-GCdHkyhn9D2Mh1tZoDAISLg4AC1ACNSluN3MQaN8TPc="><link rel="stylesheet" href="/css/add-on.css">
 </head>
 
@@ -28,7 +40,7 @@
       <a href="/" class="nav">
         
           
-            Tags
+            Blog
           
         
       </a>
@@ -83,37 +95,37 @@
 
   
     
-    <a href="//twitter.com/share?text=JWS&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2ftags%2fjws%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+    <a href="//twitter.com/share?text=Configuring%20Envoy%20Logs%20and%20Taps&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
         <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
       </a>
   
 
   
-      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2ftags%2fjws%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
         <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
         </a>
   
 
   
-    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2ftags%2fjws%2f&amp;title=JWS" target="_blank" rel="noopener" class="nav share-btn reddit">
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f&amp;title=Configuring%20Envoy%20Logs%20and%20Taps" target="_blank" rel="noopener" class="nav share-btn reddit">
           <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
         </a>
   
 
   
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2ftags%2fjws%2f&amp;title=JWS" target="_blank" rel="noopener" class="nav share-btn linkedin">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f&amp;title=Configuring%20Envoy%20Logs%20and%20Taps" target="_blank" rel="noopener" class="nav share-btn linkedin">
             <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
           </a>
   
 
   
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2ftags%2fjws%2f&amp;description=JWS" target="_blank" rel="noopener" class="nav share-btn pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f&amp;description=Configuring%20Envoy%20Logs%20and%20Taps" target="_blank" rel="noopener" class="nav share-btn pinterest">
           <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
         </a>
   
 
   
-        <a href="mailto:?subject=Check%20out%20this%20post%20by %7b%20%20%20%20%20%20%20%20map%5b%5d%7d&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2ftags%2fjws%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
           <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
         </a>
   
@@ -136,8 +148,6 @@
     <footer>
       <ul class="socnet-icons">
         
-    <li><a href="/tags/jws/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fas fa-rss"></a></li>
-
 
         <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
 
@@ -188,10 +198,8 @@
 
       <main id="site-main">
         
-  
-  
-    <article class="post">
-  <header>
+  <article class="post">
+    <header>
   <div class="title">
     
       <h2><a href="/blog/envoy_opa_8_logs_and_taps/">Configuring Envoy Logs and Taps</a></h2>
@@ -211,7 +219,52 @@
   </div>
 </header>
 
+    <section id="socnet-share">
+      
+
+
+
+
   
+    
+    <a href="//twitter.com/share?text=Configuring%20Envoy%20Logs%20and%20Taps&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f&amp;title=Configuring%20Envoy%20Logs%20and%20Taps" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f&amp;title=Configuring%20Envoy%20Logs%20and%20Taps" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f&amp;description=Configuring%20Envoy%20Logs%20and%20Taps" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_8_logs_and_taps%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </section>
+    
   <a href="/blog/envoy_opa_8_logs_and_taps/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" alt="">
@@ -219,11 +272,30 @@
   </a>
 
 
-  
-  <p><span>Photo by <a href="https://unsplash.com/@kazukyakayashi?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Kazuky Akayashi</a> on <a href="https://unsplash.com/@kazukyakayashi?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></span></p>
-  <footer>
-    <a href="/blog/envoy_opa_8_logs_and_taps/" class="button big">Read more</a>
-    <ul class="stats">
+    <div class="content">
+      <p><span>Photo by <a href="https://unsplash.com/@kazukyakayashi?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Kazuky Akayashi</a> on <a href="https://unsplash.com/@kazukyakayashi?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
+<h1 id="getting-started-with-envoy--open-policy-agent-----08----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 08 &mdash;</h1>
+<h2 id="learn-how-to-configure-envoys-access-logs-and-taps-for-capturing-full-requests--responses">Learn how to configure Envoy&rsquo;s access logs and taps for capturing full requests &amp; responses</h2>
+<p>This is the 7th Envoy &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
+<p>The source code for this getting started example is located on Github. <span style="color:blue"> &mdash;&mdash;&gt;  <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/08_log_config_taps">Envoy &amp; OPA GS # 8</a> </span></p>
+<p>Here is a list of the Getting Started Guides that are currently available.</p>
+<h2 id="getting-started-guides">Getting Started Guides</h2>
+<ol>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_and_taps/" title="Learn how to configure Envoy's access logs and taps for capturing full requests &amp; responses">Configuring Envoy Logs and Taps</a></span></li>
+</ol>
+<h1 id="draft-article-that-is-under-construction">Draft Article that is Under construction</h1>
+<h2 id="introduction">Introduction</h2>
+
+    </div>
+    <footer>
+      <ul class="stats">
   <li class="categories">
     <ul>
     
@@ -258,228 +330,13 @@
   </li>
 </ul>
 
-  </footer>
-</article>
-
+    </footer>
+  </article>
   
-    <article class="post">
-  <header>
-  <div class="title">
-    
-      <h2><a href="/blog/envoy_opa_7_app_contracts/">Putting It All Together with Composite Authorization</a></h2>
-    
-    
-      <p>Learn how to Implement Application Specific Authorization Rules</p>
-    
-  </div>
-  <div class="meta">
-    <time class="published" datetime="2020-09-07 22:37:37 -0400 EDT">
-      September 7, 2020
-    </time>
-    <span class="author">Helpful Badger</span>
-    
-      <p>18 minute read</p>
-    
-  </div>
-</header>
 
+  <div class="pagination">
   
-  <a href="/blog/envoy_opa_7_app_contracts/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg" alt="">
-    
-  </a>
-
-
-  
-  <p><span>Photo by <a href="https://unsplash.com/@thombradley?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Thom Bradley</a> on <a href="https://unsplash.com/s/photos/ios-app?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></span></p>
-  <footer>
-    <a href="/blog/envoy_opa_7_app_contracts/" class="button big">Read more</a>
-    <ul class="stats">
-  <li class="categories">
-    <ul>
-    
-      
-        
-          <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
-        
-          <li><a class="article-terms-link" href="/categories/security/">Security</a></li>
-        
-          <li><a class="article-terms-link" href="/categories/authentication/">Authentication</a></li>
-        
-      
-    
-    </ul>
-  </li>
-  <li class="tags">
-    <ul>
-    
-      
-        
-          <li><a class="article-terms-link" href="/tags/opa/">OPA</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/open-policy-agent/">Open Policy Agent</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/jws/">JWS</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/signatures/">Signatures</a></li>
-        
-      
-    
-    </ul>
-  </li>
-</ul>
-
-  </footer>
-</article>
-
-  
-    <article class="post">
-  <header>
-  <div class="title">
-    
-      <h2><a href="/blog/envoy_opa_6_envoy_jws/">JWS Signature Validation with Envoy</a></h2>
-    
-    
-      <p>Learn how to validate JWS signatures natively with Envoy</p>
-    
-  </div>
-  <div class="meta">
-    <time class="published" datetime="2020-09-07 20:58:25 -0400 EDT">
-      September 7, 2020
-    </time>
-    <span class="author">Helpful Badger</span>
-    
-      <p>4 minute read</p>
-    
-  </div>
-</header>
-
-  
-  <a href="/blog/envoy_opa_6_envoy_jws/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg" alt="">
-    
-  </a>
-
-
-  
-  <p><span>Photo by <a href="https://unsplash.com/@cytonn_photography?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Cytonn Photography</a> on <a href="https://unsplash.com/s/photos/signature?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></span></p>
-  <footer>
-    <a href="/blog/envoy_opa_6_envoy_jws/" class="button big">Read more</a>
-    <ul class="stats">
-  <li class="categories">
-    <ul>
-    
-      
-        
-          <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
-        
-          <li><a class="article-terms-link" href="/categories/security/">Security</a></li>
-        
-          <li><a class="article-terms-link" href="/categories/authentication/">Authentication</a></li>
-        
-      
-    
-    </ul>
-  </li>
-  <li class="tags">
-    <ul>
-    
-      
-        
-          <li><a class="article-terms-link" href="/tags/opa/">OPA</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/open-policy-agent/">Open Policy Agent</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/jws/">JWS</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/signatures/">Signatures</a></li>
-        
-      
-    
-    </ul>
-  </li>
-</ul>
-
-  </footer>
-</article>
-
-  
-    <article class="post">
-  <header>
-  <div class="title">
-    
-      <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
-    
-    
-      <p>Learn how to validate JWS signatures with Open Policy Agent</p>
-    
-  </div>
-  <div class="meta">
-    <time class="published" datetime="2020-09-07 12:10:17 -0400 EDT">
-      September 7, 2020
-    </time>
-    <span class="author">Helpful Badger</span>
-    
-      <p>9 minute read</p>
-    
-  </div>
-</header>
-
-  
-  <a href="/blog/envoy_opa_5_opa_jws/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-XQaqV5qYcXg-unsplash.jpg" alt="">
-    
-  </a>
-
-
-  
-  <p><span>Photo by <a href="https://unsplash.com/@skillscouter?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">SkillScouter</a> on <a href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></span></p>
-  <footer>
-    <a href="/blog/envoy_opa_5_opa_jws/" class="button big">Read more</a>
-    <ul class="stats">
-  <li class="categories">
-    <ul>
-    
-      
-        
-          <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
-        
-          <li><a class="article-terms-link" href="/categories/security/">Security</a></li>
-        
-          <li><a class="article-terms-link" href="/categories/authentication/">Authentication</a></li>
-        
-      
-    
-    </ul>
-  </li>
-  <li class="tags">
-    <ul>
-    
-      
-        
-          <li><a class="article-terms-link" href="/tags/opa/">OPA</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/open-policy-agent/">Open Policy Agent</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/jws/">JWS</a></li>
-        
-          <li><a class="article-terms-link" href="/tags/signatures/">Signatures</a></li>
-        
-      
-    
-    </ul>
-  </li>
-</ul>
-
-  </footer>
-</article>
-
-  
-  
-<div class="pagination">
+    <a href="/blog/envoy_opa_7_app_contracts/" class="button"><div class="previous"><div>Putting It All Together with Composite Authorization</div></div></a>
   
   
 </div>
@@ -645,8 +502,6 @@
   
       <ul class="socnet-icons">
         
-    <li><a href="/tags/jws/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fas fa-rss"></a></li>
-
 
         <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
 
