@@ -12,13 +12,13 @@
     
     
     <item>
-      <title>Configuring Envoy Logs and Taps</title>
-      <link>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_and_taps/</link>
+      <title>Configuring Envoy Logs, Taps and Traces</title>
+      <link>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/</link>
       <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
       
-      <guid>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_and_taps/</guid>
+      <guid>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/</guid>
       <description>Photo by Kazuky Akayashi on Unsplash
-Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 08 &amp;mdash; Learn how to configure Envoy&amp;rsquo;s access logs and taps for capturing full requests &amp;amp; responses This is the 7th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 08 &amp;mdash; Learn how to configure Envoy&amp;rsquo;s access logs, taps for capturing full requests &amp;amp; responses and traces for capturing end to end flow This is the 8th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
     </item>
     
     <item>

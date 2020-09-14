@@ -12,9 +12,45 @@
     
     
     <item>
+      <title>Envoy</title>
+      <link>https://helpfulbadger.github.io/tags/envoy/</link>
+      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/tags/envoy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>logs</title>
+      <link>https://helpfulbadger.github.io/tags/logs/</link>
+      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/tags/logs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>taps</title>
+      <link>https://helpfulbadger.github.io/tags/taps/</link>
+      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/tags/taps/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>traces</title>
+      <link>https://helpfulbadger.github.io/tags/traces/</link>
+      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/tags/traces/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>JWS</title>
       <link>https://helpfulbadger.github.io/tags/jws/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      <pubDate>Mon, 07 Sep 2020 22:37:37 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/tags/jws/</guid>
       <description></description>
@@ -23,7 +59,7 @@
     <item>
       <title>OPA</title>
       <link>https://helpfulbadger.github.io/tags/opa/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      <pubDate>Mon, 07 Sep 2020 22:37:37 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/tags/opa/</guid>
       <description></description>
@@ -32,7 +68,7 @@
     <item>
       <title>Open Policy Agent</title>
       <link>https://helpfulbadger.github.io/tags/open-policy-agent/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      <pubDate>Mon, 07 Sep 2020 22:37:37 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/tags/open-policy-agent/</guid>
       <description></description>
@@ -41,18 +77,9 @@
     <item>
       <title>Signatures</title>
       <link>https://helpfulbadger.github.io/tags/signatures/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      <pubDate>Mon, 07 Sep 2020 22:37:37 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/tags/signatures/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Envoy</title>
-      <link>https://helpfulbadger.github.io/tags/envoy/</link>
-      <pubDate>Tue, 01 Sep 2020 17:34:13 -0400</pubDate>
-      
-      <guid>https://helpfulbadger.github.io/tags/envoy/</guid>
       <description></description>
     </item>
     

@@ -12,15 +12,6 @@
     
     
     <item>
-      <title>Authentication</title>
-      <link>https://helpfulbadger.github.io/categories/authentication/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
-      
-      <guid>https://helpfulbadger.github.io/categories/authentication/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>cloud</title>
       <link>https://helpfulbadger.github.io/categories/cloud/</link>
       <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
@@ -30,18 +21,9 @@
     </item>
     
     <item>
-      <title>Security</title>
-      <link>https://helpfulbadger.github.io/categories/security/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
-      
-      <guid>https://helpfulbadger.github.io/categories/security/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Observability</title>
       <link>https://helpfulbadger.github.io/categories/observability/</link>
-      <pubDate>Tue, 01 Sep 2020 17:34:13 -0400</pubDate>
+      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/categories/observability/</guid>
       <description></description>
@@ -50,9 +32,27 @@
     <item>
       <title>service mesh</title>
       <link>https://helpfulbadger.github.io/categories/service-mesh/</link>
-      <pubDate>Tue, 01 Sep 2020 17:34:13 -0400</pubDate>
+      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/categories/service-mesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Authentication</title>
+      <link>https://helpfulbadger.github.io/categories/authentication/</link>
+      <pubDate>Mon, 07 Sep 2020 22:37:37 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/categories/authentication/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security</title>
+      <link>https://helpfulbadger.github.io/categories/security/</link>
+      <pubDate>Mon, 07 Sep 2020 22:37:37 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/categories/security/</guid>
       <description></description>
     </item>
     

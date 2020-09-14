@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to Implement Application Specific Authorization Rules">
 <meta itemprop="datePublished" content="2020-09-07T22:37:37-04:00" />
 <meta itemprop="dateModified" content="2020-09-07T22:37:37-04:00" />
-<meta itemprop="wordCount" content="3623">
+<meta itemprop="wordCount" content="3732">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg">
 
 
@@ -288,6 +288,7 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
 </ol>
 <h2 id="introduction">Introduction</h2>
 <p>In this example we are going to simulate an ecommerce company called <code>Example.com</code> that has a published set of APIs and multiple client applications. Each client application has:</p>
@@ -410,69 +411,67 @@
                             inline_string: "{\"keys\":[...]}" 
 </code></pre>
 <p>To pass this data to Open Policy Agent, in the <code>envoy.filters.http.ext_authz</code> section, add the array named <code>metadata_context_namespaces</code>. This array specifies the names of the Envoy dynamic metadata namespaces to forward to the OPA Authorization Service. See the configuration change highlighted in blue below.</p>
-<pre><code>                  - name: envoy.filters.http.ext_authz
-                    typed_config:
-                      "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
-                      failure_mode_allow: false
-                      grpc_service:
-                        google_grpc:
-                          target_uri: opa:9191
-                          stat_prefix: ext_authz
-                        timeout: 0.5s
-                      include_peer_certificate: true
-                      <span style="color:blue"><strong>metadata_context_namespaces:
-                      - envoy.filters.http.jwt_authn</strong></span>
-                  - name: envoy.filters.http.router
-                    typed_config: {}
-</code></pre>
-<p>These changes add some data to the <code>metadata_context</code>. For each dynamic metadata namespace added, it will add it&rsquo;s data under a key that matches the namespace name in the <code>filter_metadata</code> object. For this example it adds each token&rsquo;s payload in the <code>envoy.filters.http.jwt_authn</code> object underneath the <code>fields</code> object. As you can see from the example below, it adds a lot of extra hierarchy via nested objects that express data types to the original object. So, it may not be worth it to have Envoy forward the validated payload. For us configuring Envoy to forward the token and simply reading the token payload directly is less complicated.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>                  - <span style="color:#00f">name</span>: envoy.filters.http.ext_authz
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                    <span style="color:#00f">typed_config</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>                      <span style="color:#00f">&#34;@type&#34;: </span>type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>                      <span style="color:#00f">failure_mode_allow</span>: <span style="color:#00f">false</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>                      <span style="color:#00f">grpc_service</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>                        <span style="color:#00f">google_grpc</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>                          <span style="color:#00f">target_uri</span>: opa:9191
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>                          <span style="color:#00f">stat_prefix</span>: ext_authz
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>                        <span style="color:#00f">timeout</span>: 0.5s
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>                      <span style="color:#00f">include_peer_certificate</span>: <span style="color:#00f">true</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span style="color:#009c00">&gt;                      metadata_context_namespaces:</span>
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span style="color:#009c00">&gt;                      - envoy.filters.http.jwt_authn</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                  - <span style="color:#00f">name</span>: envoy.filters.http.router
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                    <span style="color:#00f">typed_config</span>: {}
+</code></pre></div><p>These changes add some data to the <code>metadata_context</code>. For each dynamic metadata namespace added, it will add it&rsquo;s data under a key that matches the namespace name in the <code>filter_metadata</code> object. For this example it adds each token&rsquo;s payload in the <code>envoy.filters.http.jwt_authn</code> object underneath the <code>fields</code> object. As you can see from the example below, it adds a lot of extra hierarchy via nested objects that express data types to the original object. So, it may not be worth it to have Envoy forward the validated payload. For us configuring Envoy to forward the token and simply reading the token payload directly is less complicated.</p>
 <p>See the resultant <code>metadata_context</code> below for an example.</p>
-<pre><code>  "input": {
-    "attributes": {
-      "destination": { "...":"..." },
-      "metadata_context": {
-        <span style="color:blue"><strong>"filter_metadata": {
-          "envoy.filters.http.jwt_authn": {
-            "fields": {
-              "workforce_provider": {
-                "Kind": {
-                  "StructValue": {
-                    "fields": {
-                      "aud": {
-                        "Kind": {
-                          "ListValue": {
-                            "values": [
-                              { "Kind": { "StringValue": "apigateway.example.com"} },
-                              { "Kind": { "StringValue": "protected-stuff.example.com" } }
-                            ]
-                          }
-                        }
-                      },
-                      "auth_time": { "Kind": { "NumberValue": 1597676718 } },
-                      "azp": { "Kind": { "StringValue": "app_123456" } },
-                      "exp": { "Kind": { "NumberValue": 2735689600 } },
-                      "iat": { "Kind": { "NumberValue": 1597676718 } },
-                      "iss": { "Kind": { "StringValue": "workforceIdentity.example.com" } },
-                      "jti": { "Kind": { "StringValue": "mPPdwJ7Jrr2MQzS" } },
-                      "sub": { "Kind": { "StringValue": "workforceIdentity:406319" } }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }</strong></span>
-      },
-      "request": {"...": "..."},
-      "source":  {"...": "..."}
-    },
-    "parsed_body": null,
-    "parsed_path": ["..."],
-    "parsed_query": {},
-    "truncated_body": false
-  }
-</code></pre>
-<h3 id="authorization-stage-2---open-policy-agent-policies">Authorization Stage 2 - Open Policy Agent Policies</h3>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>  <span style="color:#00f">&#34;input&#34;: </span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#00f">&#34;attributes&#34;: </span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>      <span style="color:#00f">&#34;destination&#34;: </span>{ <span style="color:#009c00">&#34;...&#34;</span>:<span style="color:#009c00">&#34;...&#34;</span> },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>      <span style="color:#00f">&#34;metadata_context&#34;: </span>{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span style="color:#009c00">&gt;        &#34;filter_metadata&#34;: {</span>
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>          <span style="color:#00f">&#34;envoy.filters.http.jwt_authn&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>            <span style="color:#00f">&#34;fields&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>              <span style="color:#00f">&#34;workforce_provider&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>                <span style="color:#00f">&#34;Kind&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>                  <span style="color:#00f">&#34;StructValue&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>                    <span style="color:#00f">&#34;fields&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>                      <span style="color:#00f">&#34;aud&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                        <span style="color:#00f">&#34;Kind&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                          <span style="color:#00f">&#34;ListValue&#34;: </span>{
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>                            <span style="color:#00f">&#34;values&#34;: </span>[
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>                              { <span style="color:#00f">&#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;apigateway.example.com&#34;</span>} },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>                              { <span style="color:#00f">&#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;protected-stuff.example.com&#34;</span> } }
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>                            ]
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>                          }
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>                        }
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>                      },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>                      <span style="color:#00f">&#34;auth_time&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>1597676718 } },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>                      <span style="color:#00f">&#34;azp&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;app_123456&#34;</span> } },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>                      <span style="color:#00f">&#34;exp&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>2735689600 } },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>                      <span style="color:#00f">&#34;iat&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>1597676718 } },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>                      <span style="color:#00f">&#34;iss&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;workforceIdentity.example.com&#34;</span> } },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span>                      <span style="color:#00f">&#34;jti&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;mPPdwJ7Jrr2MQzS&#34;</span> } },
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>                      <span style="color:#00f">&#34;sub&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;workforceIdentity:406319&#34;</span> } }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>                    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>                  }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span>                }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span>              }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span>            }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span>          }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span>        }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span>      },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span>      <span style="color:#00f">&#34;request&#34;: {&#34;...&#34;: </span><span style="color:#009c00">&#34;...&#34;</span>},
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span>      <span style="color:#00f">&#34;source&#34;:  {&#34;...&#34;: </span><span style="color:#009c00">&#34;...&#34;</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>    },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span>    <span style="color:#00f">&#34;parsed_body&#34;: </span><span style="color:#00f">null</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span>    <span style="color:#00f">&#34;parsed_path&#34;: </span>[<span style="color:#009c00">&#34;...&#34;</span>],
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>    <span style="color:#00f">&#34;parsed_query&#34;: </span>{},
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span>    <span style="color:#00f">&#34;truncated_body&#34;: </span><span style="color:#00f">false</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span>  }
+</code></pre></div><h3 id="authorization-stage-2---open-policy-agent-policies">Authorization Stage 2 - Open Policy Agent Policies</h3>
 <h4 id="extracting-the-jws-token-payloads">Extracting the JWS Token Payloads</h4>
 <p>Since we also have the configuration setting <code>forward: true</code>, we can simply use OPA&rsquo;s built in capabilities to more easily access the data that we need from the tokens.</p>
 <ul>
@@ -559,25 +558,24 @@ decision {
 <li>The same is true for the second messages rule block.</li>
 <li>This section will result in a messages array that has either 0, 1 or 2 elements.</li>
 </ul>
-<pre><code>messages[ msg ]{
-  <span style="color:blue"><strong>not apiPermittedForClient</strong></span>
-  msg := {
-    "id"  : "1",
-    "priority"  : "5",
-    "message" : "The requested API Endpoint is not permitted for the client application"
-  }
-}
-
-messages[ msg ]{
-  <span style="color:red"><strong>not userTypeAppropriateForClient</strong></span>
-  msg := {
-    "id"  : "2",
-    "priority"  : "5",
-    "message" : "The authenticated user type is not allowed for the client application"
-  }
-}
-</code></pre>
-<h4 id="now-lets-return-the-results-to-envoy">Now let&rsquo;s return the results to Envoy</h4>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>messages[ msg ]{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  not apiPermittedForClient
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  msg := {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#009c00">&#34;id&#34;</span>  : <span style="color:#009c00">&#34;1&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#009c00">&#34;priority&#34;</span>  : <span style="color:#009c00">&#34;5&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#009c00">&#34;message&#34;</span> : <span style="color:#009c00">&#34;The requested API Endpoint is not permitted for the client application&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>  }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>messages[ msg ]{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>  not userTypeAppropriateForClient
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>  msg := {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>    <span style="color:#009c00">&#34;id&#34;</span>  : <span style="color:#009c00">&#34;2&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>    <span style="color:#009c00">&#34;priority&#34;</span>  : <span style="color:#009c00">&#34;5&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>    <span style="color:#009c00">&#34;message&#34;</span> : <span style="color:#009c00">&#34;The authenticated user type is not allowed for the client application&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>  }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>}
+</code></pre></div><h4 id="now-lets-return-the-results-to-envoy">Now let&rsquo;s return the results to Envoy</h4>
 <p>Envoy is looking for results of the <code>allow</code> rule. The structure of our response is defined by the Envoy external authorization API contract. OPA is also a little bit finicky when assigning values. So we were very careful to make sure that there was no way that any of the variables in this section could end up as undefined. If anything is undefined in the object that we are trying to return, then this rule will fail and the entire result returned to Envoy will be undefined.</p>
 <ul>
 <li>Since we have setup a default value for the decision variable, it will always be either true or false</li>
@@ -586,27 +584,26 @@ messages[ msg ]{
 <li>The body value must also be a string. So, we can&rsquo;t return any of the other mock data that we have here as an object. So first we declare it as an anonymous object then immediately pass it to the json marshaller. This will return a string. The json marshaller should be able to handle any numeric, null or undefined values for us and always return a string.</li>
 <li>With these guarantees, we can be confident that this block will always return a defined result to Envoy</li>
 </ul>
-<pre><code>allow = response {
-  response := {
-    "allowed": <span style="color:blue"><strong>decision</strong></span>,
-    "headers": {
-      "X-Authenticated-User": "true", 
-      "X-Authenticated-App": "true",
-      "Endpoint-ID": endpointID,
-      "Content-Type": "application/json"
-    },
-    "body" : <span style="color:blue"><strong>json.marshal</strong></span>(
-                      {
-                        "Authorized-User-Type": userTypeAppropriateForClient,
-                        "Authorized-Endpoint": apiPermittedForClient,
-                        "Authorization-Failures" : messages,
-                        "Requested-Path": http_request.path,
-                        "Requested-Method": http_request.method
-                      })
-  }
-} 
-</code></pre>
-<p>With that explanation behind us, you can <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/policy.rego">read through the entire policy in context on github</a></span>.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>allow = response {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  response := {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#009c00">&#34;allowed&#34;</span>: decision,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#009c00">&#34;headers&#34;</span>: {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>      <span style="color:#009c00">&#34;X-Authenticated-User&#34;</span>: <span style="color:#009c00">&#34;true&#34;</span>, 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>      <span style="color:#009c00">&#34;X-Authenticated-App&#34;</span>: <span style="color:#009c00">&#34;true&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>      <span style="color:#009c00">&#34;Endpoint-ID&#34;</span>: endpointID,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>      <span style="color:#009c00">&#34;Content-Type&#34;</span>: <span style="color:#009c00">&#34;application/json&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    },
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#009c00">&#34;body&#34;</span> : json.<span style="color:#c34e00">marshal</span>(
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>                      {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>                        <span style="color:#009c00">&#34;Authorized-User-Type&#34;</span>: userTypeAppropriateForClient,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                        <span style="color:#009c00">&#34;Authorized-Endpoint&#34;</span>: apiPermittedForClient,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                        <span style="color:#009c00">&#34;Authorization-Failures&#34;</span> : messages,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>                        <span style="color:#009c00">&#34;Requested-Path&#34;</span>: http_request.path,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>                        <span style="color:#009c00">&#34;Requested-Method&#34;</span>: http_request.method
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>                      })
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>  }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>} 
+</code></pre></div><p>With that explanation behind us, you can <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/policy.rego">read through the entire policy in context on github</a></span>.</p>
 <h2 id="running-our-example-through-its-paces">Running our Example Through Its Paces</h2>
 <p>We use Postman and Newman to setup the tests for this getting started guide. There are some great tutorials on the Postman site that describe how to write test scripts.</p>
 <ol>
@@ -626,18 +623,16 @@ messages[ msg ]{
 We have created folder level scripts to set up data for our templates.</p>
 <p><strong>Folder level Pre-Request Script</strong></p>
 <p>The pre-request script simply sets the templated values for the request port and JWS tokens for the User and application. These statically defined values use the &ldquo;super app&rdquo; that has permission for all endpoints. The postman library provides the <code>pm.environment.set</code> command to set values in our template.</p>
-<pre><code><span style="color:blue"><strong>pm.environment.set</strong></span>("port", "8080");
-<span style="color:blue"><strong>pm.environment.set</strong></span>("ActorToken", "...")
-<span style="color:blue"><strong>pm.environment.set</strong></span>("AppToken", "...");
-</code></pre>
-<p><strong>Folder level Test Script</strong></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>pm.environment.set(<span style="color:#009c00">&#34;port&#34;</span>, <span style="color:#009c00">&#34;8080&#34;</span>);
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>pm.environment.set(<span style="color:#009c00">&#34;ActorToken&#34;</span>, <span style="color:#009c00">&#34;...&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>pm.environment.set(<span style="color:#009c00">&#34;AppToken&#34;</span>, <span style="color:#009c00">&#34;...&#34;</span>);
+</code></pre></div><p><strong>Folder level Test Script</strong></p>
 <p>The test script simply checks for a successful response.</p>
-<pre><code><span style="color:blue"><strong>pm.test</strong></span>("response should be okay", function () {
-      <span style="color:blue"><strong>pm.response.to.be.success</strong></span>;
-      <span style="color:blue"><strong>pm.response.to.not.be.error</strong></span>;
-});
-</code></pre>
-<h3 id="iteration-data-based-tests">Iteration Data Based Tests</h3>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>pm.test(<span style="color:#009c00">&#34;response should be okay&#34;</span>, <span style="color:#00f">function</span> () {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>      pm.response.to.be.success;
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>      pm.response.to.not.be.error;
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>});
+</code></pre></div><h3 id="iteration-data-based-tests">Iteration Data Based Tests</h3>
 <p>Postman / Newman loads each record in the array in our test data file into the template variables in our Postman collection. Each record has the following properties:</p>
 <ul>
 <li>Test case ID</li>
@@ -652,27 +647,27 @@ We have created folder level scripts to set up data for our templates.</p>
 <li>The expected result</li>
 </ul>
 <p>An example is shown below.</p>
-<pre><code>  {
-    <span style="color:blue"><strong>"id"</strong></span>: "001",
-    <span style="color:blue"><strong>"App"</strong></span>: "app_000123",
-    <span style="color:blue"><strong>"ActorToken"</strong></span>: "...",
-    <span style="color:blue"><strong>"AppToken"</strong></span>: "...",
-    <span style="color:blue"><strong>"host"</strong></span>: "localhost",
-    <span style="color:blue"><strong>"port"</strong></span>: "8080",
-    <span style="color:blue"><strong>"method"</strong></span>: "GET",
-    <span style="color:blue"><strong>"uri"</strong></span>: "/api/customer",
-    <span style="color:blue"><strong>"pattern"</strong></span>: "/api/customer",
-    <span style="color:blue"><strong>"expect"</strong></span>: 200
-  }
-</code></pre>
-<p>The post execution test only needs one piece of data from the record for our completion test. That is the <code>expect</code> value from the record. We get that using the <code>pm.iterationData.get</code> command.</p>
-<pre><code><span style="color:blue"><strong>var</strong></span> expect = <span style="color:blue"><strong>pm.iterationData.get</strong></span>("expect")
-
-<span style="color:blue"><strong>pm.test</strong></span>("GET response have return status: " + expect, function () {
-      <span style="color:blue"><strong>pm.response.to.have.status</strong></span>( <span style="color:blue"><strong>Number</strong></span>( expect) )
-});
-</code></pre>
-<p>There are 4 sets of templates and data files. You can run them all to test our permissions with the following command <pre><code>./demonstrate_user_and_api_contracts.sh </code></pre> in the example&rsquo;s based directory <code>07_opa_validate_method_uri</code>.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  &#34;id&#34;: <span style="color:#009c00">&#34;001&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  &#34;App&#34;: <span style="color:#009c00">&#34;app_000123&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>  &#34;ActorToken&#34;: <span style="color:#009c00">&#34;...&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>  &#34;AppToken&#34;: <span style="color:#009c00">&#34;...&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>  &#34;host&#34;: <span style="color:#009c00">&#34;localhost&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>  &#34;port&#34;: <span style="color:#009c00">&#34;8080&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>  &#34;method&#34;: <span style="color:#009c00">&#34;GET&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>  &#34;uri&#34;: <span style="color:#009c00">&#34;/api/customer&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>  &#34;pattern&#34;: <span style="color:#009c00">&#34;/api/customer&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>  &#34;expect&#34;: 200
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>}
+</code></pre></div><p>The post execution test only needs one piece of data from the record for our completion test. That is the <code>expect</code> value from the record. We get that using the <code>pm.iterationData.get</code> command.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#00f">var</span> expect = pm.iterationData.get(<span style="color:#009c00">&#34;expect&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>pm.test(<span style="color:#009c00">&#34;GET response have return status: &#34;</span> + expect, <span style="color:#00f">function</span> () {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>      pm.response.to.have.status( Number( expect) )
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>});
+</code></pre></div><p>There are 4 sets of templates and data files. You can run them all to test our permissions with the following command &hellip;</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">./demonstrate_user_and_api_contracts.sh
+</code></pre></div><p>&hellip;in the example&rsquo;s based directory <code>07_opa_validate_method_uri</code>.</p>
 <h1 id="congratulations">Congratulations</h1>
 <p>We have just completed our first semi-realistic example. In future lessons we will layer on more features and refactor this example to show a more realistic deployment.</p>
 
@@ -722,7 +717,7 @@ We have created folder level scripts to set up data for our templates.</p>
     <a href="/blog/envoy_opa_6_envoy_jws/" class="button"><div class="previous"><div>JWS Signature Validation with Envoy</div></div></a>
   
   
-    <a href="/blog/envoy_opa_8_logs_and_taps/" class="button"><div class="next"><div>Configuring Envoy Logs and Taps</div></div></a>
+    <a href="/blog/envoy_opa_8_logs_taps_and_traces/" class="button"><div class="next"><div>Configuring Envoy Logs, Taps and Traces</div></div></a>
   
 </div>
 
@@ -738,7 +733,7 @@ We have created folder level scripts to set up data for our templates.</p>
       <article class="mini-post">
         <section>
           
-  <a href="/blog/envoy_opa_8_logs_and_taps/" class="image featured">
+  <a href="/blog/envoy_opa_8_logs_taps_and_traces/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" alt="">
     
@@ -747,7 +742,7 @@ We have created folder level scripts to set up data for our templates.</p>
 
         </section>
         <header>
-          <h2><a href="/blog/envoy_opa_8_logs_and_taps/">Configuring Envoy Logs and Taps</a></h2>
+          <h2><a href="/blog/envoy_opa_8_logs_taps_and_traces/">Configuring Envoy Logs, Taps and Traces</a></h2>
           <time class="published" datetime="">September 10, 2020</time>
         </header>
       </article>
@@ -846,22 +841,22 @@ We have created folder level scripts to set up data for our templates.</p>
           
           <li>
             
-              <a href="/categories/security/">security<span class="count">6</span></a>
+              <a href="/categories/security/">security<span class="count">5</span></a>
             
           
           <li>
             
-              <a href="/categories/authentication/">authentication<span class="count">4</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">4</span></a>
             
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">3</span></a>
+              <a href="/categories/authentication/">authentication<span class="count">3</span></a>
             
           
           <li>
             
-              <a href="/categories/observability/">observability<span class="count">2</span></a>
+              <a href="/categories/observability/">observability<span class="count">3</span></a>
             
           
           </li>

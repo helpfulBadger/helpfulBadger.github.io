@@ -6,20 +6,10 @@
     <description>Recent content in Open Policy Agent on Helpful Badger&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 10 Sep 2020 10:36:36 -0400</lastBuildDate>
+    <lastBuildDate>Mon, 07 Sep 2020 22:37:37 -0400</lastBuildDate>
     
 	<atom:link href="https://helpfulbadger.github.io/tags/open-policy-agent/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Configuring Envoy Logs and Taps</title>
-      <link>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_and_taps/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
-      
-      <guid>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_and_taps/</guid>
-      <description>Photo by Kazuky Akayashi on Unsplash
-Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 08 &amp;mdash; Learn how to configure Envoy&amp;rsquo;s access logs and taps for capturing full requests &amp;amp; responses This is the 7th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
-    </item>
     
     <item>
       <title>Putting It All Together with Composite Authorization</title>

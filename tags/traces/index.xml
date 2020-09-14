@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>traces on Helpful Badger&#39;s Blog</title>
+    <link>https://helpfulbadger.github.io/tags/traces/</link>
+    <description>Recent content in traces on Helpful Badger&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 10 Sep 2020 10:36:36 -0400</lastBuildDate>
+    
+	<atom:link href="https://helpfulbadger.github.io/tags/traces/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Configuring Envoy Logs, Taps and Traces</title>
+      <link>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/</link>
+      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/</guid>
+      <description>Photo by Kazuky Akayashi on Unsplash
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 08 &amp;mdash; Learn how to configure Envoy&amp;rsquo;s access logs, taps for capturing full requests &amp;amp; responses and traces for capturing end to end flow This is the 8th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
+    </item>
+    
+  </channel>
+</rss>

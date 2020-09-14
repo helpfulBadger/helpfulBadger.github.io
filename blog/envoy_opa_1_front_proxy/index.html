@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to set up Envoy as a front proxy with docker">
 <meta itemprop="datePublished" content="2020-08-31T13:27:14-04:00" />
 <meta itemprop="dateModified" content="2020-08-31T13:27:14-04:00" />
-<meta itemprop="wordCount" content="1592">
+<meta itemprop="wordCount" content="1598">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/mattia-serrani-HgUAqCGN9-o-unsplash.jpg">
 
 
@@ -288,6 +288,7 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
 </ol>
 <h2 id="overview">Overview</h2>
 <p><span style="color:blue"><a href="https://www.envoyproxy.io/">Envoy</a></span> is an open source edge and service proxy that has become extremely popular as the backbone underneath most of the leading service mesh products (both open source and commercial). This article is intended to demystify it a bit and help people understand how to use it on it&rsquo;s own in a minimalist fashion.</p>
@@ -340,7 +341,7 @@ The diagram above shows the sidecar approach.</p>
 <p>You should see something like this if you successfully called HTTPBin through Envoy:</p>
 <p><img class="special-img-class" src="/img/2020/08/01_Curl_Response.png" /></p>
 <h1 id="congratulations">Congratulations</h1>
-<p>Congratulations, you have successully stood up your first Envoy instance and configured it to forward traffic! This is the simplest possible Envoy configuration :)  We don&rsquo;t have any security yet or any other features that Envoy is famous for. We will get to that in future articles. Feel free to use <span style="color:blue"><a href="https://www.postman.com/">postman</a></span> to explore other requests that you can send. Additionally, don&rsquo;t forget to explore Envoy&rsquo;s admin console by pointing your web browser to <span style="color:blue"><a href="http://localhost:8001">http://localhost:8001</a></span></p>
+<p>Congratulations, you have successfully stood up your first Envoy instance and configured it to forward traffic! This is the simplest possible Envoy configuration :)  We don&rsquo;t have any security yet or any other features that Envoy is famous for. We will get to that in future articles. Feel free to use <span style="color:blue"><a href="https://www.postman.com/">postman</a></span> to explore other requests that you can send. Additionally, don&rsquo;t forget to explore Envoy&rsquo;s admin console by pointing your web browser to <span style="color:blue"><a href="http://localhost:8001">http://localhost:8001</a></span></p>
 
     </div>
     <footer>
@@ -396,7 +397,7 @@ The diagram above shows the sidecar approach.</p>
       <article class="mini-post">
         <section>
           
-  <a href="/blog/envoy_opa_8_logs_and_taps/" class="image featured">
+  <a href="/blog/envoy_opa_8_logs_taps_and_traces/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" alt="">
     
@@ -405,7 +406,7 @@ The diagram above shows the sidecar approach.</p>
 
         </section>
         <header>
-          <h2><a href="/blog/envoy_opa_8_logs_and_taps/">Configuring Envoy Logs and Taps</a></h2>
+          <h2><a href="/blog/envoy_opa_8_logs_taps_and_traces/">Configuring Envoy Logs, Taps and Traces</a></h2>
           <time class="published" datetime="">September 10, 2020</time>
         </header>
       </article>
@@ -504,22 +505,22 @@ The diagram above shows the sidecar approach.</p>
           
           <li>
             
-              <a href="/categories/security/">security<span class="count">6</span></a>
+              <a href="/categories/security/">security<span class="count">5</span></a>
             
           
           <li>
             
-              <a href="/categories/authentication/">authentication<span class="count">4</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">4</span></a>
             
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">3</span></a>
+              <a href="/categories/authentication/">authentication<span class="count">3</span></a>
             
           
           <li>
             
-              <a href="/categories/observability/">observability<span class="count">2</span></a>
+              <a href="/categories/observability/">observability<span class="count">3</span></a>
             
           
           </li>
