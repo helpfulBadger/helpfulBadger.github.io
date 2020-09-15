@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to configure Envoy&#39;s access logs, taps for capturing full requests &amp; responses and traces">
 <meta itemprop="datePublished" content="2020-09-10T10:36:36-04:00" />
 <meta itemprop="dateModified" content="2020-09-10T10:36:36-04:00" />
-<meta itemprop="wordCount" content="1161">
+<meta itemprop="wordCount" content="2175">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg">
 
 
@@ -214,7 +214,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>6 minute read</p>
+      <p>11 minute read</p>
     
   </div>
 </header>
@@ -290,7 +290,6 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs, taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
 </ol>
-<h1 id="draft-article-that-is-under-construction">Draft Article that is Under construction</h1>
 <h2 id="introduction">Introduction</h2>
 <p>In this example we are going to use both a Front Proxy deployment and a service mesh deployment to centralize log configuration, capture full requests and responses with taps and to inject trace information. Logs and taps can be done transparently without the knowledge nor cooperation from our applications. However, for traces there cooperation from our app is required to forward the trace headers to the next link in the chain.</p>
 <p>The diagram below shows what we will be building.</p>
@@ -315,9 +314,9 @@
 <li><span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/08_log_taps_traces/front-envoy-jaeger.yaml#L54-L119">Front Proxy&rsquo;s Configuration</a></span></li>
 <li><span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/08_log_taps_traces/service1-envoy-jaeger.yaml#L51-L116">Service 1&rsquo;s Envoy Configuration</a></span></li>
 <li><span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/08_log_taps_traces/service2-envoy-jaeger.yaml#L51-L116">Service 2&rsquo;s Envoy Configuration</a></span></li>
-<li>Elastic common schema was introduced to make it easier to analyze logs across applications. <span style="color:blue"><a href="https://www.elastic.co/blog/introducing-the-elastic-common-schema">This article on the elastic.co web site</a></span> is a good read and explains it in more detail.</li>
-<li>The <span style="color:blue"><a href="https://www.elastic.co/guide/en/ecs/current/index.html">reference for elastic common schema</a></span> provides names for many typical deployment environments, and cloud environments etc.</li>
 </ul>
+<p>Elastic common schema was introduced to make it easier to analyze logs across applications. <span style="color:blue"><a href="https://www.elastic.co/blog/introducing-the-elastic-common-schema">This article on the elastic.co web site</a></span> is a good read and explains it in more detail. The <span style="color:blue"><a href="https://www.elastic.co/guide/en/ecs/current/index.html">reference for elastic common schema</a></span> provides names for many typical deployment environments, and cloud environments etc.</p>
+<p>Below is the abbreviation envoy.yaml configuration that shows how to specify our logging configuration. The explanation of the configuration follows.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">static_resources</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#00f">listeners</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  ...
@@ -357,8 +356,8 @@
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span>                <span style="color:#00f">http.request.headers.x_b3_sampled</span>: <span style="color:#009c00">&#34;%REQ(X-B3-SAMPLED)%&#34;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span>                <span style="color:#00f">http.request.method</span>: <span style="color:#009c00">&#34;%REQ(:METHOD)%&#34;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>                <span style="color:#00f">http.response.body.bytes</span>: <span style="color:#009c00">&#34;%BYTES_SENT%&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span style="color:#009c00">&gt;                service.name: &#34;envoy&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span>                <span style="color:#00f">service.version</span>: <span style="color:#009c00">&#34;1.16&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span style="color:#009c00">&gt;                service.name: &#34;envoy&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span>                <span style="color:#00f">service.version</span>: <span style="color:#009c00">&#34;1.16&#34;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>                ...
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span>  <span style="color:#00f">clusters</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span><span style="color:#00f">admin</span>:
@@ -369,8 +368,8 @@
 <li>The <code>typed_json_format</code> property is what allows us to create logs in JSON Lines format</li>
 <li>Envoy gives us template strings to insert into the configuration that it will replace with the request specific values at run time. <code>client.address: &quot;%DOWNSTREAM_REMOTE_ADDRESS%&quot;</code>. In these examples, we have pretty much used every available template string. The client section of elastic common schema holds everything that we know about the client application that is originating the request. We use dot notation here since nested JSON support is not available in Envoy 1.15</li>
 <li>Elastic Common Schema does not have standard names for everything. So we created a section for unique Envoy properties <code>envoy.route.name: &quot;%ROUTE_NAME%&quot;</code></li>
-<li>The configuration language also has macros that enable us to do lookups. In this example we lookup the X-Request-Id header and put it in the http.request.headers.id field <code>http.request.headers.id: &quot;%REQ(X-REQUEST-ID)%&quot;</code></li>
-<li>We can also insert static values into the logs for hardcoding labels such as which service the log entry is for etc. <code>service.name: &quot;envoy&quot;</code></li>
+<li>The configuration language has macros that enable us to do lookups. In this example we lookup the X-Request-Id header and put it in the http.request.headers.id field <code>http.request.headers.id: &quot;%REQ(X-REQUEST-ID)%&quot;</code></li>
+<li>We can insert static values into the logs for hardcoding labels such as which service the log entry is for etc. <code>service.name: &quot;envoy&quot;</code></li>
 </ul>
 <h2 id="now-lets-tackle-taps">Now Let&rsquo;s Tackle Taps</h2>
 <p>Taps let us capture full requests and responses. More details are for <span style="color:blue"><a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/tap_filter">how the tap feature works</a></span> is located in the Envoy Documentation. There are 2 ways that we can capture taps:</p>
@@ -378,6 +377,11 @@
 <li>Statically configured with a local filesystem directory as the target for output. Envoy will store the request and response for each request in a separate file. The output directory must be specified with a trailing slash. Otherwise the files will not be written. The good news here is that you don&rsquo;t need log rotate. You can have a separate process scoop up each file, send the data to a log aggregator and then delete the file.</li>
 <li>The second method for getting taps is by sending a configuration update to the admin port with a selection criteria and then holding the connection open while waiting for taps to stream in over the network. This would obviously be the preferred approach for a production environment.</li>
 </ol>
+<p>Below is abbreviated structure of our Envoy.yaml config file. The highlighted section is the tap configuration. Taps are simply another available HTTP filter.</p>
+<ul>
+<li>We have match configuration that allows us to selectively target what we tap and what we don&rsquo;t.</li>
+<li>The output configuration section is where we specify where the taps should be sent. For the <code>file_per_tap</code> sink, remember to add the trailing slash to the path otherwise no files will be written. Additionally, the file path can&rsquo;t be set to standard out due to the expectation that new files will be opened under the subdirectory that is specified.</li>
+</ul>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">static_resources</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#00f">listeners</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  ...
@@ -408,7 +412,109 @@
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>  ...
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span style="color:#00f">admin</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>...
-</code></pre></div>
+</code></pre></div><blockquote>
+<p>NOTE: The tap filter is experimental and is currently under active development. There is currently a very limited set of match conditions, output configuration, output sinks, etc. Capabilities will be expanded over time and the configuration structures are likely to change.</p>
+</blockquote>
+<h2 id="enabling-traces">Enabling Traces</h2>
+<p>The <span style="color:blue"><a href="https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/observability/tracing#arch-overview-tracing">overview documentation for Envoy&rsquo;s Tracing features</a></span> succinctly describes Envoy&rsquo;s tracing capabilities very well. So, I have included a snippet here as a lead in to our configuration.</p>
+<blockquote>
+<p>Distributed tracing allows developers to obtain visualizations of call flows in large service oriented architectures. It can be invaluable in understanding serialization, parallelism, and sources of latency. Envoy supports three features related to system wide tracing:</p>
+<ul>
+<li>Request ID generation: Envoy will generate UUIDs when needed and populate the x-request-id HTTP header. Applications can forward the x-request-id header for unified logging as well as tracing. The behavior can be configured on per HTTP connection manager basis using an extension.</li>
+<li>Client trace ID joining: The x-client-trace-id header can be used to join untrusted request IDs to the trusted internal x-request-id.</li>
+<li>External trace service integration: Envoy supports pluggable external trace visualization providers, that are divided into two subgroups:
+<ul>
+<li>External tracers which are part of the Envoy code base, like LightStep, Zipkin or any Zipkin compatible backends (e.g. Jaeger), and Datadog.</li>
+<li>External tracers which come as a third party plugin, like Instana.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>Tracing options are exploding and as such expect a lot of new capabilities to be added to Envoy. There are a great deal of configuration options already. We are demonstrating the simplest possible tracing solution. Therefore, configuration below leverages the built in support for Zipkin compatible backends (jaegar).</p>
+<p>In lines 11 -19 below, the tracing configuration is standard part of the version 3 connection manager. The tracing property contains a provider.</p>
+<ul>
+<li>We have set up zipkin as the output format with jaegar as the configured destination. HTTP and gRPC are both supported. The example uses HTTP protocol for transmitting the traces.</li>
+<li>Our trace configuration refers to a cluster that we have named jaeger. So, we need to add a cluster configuration for it in the clusters section of the configuration file. Lines 28 through 40 points Envoy to our all-in-one jaeger container and port 9411 on that container.</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">static_resources</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#00f">listeners</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  - <span style="color:#00f">address</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    ...
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#00f">filter_chains</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    - <span style="color:#00f">filters</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>      - <span style="color:#00f">name</span>: envoy.filters.network.http_connection_manager
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>        <span style="color:#00f">typed_config</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>          <span style="color:#00f">&#34;@type&#34;: </span>type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>          <span style="color:#00f">generate_request_id</span>: <span style="color:#00f">true</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span style="color:#009c00">&gt;          tracing:</span>
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>            <span style="color:#00f">provider</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>              <span style="color:#00f">name</span>: envoy.tracers.zipkin
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>              <span style="color:#00f">typed_config</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>                <span style="color:#00f">&#34;@type&#34;: </span>type.googleapis.com/envoy.config.trace.v2.ZipkinConfig
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>                <span style="color:#00f">collector_cluster</span>: jaeger
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>                <span style="color:#00f">collector_endpoint</span>: <span style="color:#009c00">&#34;/api/v2/spans&#34;</span>
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>                <span style="color:#00f">shared_span_context</span>: <span style="color:#00f">false</span>
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>                <span style="color:#00f">collector_endpoint_version</span>: HTTP_JSON
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>          <span style="color:#00f">codec_type</span>: auto
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>          <span style="color:#00f">route_config</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>            ...
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>          <span style="color:#00f">http_filters</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>            ...
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>  <span style="color:#00f">clusters</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>  - <span style="color:#00f">name</span>: service1
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span>    ...
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span style="color:#009c00">&gt;  - name: jaeger</span>
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>    <span style="color:#00f">connect_timeout</span>: 1s
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>    <span style="color:#00f">type</span>: strict_dns
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span>    <span style="color:#00f">lb_policy</span>: round_robin
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span>    <span style="color:#00f">load_assignment</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span>      <span style="color:#00f">cluster_name</span>: jaeger
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span>      <span style="color:#00f">endpoints</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span>      - <span style="color:#00f">lb_endpoints</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span>        - <span style="color:#00f">endpoint</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span>            <span style="color:#00f">address</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span>              <span style="color:#00f">socket_address</span>:
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>                <span style="color:#00f">address</span>: jaeger
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span>                <span style="color:#00f">port_value</span>: 9411
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span><span style="color:#00f">admin</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>  ...
+</code></pre></div><h1 id="running-the-solution">Running the Solution</h1>
+<p>There is a bash script in the <code>08_log_taps_traces</code> directory that demonstrates the completed example. Just run <code>./demonstrate_log_tap_and_trace.sh</code> The script does the following:</p>
+<ol>
+<li>It cleans up any left over files from a previous run.</li>
+<li>Creates temporary directories to hold the taps and log files that we will capture.</li>
+<li>Starts up 3 envoy instances, 2 services, and jaeger as drawn in our diagram at the top of this article.</li>
+<li>Shows the containers running for validation that there were no failures.</li>
+<li>Sends a request through the Envoy front proxy and onwards through the service mesh.</li>
+<li>Displays the custom access logs captured by each of the 3 Envoy proxies.</li>
+</ol>
+<blockquote>
+<ul>
+<li>These logs are captured in JSON Lines format.</li>
+<li>They are run through a tool called <a href="https://github.com/stedolan/jq">jq</a> (running in a docker container).</li>
+<li>JQ pretty prints each log line and sorts the keys to make it easier to see the data groupings.</li>
+<li>Service 1 has 2 log lines since it captures the request as it goes into service 1 and it in turn calls service 2.</li>
+</ul>
+</blockquote>
+<ol start="7">
+<li>Shows the taps captured in all 3 envoy instances. These taps show the full request and response details.</li>
+<li>The request and response bodies are base64 encoded in the taps in case they are binary. So, the script decodes each body that is available and shows it to the user.</li>
+<li>It uses the open command to open Jaeger in a web browser. If it doesn&rsquo;t work on your operating system simply navigate to <code>http://localhost:16686/</code> on your own.</li>
+<li>Finally it shuts down the environment. It leaves all of the logs and taps in the <code>tmp</code> directory for further inspection.</li>
+</ol>
+<h2 id="lets-take-a-look-at-our-traces">Let&rsquo;s take a look at our traces</h2>
+<p><strong>Jaeger Landing Page</strong></p>
+<p>The Jaeger landing page displays a summary of recent traces. It also enables filtering and selection of traces.</p>
+<p><img class="special-img-class" src="/img/2020/09/08_jaeger_landing_page.png" /><br></p>
+<p><strong>Call Graph</strong></p>
+<p>The Jaeger call graph page shows the entire call tree. Ours is pretty simple. It also shows response time details and where this trace fits withing the norms.</p>
+<p><img class="special-img-class" src="/img/2020/09/08_jaeger_graph_boxes.png" /><br></p>
+<p><strong>Trace Details</strong></p>
+<p>The Jaeger trace details page shows all of the tags that were captured at each leg of the request&rsquo;s journey.</p>
+<p><img class="special-img-class" src="/img/2020/09/08_jaeger_display_trace.png" /><br></p>
+<h1 id="congratulations">Congratulations</h1>
+<p>We have completed a tour of another Envoy feature. These observability features will come in handy as our system becomes more complex. Additionally, Envoy is a very powerful tool for intercepting our traffic in a legacy environment. This can give all of our legacy applications consistently formatted data across our entire environment. This super-power can be incredibly critical in an environment with a lot of older applications that don&rsquo;t have active development, limited engineering knowledge and obsolete technology stacks.</p>
+
     </div>
     <footer>
       <ul class="stats">
