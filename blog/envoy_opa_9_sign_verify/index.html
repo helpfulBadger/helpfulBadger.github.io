@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests">
 <meta itemprop="datePublished" content="2020-10-07T09:30:44-04:00" />
 <meta itemprop="dateModified" content="2020-10-07T09:30:44-04:00" />
-<meta itemprop="wordCount" content="2776">
+<meta itemprop="wordCount" content="2820">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg">
 
 
@@ -619,6 +619,9 @@
 The other statements should be familiar from our previous discussion of Envoy&rsquo;s external authorization contract. So, we won&rsquo;t break that down again.</p>
 <br>
 <p>The <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/09_sign_validate_request/verify/policy_test.rego">signature verification policy tests</a></span> are more complicated than the tests for the signing process due to increased complexity of the policy.</p>
+<h1 id="running-the-example">Running the Example</h1>
+<p>Simply run the <code>./demonstrate_sign_verify.sh</code> script to see request signing and verification in action. The example scripts leverage the same logs, taps and traces configuration as Getting started guide # 8.</p>
+<p>Link to script to run <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/09_sign_validate_request/demonstrate_sign_verify.sh">the request signing &amp; verification example</a></span></p>
 <h1 id="congratulations">Congratulations</h1>
 <p>We have completed our example to demonstrate how to sign and validate HTTP requests. This capability is very powerful and effective and protecting the integrity of transactions. The best part about this approach is that this powerful capability can be added to any application in your portfolio without requiring code changes to every system.</p>
 
