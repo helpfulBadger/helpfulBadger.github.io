@@ -2,22 +2,22 @@
 <html lang="en">
   <head>
   <meta charset="utf-8">
-<title>JWS Signature Validation with OPA - Helpful Badger&#39;s Blog</title>
+<title>JWS Token Validation with OPA - Helpful Badger&#39;s Blog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="JWS Signature Validation with OPA">
-<meta itemprop="description" content="Learn how to validate JWS signatures with Open Policy Agent">
+<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="JWS Token Validation with OPA">
+<meta itemprop="description" content="Learn how to validate JWS tokens with Open Policy Agent">
 <meta itemprop="datePublished" content="2020-09-07T12:10:17-04:00" />
 <meta itemprop="dateModified" content="2020-09-07T12:10:17-04:00" />
-<meta itemprop="wordCount" content="1739">
+<meta itemprop="wordCount" content="1808">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/jws-signatures-XQaqV5qYcXg-unsplash.jpg">
 
 
 
 <meta itemprop="keywords" content="OPA,Open Policy Agent,JWS,Signatures," />
-<meta property="og:title" content="JWS Signature Validation with OPA" />
-<meta property="og:description" content="Learn how to validate JWS signatures with Open Policy Agent" />
+<meta property="og:title" content="JWS Token Validation with OPA" />
+<meta property="og:description" content="Learn how to validate JWS tokens with Open Policy Agent" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" />
 <meta property="og:image" content="https://helpfulbadger.github.io/img/2020/08/jws-signatures-XQaqV5qYcXg-unsplash.jpg" />
@@ -26,8 +26,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/08/jws-signatures-XQaqV5qYcXg-unsplash.jpg"/>
 
-<meta name="twitter:title" content="JWS Signature Validation with OPA"/>
-<meta name="twitter:description" content="Learn how to validate JWS signatures with Open Policy Agent"/>
+<meta name="twitter:title" content="JWS Token Validation with OPA"/>
+<meta name="twitter:description" content="Learn how to validate JWS tokens with Open Policy Agent"/>
 <link rel="stylesheet" href="/css/bundle.min.182747932867f43d8c875b59a0300848b838002d4008d4a5b8ddcc41a37c4cf7.css" integrity="sha256-GCdHkyhn9D2Mh1tZoDAISLg4AC1ACNSluN3MQaN8TPc="><link rel="stylesheet" href="/css/add-on.css">
 </head>
 
@@ -95,7 +95,7 @@
 
   
     
-    <a href="//twitter.com/share?text=JWS%20Signature%20Validation%20with%20OPA&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+    <a href="//twitter.com/share?text=JWS%20Token%20Validation%20with%20OPA&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
         <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
       </a>
   
@@ -107,19 +107,19 @@
   
 
   
-    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn reddit">
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Token%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn reddit">
           <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
         </a>
   
 
   
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn linkedin">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Token%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn linkedin">
             <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
           </a>
   
 
   
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;description=JWS%20Signature%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;description=JWS%20Token%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn pinterest">
           <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
         </a>
   
@@ -202,10 +202,10 @@
     <header>
   <div class="title">
     
-      <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
+      <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Token Validation with OPA</a></h2>
     
     
-      <p>Learn how to validate JWS signatures with Open Policy Agent</p>
+      <p>Learn how to validate JWS tokens with Open Policy Agent</p>
     
   </div>
   <div class="meta">
@@ -227,7 +227,7 @@
 
   
     
-    <a href="//twitter.com/share?text=JWS%20Signature%20Validation%20with%20OPA&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+    <a href="//twitter.com/share?text=JWS%20Token%20Validation%20with%20OPA&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
         <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
       </a>
   
@@ -239,19 +239,19 @@
   
 
   
-    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn reddit">
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Token%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn reddit">
           <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
         </a>
   
 
   
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Signature%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn linkedin">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;title=JWS%20Token%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn linkedin">
             <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
           </a>
   
 
   
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;description=JWS%20Signature%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_5_opa_jws%2f&amp;description=JWS%20Token%20Validation%20with%20OPA" target="_blank" rel="noopener" class="nav share-btn pinterest">
           <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
         </a>
   
@@ -275,7 +275,7 @@
     <div class="content">
       <p><span>Photo by <a href="https://unsplash.com/@skillscouter?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">SkillScouter</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
 <h1 id="getting-started-with-envoy--open-policy-agent-----05----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 05 &mdash;</h1>
-<h2 id="jws-signature-validation-with-opa">JWS Signature Validation with OPA</h2>
+<h2 id="jws-token-validation-with-opa">JWS Token Validation with OPA</h2>
 <p>This is the 5th Envoy &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
 <p>The source code for this getting started example is located on Github. <span style="color:blue"> &mdash;&mdash;&gt;  <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/05_opa_validate_jws">Envoy &amp; OPA GS # 5</a> </span></p>
 <p>Here is a list of the Getting Started Guides that are currently available.</p>
@@ -285,10 +285,11 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS tokens with Open Policy Agent">JWS Token Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS tokens natively with Envoy">JWS Token Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs, taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/" title="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests">Sign / Verify HTTP Requests</a></span></li>
 </ol>
 <h2 id="introduction">Introduction</h2>
 <p>This getting started guide will validate 3 different identity tokens that are expressed as Signed JSON web tokens (JWS) for short. This guide assumes knowledge of several IETF RFCs:</p>
@@ -329,31 +330,31 @@
 <li>The remaining claims are standard claims that contain information about the token issuance, use and authentication methods performed.</li>
 </ul>
 <p>The full token is below:</p>
-<pre><code><strong>
-{
-    <span style="color:blue">"iss"</span>: "customerIdentity.example.com",
-    <span style="color:blue">"sub"</span>: "customerIdentity:DBm4FBclSD261G2",
-    <span style="color:blue">"profileRefID"</span>: "34983598sfkh9w8798798d",
-    <span style="color:blue">"customerRefID"</span>: "DBm4FBclSD261G2",
-    <span style="color:blue">"consentID"</span>: "4378afd4f",
-    <span style="color:blue">"aud"</span>: [ "apigateway.example.com", "protected-stuff.example.com"],
-    <span style="color:blue">"azp"</span>: "app_123456",
-    <span style="color:blue">"exp"</span>: 2735689600,
-    <span style="color:blue">"iat"</span>: 1597676718,
-    <span style="color:blue">"auth_time"</span>: 1597676718,
-    <span style="color:blue">"jti"</span>: "o8T2hxraeFzIQ6p",
-    <span style="color:blue">"nonce"</span>: "n-0S6_WzA2Mj",
-    <span style="color:blue">"acr"</span>: "urn:mace:incommon:iap:silver",
-    <span style="color:blue">"amr"</span>: [
-      "face",
-      "fpt",
-      "geo",
-      "mfa"
-    ],
-    <span style="color:blue">"vot"</span>: "P1.Cc.Ac",
-    <span style="color:blue">"vtm"</span>: "https://example.org/vot-trust-framework"
-}
-</strong></code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#00f">&#34;iss&#34;: </span><span style="color:#009c00">&#34;customerIdentity.example.com&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#00f">&#34;sub&#34;: </span><span style="color:#009c00">&#34;customerIdentity:DBm4FBclSD261G2&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#00f">&#34;profileRefID&#34;: </span><span style="color:#009c00">&#34;34983598sfkh9w8798798d&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#00f">&#34;customerRefID&#34;: </span><span style="color:#009c00">&#34;DBm4FBclSD261G2&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#00f">&#34;consentID&#34;: </span><span style="color:#009c00">&#34;4378afd4f&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>    <span style="color:#00f">&#34;aud&#34;: </span>[ <span style="color:#009c00">&#34;apigateway.example.com&#34;</span>, <span style="color:#009c00">&#34;protected-stuff.example.com&#34;</span>],
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    <span style="color:#00f">&#34;azp&#34;: </span><span style="color:#009c00">&#34;app_123456&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#00f">&#34;exp&#34;: </span>2735689600,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#00f">&#34;iat&#34;: </span>1597676718,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#00f">&#34;auth_time&#34;: </span>1597676718,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    <span style="color:#00f">&#34;jti&#34;: </span><span style="color:#009c00">&#34;o8T2hxraeFzIQ6p&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>    <span style="color:#00f">&#34;nonce&#34;: </span><span style="color:#009c00">&#34;n-0S6_WzA2Mj&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>    <span style="color:#00f">&#34;acr&#34;: </span><span style="color:#009c00">&#34;urn:mace:incommon:iap:silver&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>    <span style="color:#00f">&#34;amr&#34;: </span>[
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>      <span style="color:#009c00">&#34;face&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>      <span style="color:#009c00">&#34;fpt&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>      <span style="color:#009c00">&#34;geo&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>      <span style="color:#009c00">&#34;mfa&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>    ],
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>    <span style="color:#00f">&#34;vot&#34;: </span><span style="color:#009c00">&#34;P1.Cc.Ac&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>    <span style="color:#00f">&#34;vtm&#34;: </span><span style="color:#009c00">&#34;https://example.org/vot-trust-framework&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>}
+</code></pre></div></strong>
 <h3 id="proof-of-authentication-for-a-workforce-user">Proof of Authentication for a Workforce User</h3>
 <p>The call center agent was authenticated by the application she / he is using. Evidence of that authentication is captured as a JWS token is placed in the <code>actor-token</code> header. The workforce identity provider performed the authentication. This token saves repeated database lookups and is used to authorize what an agent can do on their own behalf as well as what an agent can do on the customer&rsquo;s behalf.</p>
 <ul>
@@ -361,18 +362,18 @@
 <li>The remaining claims are standard claims that contain information about the token issuance, and use.</li>
 </ul>
 <p>The full token is below:</p>
-<pre><code><strong>
-{
-    <span style="color:blue">"iss"</span>: "workforceIdentity.example.com",
-    <span style="color:blue">"sub"</span>: "workforceIdentity:406319",
-    <span style="color:blue">"aud"</span>: [ "apigateway.example.com", "protected-stuff.example.com"],
-    <span style="color:blue">"azp"</span>: "app_123456",
-    <span style="color:blue">"exp"</span>: 2735689600,
-    <span style="color:blue">"iat"</span>: 1597676718,
-    <span style="color:blue">"auth_time"</span>: 1597676718,
-    <span style="color:blue">"jti"</span>: "mPPdwJ7Jrr2MQzS"
-}
-</strong></code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#00f">&#34;iss&#34;: </span><span style="color:#009c00">&#34;workforceIdentity.example.com&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#00f">&#34;sub&#34;: </span><span style="color:#009c00">&#34;workforceIdentity:406319&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#00f">&#34;aud&#34;: </span>[ <span style="color:#009c00">&#34;apigateway.example.com&#34;</span>, <span style="color:#009c00">&#34;protected-stuff.example.com&#34;</span>],
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#00f">&#34;azp&#34;: </span><span style="color:#009c00">&#34;app_123456&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#00f">&#34;exp&#34;: </span>2735689600,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>    <span style="color:#00f">&#34;iat&#34;: </span>1597676718,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    <span style="color:#00f">&#34;auth_time&#34;: </span>1597676718,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#00f">&#34;jti&#34;: </span><span style="color:#009c00">&#34;mPPdwJ7Jrr2MQzS&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>}
+</code></pre></div></strong>
 <h3 id="proof-of-authentication-for-an-application">Proof of Authentication for an Application</h3>
 <p>The application that the call center agent is using was authenticated by the API gateway. Proof of authentication and application details are placed in the <code>app-token</code> header. This stateless token saves repeated database lookups and is used for application level authorizations.</p>
 <ul>
@@ -380,26 +381,26 @@
 <li>The client_id The remaining claims are standard claims that contain information about the token issuance, and use.</li>
 </ul>
 <p>The full token is below:</p>
-<pre><code><strong>
-{
-    <span style="color:blue">"iss"</span>: "apigateway.example.com",
-    <span style="color:blue">"sub"</span>: "apigateway:app_123456",
-    <span style="color:blue">"aud"</span>: [ "apigateway.example.com", "protected-stuff.example.com"],
-    <span style="color:blue">"azp"</span>: "app_123456",
-    <span style="color:blue">"client_id"</span>: "app_123456",
-    <span style="color:blue">"exp"</span>: 2735689600,
-    <span style="color:blue">"iat"</span>: 1597676718,
-    <span style="color:blue">"auth_time"</span>: 1597676718,
-    <span style="color:blue">"jti"</span>: "XcOpQe2vqTq1kny",
-    <span style="color:blue">"grant"</span>: "client_credentials",
-    <span style="color:blue">"owningLegalEntity"</span>: "Example Co.",
-    <span style="color:blue">"scopes"</span>: [
-      "rewards:read",
-      "rewards:redeem"
-    ],
-    <span style="color:blue">"kid"</span>: "APIGW-ES256"
-}
-</strong></code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#00f">&#34;iss&#34;: </span><span style="color:#009c00">&#34;apigateway.example.com&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#00f">&#34;sub&#34;: </span><span style="color:#009c00">&#34;apigateway:app_123456&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#00f">&#34;aud&#34;: </span>[ <span style="color:#009c00">&#34;apigateway.example.com&#34;</span>, <span style="color:#009c00">&#34;protected-stuff.example.com&#34;</span>],
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#00f">&#34;azp&#34;: </span><span style="color:#009c00">&#34;app_123456&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#00f">&#34;client_id&#34;: </span><span style="color:#009c00">&#34;app_123456&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>    <span style="color:#00f">&#34;exp&#34;: </span>2735689600,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    <span style="color:#00f">&#34;iat&#34;: </span>1597676718,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#00f">&#34;auth_time&#34;: </span>1597676718,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#00f">&#34;jti&#34;: </span><span style="color:#009c00">&#34;XcOpQe2vqTq1kny&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#00f">&#34;grant&#34;: </span><span style="color:#009c00">&#34;client_credentials&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    <span style="color:#00f">&#34;owningLegalEntity&#34;: </span><span style="color:#009c00">&#34;Example Co.&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>    <span style="color:#00f">&#34;scopes&#34;: </span>[
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>      <span style="color:#009c00">&#34;rewards:read&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>      <span style="color:#009c00">&#34;rewards:redeem&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>    ],
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>    <span style="color:#00f">&#34;kid&#34;: </span><span style="color:#009c00">&#34;APIGW-ES256&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>}
+</code></pre></div></strong>
 <h2 id="open-policy-agent-examples">Open Policy Agent Examples</h2>
 <p>In the policy examples directory, there are 2 different REGO policies:</p>
 <ul>
@@ -407,66 +408,66 @@
 <li>policy.rego - which shows our final policy</li>
 </ul>
 <h3 id="jws_examples_v1rego">jws_examples_v1.rego</h3>
-<pre><code><strong>
-verify_example = { "isValid": isValid} {
-    isValid := io.jwt.verify_es256(es256_token, jwks)
-}
-</strong></code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>verify_example = { <span style="color:#009c00">&#34;isValid&#34;</span>: isValid} {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>    isValid := io.jwt.verify_es256(es256_token, jwks)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>}
+</code></pre></div></strong>
 <p>The io.jwt.verify_xxx function simply checks to see if the signature on the token is valid. It returns a boolean indicating signature validity. It does not check the token claims. The downside of this function is that you must already know the algorithm used and then call the correct validation function.</p>
-<pre><code><strong>
-decode_example = {"header": header, "payload": payload, "signature": signature} {
-    [header, payload, signature] := io.jwt.decode(es256_token)
-}
-</strong></code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>decode_example = {<span style="color:#009c00">&#34;header&#34;</span>: header, <span style="color:#009c00">&#34;payload&#34;</span>: payload, <span style="color:#009c00">&#34;signature&#34;</span>: signature} {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>    [header, payload, signature] := io.jwt.decode(es256_token)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>}
+</code></pre></div></strong>
 <p>The io.jwt.decode() function does not validate the JWS. It base64 decodes the token and returns it&rsquo;s constituent parts (header, payload and signature).</p>
-<pre><code><strong>
-decode_verify_example = { "isValid": isValid, "header": header, "payload": payload } {
-     [isValid, header, payload] := io.jwt.decode_verify(es256_token, { "cert": jwks, "iss": "xxx", })
-}
-</strong></code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>decode_verify_example = { <span style="color:#009c00">&#34;isValid&#34;</span>: isValid, <span style="color:#009c00">&#34;header&#34;</span>: header, <span style="color:#009c00">&#34;payload&#34;</span>: payload } {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>     [isValid, header, payload] := io.jwt.decode_verify(es256_token, { <span style="color:#009c00">&#34;cert&#34;</span>: jwks, <span style="color:#009c00">&#34;iss&#34;</span>: <span style="color:#009c00">&#34;xxx&#34;</span>, })
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>}
+</code></pre></div></strong>
 <p>The io.jwt.decode_verify() function detects the correct algorithm from the JWS headers, validates the signature and validates the claims in the token. The second parameter for the decode and verify function is an object that contains the validation parameters. The cert property must be a string. A JSON web token keyset must be serialized to a string if you have it already read into memory as a parsed object. The other properties in the object are the expected token values. If an audience claim is specified in the token, then an audience claim must be specified in the parameter list. The audience claim is also assumed to be an array of strings. Audience claim validation checks for the presence of the supplied audience string anywhere in the audience claim array in the JWS.</p>
 <p>The REGO policy in this file decodes the token using all 3 functions above and assigns them to the result.</p>
-<pre><code><strong>
-result = {
-    "verify_example": verify_example,
-    "decode_example": decode_example,
-    "decode_verify_example": decode_verify_example
-}
-</strong></code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>result = {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>    <span style="color:#009c00">&#34;verify_example&#34;</span>: verify_example,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>    <span style="color:#009c00">&#34;decode_example&#34;</span>: decode_example,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>    <span style="color:#009c00">&#34;decode_verify_example&#34;</span>: decode_verify_example
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>}
+</code></pre></div></strong>
 <p>The output below shows the result of executing the policy.</p>
-<pre><code><strong>
-{
-  "result": [
-    {
-      "expressions": [
-        {
-          "value": {
-            "decode_example": {
-              "header": { "alg": "ES256",  "typ": "JWT" },
-              "payload": { "iss": "xxx", "nbf": 1444478400 },
-              "signature": "940adccdf37ea482fca1453eecf53cdeefb37d7a2e8170598fa76b15e285b0f128561cbd580ca266546c858aa34d25dd6b0f32c362fea2fb78cd35196f63d632"
-            },
-            "decode_verify_example": {
-              "header": { "alg": "ES256",  "typ": "JWT" },
-              "isValid": true,
-              "payload": { "iss": "xxx", "nbf": 1444478400 }
-            },
-            "verify_example": {
-              "isValid": true
-            }
-          },
-          "text": "data.jws.examples.v1.result",
-          "location": {
-            "row": 1,
-            "col": 1
-          }
-        }
-      ]
-    }
-  ]
-}
-</strong></code></pre>
-<p>The policy_examples directory contains several scripts and rego policies that demonstrates 5 different ways to invoke our policy. The full suite of JWS signature validations are only performed in the first 4 techniques:</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#00f">&#34;result&#34;: </span>[
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>      <span style="color:#00f">&#34;expressions&#34;: </span>[
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>        {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>          <span style="color:#00f">&#34;value&#34;: </span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>            <span style="color:#00f">&#34;decode_example&#34;: </span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>              <span style="color:#00f">&#34;header&#34;: { &#34;alg&#34;: &#34;ES256&#34;,  &#34;typ&#34;: </span><span style="color:#009c00">&#34;JWT&#34;</span> },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>              <span style="color:#00f">&#34;payload&#34;: { &#34;iss&#34;: &#34;xxx&#34;, &#34;nbf&#34;: </span>1444478400 },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>              <span style="color:#00f">&#34;signature&#34;: </span><span style="color:#009c00">&#34;940adccdf37ea482fca1453eecf53cdeefb37d7a2e8170598fa76b15e285b0f128561cbd580ca266546c858aa34d25dd6b0f32c362fea2fb78cd35196f63d632&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>            },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>            <span style="color:#00f">&#34;decode_verify_example&#34;: </span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>              <span style="color:#00f">&#34;header&#34;: { &#34;alg&#34;: &#34;ES256&#34;,  &#34;typ&#34;: </span><span style="color:#009c00">&#34;JWT&#34;</span> },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>              <span style="color:#00f">&#34;isValid&#34;: </span><span style="color:#00f">true</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>              <span style="color:#00f">&#34;payload&#34;: { &#34;iss&#34;: &#34;xxx&#34;, &#34;nbf&#34;: </span>1444478400 }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>            },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>            <span style="color:#00f">&#34;verify_example&#34;: </span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>              <span style="color:#00f">&#34;isValid&#34;: </span><span style="color:#00f">true</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>            }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>          },
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>          <span style="color:#00f">&#34;text&#34;: </span><span style="color:#009c00">&#34;data.jws.examples.v1.result&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>          <span style="color:#00f">&#34;location&#34;: </span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>            <span style="color:#00f">&#34;row&#34;: </span>1,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>            <span style="color:#00f">&#34;col&#34;: </span>1
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>          }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>        }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span>      ]
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>  ]
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>}
+</code></pre></div></strong>
+<p>The policy_examples directory contains several scripts and rego policies that demonstrates 5 different ways to invoke our policy:</p>
 <ol>
 <li><code>policy_examples/run_rego_tests_locally.sh</code> - This script runs the test policies with a locally installed Open Policy Agent. <img class="special-img-class" src="/img/2020/08/05_run_rego_tests_locally.png" /><br> As you can see from this example, the output looks much like outpu from test runners in most other languages.</li>
 <li><code>policy_examples/run_rego_tests_in_docker.sh</code> - This script runs the test policies using the Open Policy Agent docker container and a locally mapped volume  <img class="special-img-class" src="/img/2020/08/05_run_rego_tests_in_docker.png" /><br> The nice part about using this approach is that it doesn&rsquo;t require anything installed locally other than docker.</li>
@@ -540,6 +541,23 @@ result = {
       <article class="mini-post">
         <section>
           
+  <a href="/blog/envoy_opa_9_sign_verify/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_9_sign_verify/">Signing HTTP Requests</a></h2>
+          <time class="published" datetime="">October 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
   <a href="/blog/envoy_opa_8_logs_taps_and_traces/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" alt="">
@@ -600,25 +618,8 @@ result = {
 
         </section>
         <header>
-          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
+          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Token Validation with OPA</a></h2>
           <time class="published" datetime="">September 7, 2020</time>
-        </header>
-      </article>
-      
-      <article class="mini-post">
-        <section>
-          
-  <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
-    
-  </a>
-
-
-        </section>
-        <header>
-          <h2><a href="/blog/envoy_opa_4_opa_cli/">Using the Open Policy Agent CLI</a></h2>
-          <time class="published" datetime="">September 2, 2020</time>
         </header>
       </article>
       
@@ -643,7 +644,7 @@ result = {
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">8</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">9</span></a>
             
           
           <li>
@@ -653,17 +654,17 @@ result = {
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">4</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">5</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">4</span></a>
             
           
           <li>
             
               <a href="/categories/authentication/">authentication<span class="count">3</span></a>
-            
-          
-          <li>
-            
-              <a href="/categories/observability/">observability<span class="count">3</span></a>
             
           
           </li>

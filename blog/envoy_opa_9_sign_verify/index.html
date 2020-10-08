@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+<title>Signing HTTP Requests - Helpful Badger&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.74.3" /><meta itemprop="name" content="Signing HTTP Requests">
+<meta itemprop="description" content="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests">
+<meta itemprop="datePublished" content="2020-10-07T09:30:44-04:00" />
+<meta itemprop="dateModified" content="2020-10-07T09:30:44-04:00" />
+<meta itemprop="wordCount" content="2776">
+<meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg">
+
+
+
+<meta itemprop="keywords" content="logs,taps,traces,envoy," />
+<meta property="og:title" content="Signing HTTP Requests" />
+<meta property="og:description" content="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/" />
+<meta property="og:image" content="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg" />
+<meta property="article:published_time" content="2020-10-07T09:30:44-04:00" />
+<meta property="article:modified_time" content="2020-10-07T09:30:44-04:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg"/>
+
+<meta name="twitter:title" content="Signing HTTP Requests"/>
+<meta name="twitter:description" content="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests"/>
+<link rel="stylesheet" href="/css/bundle.min.182747932867f43d8c875b59a0300848b838002d4008d4a5b8ddcc41a37c4cf7.css" integrity="sha256-GCdHkyhn9D2Mh1tZoDAISLg4AC1ACNSluN3MQaN8TPc="><link rel="stylesheet" href="/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="/" class="nav">
+        
+          
+            Blog
+          
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          
+            <a href="/" class="nav link"><i class='fa fa-home'></i> Home</a>
+          
+        
+      
+        
+          
+          
+            <a href="/about/" class="nav link"><i class='far fa-id-card'></i> About</a>
+          
+        
+      
+        
+          
+          
+            <a href="/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+          
+        
+      
+        
+          
+          
+            <a href="/categories/" class="nav link"><i class='fas fa-sitemap'></i> Categories</a>
+          
+        
+      
+      <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>
+      <a href="#search-input" class="nav search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>
+    </menu>
+    <a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>
+    <a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
+    
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  <menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>
+  
+  
+    <menu id="share-menu" class="flyout-menu menu">
+      <h1>Share Post</h1>
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=Signing%20HTTP%20Requests&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f&amp;title=Signing%20HTTP%20Requests" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f&amp;title=Signing%20HTTP%20Requests" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f&amp;description=Signing%20HTTP%20Requests" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </menu>
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" class="hidden-single-column">
+  <a href="/"><img src="https://helpfulbadger.github.io/img/main/unsplash_badger_small_2.png" class="circle" width="" alt="Helpful Badger in the wild" /></a>
+  <header>
+    <h1>Helpful Badger</h1>
+  </header>
+  <main>
+    <p>Imagining the possibilities</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="/blog/envoy_opa_9_sign_verify/">Signing HTTP Requests</a></h2>
+    
+    
+      <p>Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests</p>
+    
+  </div>
+  <div class="meta">
+    <time class="published" datetime="2020-10-07 09:30:44 -0400 EDT">
+      October 7, 2020
+    </time>
+    <span class="author">Helpful Badger</span>
+    
+      <p>14 minute read</p>
+    
+  </div>
+</header>
+
+    <section id="socnet-share">
+      
+
+
+
+
+  
+    
+    <a href="//twitter.com/share?text=Signing%20HTTP%20Requests&amp;url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//www.reddit.com/submit?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f&amp;title=Signing%20HTTP%20Requests" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f&amp;title=Signing%20HTTP%20Requests" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f&amp;description=Signing%20HTTP%20Requests" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check%20out%20this%20post%20by Helpful%20Badger&amp;body=https%3a%2f%2fhelpfulbadger.github.io%2fblog%2fenvoy_opa_9_sign_verify%2f" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </section>
+    
+  <a href="/blog/envoy_opa_9_sign_verify/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+    <div class="content">
+      <p><span>Photo by <a href="https://unsplash.com/@phonvanna?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Vanna Phon</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
+<h1 id="getting-started-with-envoy--open-policy-agent-----09----">Getting Started with Envoy &amp; Open Policy Agent &mdash; 09 &mdash;</h1>
+<h2 id="learn-how-to-use-envoy--opa-to-sign-and-validate-http-requests">Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests</h2>
+<p>This is the 9th Envoy &amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</p>
+<p>The source code for this getting started example is located on Github. <span style="color:blue"> &mdash;&mdash;&gt;  <a href="https://github.com/helpfulBadger/envoy_getting_started/tree/master/09_sign_validate_request">Envoy &amp; OPA GS # 9</a> </span></p>
+<p>Here is a list of the Getting Started Guides that are currently available.</p>
+<h2 id="getting-started-guides">Getting Started Guides</h2>
+<ol>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_1_front_proxy/" title="Learn how to set up Envoy as a front proxy with docker">Using Envoy as a Front Proxy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS tokens with Open Policy Agent">JWS Token Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS tokens natively with Envoy">JWS Token Validation with Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs, taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/" title="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests">Sign / Verify HTTP Requests</a></span></li>
+</ol>
+<h2 id="introduction">Introduction</h2>
+<p>In this example we are going to show how we can use Envoy and Open Policy Agent to sign HTTP requests as we come through a front proxy and validate these signatures on a 2nd Envoy / Open Policy Agent instance that is dedicated to the endpoint that we are protecting.</p>
+<p>The diagram below shows system and request flow that we will be building.</p>
+<p><img class="special-img-class" src="/img/2020/10/Envoy_GS_09_Overview.svg" /><br></p>
+<p>Signing and validating signatures on a request is very useful in large environments where a request may traverse a number of different application layers, proxies and other components that are owned by a variety of teams. Some of those components may even be controlled by 3rd parties.</p>
+<blockquote>
+<p>A digital signature is a mathematical scheme for verifying the authenticity of digital messages or documents. A valid digital signature, where the prerequisites are satisfied, gives a recipient very strong reason to believe that the message was created by a known sender (authentication), and that the message was not altered in transit (integrity).[1]</p>
+</blockquote>
+<blockquote>
+<p>Digital signatures are a standard element of most cryptographic protocol suites, and are commonly used for software distribution, financial transactions, contract management software, and in other cases where it is important to detect forgery or tampering.</p>
+</blockquote>
+<blockquote>
+<p>Source: <a href="https://en.wikipedia.org/wiki/Digital_signature">Wikipedia</a></p>
+</blockquote>
+<p>Digital signatures can be a great tool to prevent internal fraud. In large corporations it is common to utilize centralized log aggregation tools. These tools are often open to all employees / workforce users that have valid credentials. This is a great practice for transparency, understanding dependencies, troubleshooting etc. However, sometimes:</p>
+<ol>
+<li>Novice engineers or engineers that are not used to working in large corporations may log sensitive data elements such as access tokens or other headers that can be used to forge a malicious request that moves money, purchases a product etc.</li>
+<li>3rd Parties such as a cloud provider that operates an API gateway, a lambda product or any other product that acts as a proxy to your code will have access to the entire request / response stream. They have their own logs. A malicious engineer at the cloud provider can log and alter or forge any request / response flowing through their products whenever a TLS connection is terminated by their product.</li>
+</ol>
+<h2 id="walking-through-the-docker-compose-file">Walking through the docker-compose file</h2>
+<p>Link to <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/09_sign_validate_request/docker-compose.yaml">compose file</a></span></p>
+<p><strong>Envoy Instances</strong></p>
+<p>As shown in the highlighted rows (lines 6 &amp; 13), each Envoy proxy is built from dockerfiles located in their own directories. Additionally, since we have traces turned on, we mapped local volumes (lines 8 &amp; 15) into the Envoy containers to capture and expose the captured requests and responses. For more information on how to set this up, there is a <span style="color:blue"><a href="/blog/envoy_opa_8_logs_taps_and_traces.md">getting started guide</a></span> for it.</p>
+</br>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">version</span>: <span style="color:#009c00">&#34;3.7&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#00f">services</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>  <span style="color:#00f">front-envoy</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#00f">build</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span style="color:#009c00">&gt;      context: ./front-proxy</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>    <span style="color:#00f">volumes</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span style="color:#009c00">&gt;      - ./tmp/front:/tmp/any</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    ...
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>  <span style="color:#00f">service1</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    <span style="color:#00f">build</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span style="color:#009c00">&gt;      context: ./service1</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>    <span style="color:#00f">volumes</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span style="color:#009c00">&gt;      - ./tmp/service1:/tmp/any</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>    ...
+</code></pre></div></strong>
+<p><strong>Open Policy Agent Instances</strong></p>
+<p>As shown in the highlighted rows (lines 3 &amp; 15), just like the Envoy instances, each Open Policy Agent instance is built from dockerfiles located in their own directories. The policy files (lines 11 &amp; 23) are consistently named but have different content and purposes.</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>  <span style="color:#00f">sign</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#00f">build</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span style="color:#f00;font-style:italic">#      context: ./sign</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    ...
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#00f">command</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>      - <span style="color:#009c00">&#34;run&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>      - <span style="color:#009c00">&#34;--log-level=debug&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>      - <span style="color:#009c00">&#34;--server&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>      - <span style="color:#009c00">&#34;--set=plugins.envoy_ext_authz_grpc.addr=:9191&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>      - <span style="color:#009c00">&#34;--set=decision_logs.console=true&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span style="color:#f00;font-style:italic">#      - &#34;/config/policy.rego&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>  <span style="color:#00f">verify</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>    <span style="color:#00f">build</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span style="color:#f00;font-style:italic">#      context: ./verify</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>    ...
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>    <span style="color:#00f">command</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>      - <span style="color:#009c00">&#34;run&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>      - <span style="color:#009c00">&#34;--log-level=debug&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>      - <span style="color:#009c00">&#34;--server&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>      - <span style="color:#009c00">&#34;--set=plugins.envoy_ext_authz_grpc.addr=:9191&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>      - <span style="color:#009c00">&#34;--set=decision_logs.console=true&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span style="color:#f00;font-style:italic">#      - &#34;/config/policy.rego&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>
+</code></pre></div></strong>
+<h2 id="walking-through-the-signing-policy">Walking through the signing policy</h2>
+<p>Link to <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/09_sign_validate_request/sign/policy.rego">signing policy</a></span></p>
+<p>As a request flows through a complex set of systems, a lot of headers are injected and / or removed on various hops. These headers might be used for:</p>
+<ul>
+<li>Routing</li>
+<li>Injecting or updating tracing headers</li>
+<li>Injecting or removing other headers that are meaningful to the proxies</li>
+</ul>
+<p>Our signature needs to survive these transformations. We need to make sure we declare what should not change and then only include that in the signature. To help use communicate these pieces of information to the recipient, we will be creating a signed JSON web token to hold our HTTP request signature.</p>
+<p>Let&rsquo;s walk through some highlights of the REGO Policy file.</p>
+<ul>
+<li>We need a private signing key to ensure that the signature has not been tampered with. This is declared on line 5 but would be retrieved from a key management system in a production deployment. <br><br></li>
+<li>The headers that we want to remain unchanged throughout the process are declared on line 8. These include some other JWS tokens. These tokens prove the identity of the user, the application originating the request, the subject / entity that is being acting on behalf of (if applicable). Additionally, for troubleshooting purposes, we have bound the session-id and request-id into the signature to ensure traceability outside of any open tracing solutions. <br><br></li>
+</ul>
+<h3 id="calculating-a-hash-of-the-headers">Calculating a hash of the headers</h3>
+<ul>
+<li>There are 3 steps required to calculate the hash of the headers.
+<ol>
+<li>The first step on line 11 is to create a new object that only contains the headers of interest from the original request. The <code>object.filter()</code> rego built in function does that for us. It takes 2 parameters. The headers we want to include in the new object and the original object that we need to pull them from.</li>
+<li>We convert the object to a JSON string on line 12, <code>json.marshal</code>. This REGO built-in function consistently orders the keys in the resulting output string. If this was not the case, then we would not be able to use REGO for this.</li>
+<li>Finally, we calculate the hash of the headers with the <code>crypto.sha256()</code> built in function.</li>
+</ol>
+</li>
+</ul>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">package</span> envoy.authz
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span style="color:#00f">import</span> input.attributes.request.http as http_request
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>signingKey = { ... } <span style="color:#f00;font-style:italic">// Private Key for creating the signature
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span style="color:#f00;font-style:italic"></span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span style="color:#f00;font-style:italic">// Headers that we would like included in the signature
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span style="color:#f00;font-style:italic"></span>criticalHeaders = [<span style="color:#009c00">&#34;actor-token&#34;</span>, <span style="color:#009c00">&#34;app-token&#34;</span>, <span style="color:#009c00">&#34;subject-token&#34;</span>, <span style="color:#009c00">&#34;session-id&#34;</span>, <span style="color:#009c00">&#34;request-id&#34;</span>]
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span style="color:#f00;font-style:italic">// We calculate the header hash by ... 
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span style="color:#f00;font-style:italic"></span>filteredHeaders = object.filter( http_request.headers, criticalHeaders )	
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>headerString = json.marshal( filteredHeaders )
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>headerHash = crypto.sha256( headerString )
+</span></code></pre></div><p></strong><br></p>
+<h3 id="calculating-a-hash-of-the-body">Calculating a Hash of the Body</h3>
+<ul>
+<li>We need to ensure the body is initialized before calculating a hash for it. Line 16 sets the body to an empty string.</li>
+<li>If <code>http_request.body</code> on line 18 is missing then the default value (empty string) is assigned to the body variable.</li>
+<li>Then we can calculate the hash of the body using the <code>crypto.sha256( body )</code> built in function on line 21</li>
+</ul>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span style="color:#f00;font-style:italic">// Ensure the request body is initialized and fetch the request&#39;s body if one is present
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span style="color:#f00;font-style:italic"></span><span style="color:#00f">default</span> body = <span style="color:#009c00">&#34;&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>body = b {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>  b := http_request.body
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>}
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span style="color:#f00;font-style:italic">// Then calculate the hash for the request body
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span style="color:#f00;font-style:italic"></span>bodyHash = crypto.sha256( body )
+</code></pre></div><p></strong><br></p>
+<h3 id="communicating-our-signature">Communicating our signature</h3>
+<p>Now that we have the hash of our headers and body, we need to gather all of the information that we want to put into our signature. We will lock all of this information together by binding it into a JWS token. We will use some standard claims and create some custom claims as well.</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>requestDigest = {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>  <span style="color:#009c00">&#34;iss&#34;</span>: <span style="color:#009c00">&#34;apigateway.example.com&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>  <span style="color:#009c00">&#34;aud&#34;</span>: [ <span style="color:#009c00">&#34;protected-api.example.com&#34;</span>],
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>  <span style="color:#009c00">&#34;host&#34;</span>: http_request.host,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>  <span style="color:#009c00">&#34;method&#34;</span>: http_request.method,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span>  <span style="color:#009c00">&#34;path&#34;</span>: http_request.path,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>  <span style="color:#009c00">&#34;created&#34;</span>: time.now_ns(),
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>  <span style="color:#009c00">&#34;headers&#34;</span>: criticalHeaders,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>  <span style="color:#009c00">&#34;headerDigest&#34;</span>: headerHash,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span>  <span style="color:#009c00">&#34;bodyDigest&#34;</span>: bodyHash
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span>}
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span>digestHeader = io.jwt.encode_sign({ <span style="color:#009c00">&#34;typ&#34;</span>: <span style="color:#009c00">&#34;JWT&#34;</span>, <span style="color:#009c00">&#34;alg&#34;</span>: <span style="color:#009c00">&#34;RS256&#34;</span> }, requestDigest, signingKey )
+</span></code></pre></div></strong>
+<ul>
+<li>The system sending the request identifies itself as the issuer (line 23).</li>
+<li>We can also specify the recipient of the request (line 24).</li>
+<li>Since the JWS is signed, we can simply copy the host, method, &amp; resource path (lines 25-27).</li>
+<li>A timestamp (line 28) informs the recipient of how long the token has been in transit. The recipient can determine how long to honor a request.</li>
+<li>The recipient needs to know which headers (line 29) were included in the header hash and of course it needs to know the hash (line 30).</li>
+<li>The recipient also needs to know what the hash of the body is (line 31).</li>
+<li>Finally, we create our JWS by passing our JWT object, our signing key and some parameters to specify the signing algorthim into the io.<code>jwt.encode_sign()</code> built in function.</li>
+</ul>
+<br>
+<h3 id="handing-off-to-envoy-to-add-the-signature-to-the-request">Handing off to Envoy to add the signature to the request</h3>
+<p>With the signature calculated, all that remains to be done is to attach it to the outbound request.</p>
+<ul>
+<li>As we learned previously, when using the external authorization feature, we can tell Envoy to insert or update headers by setting the header name and its value inside a headers object. In our case, we don&rsquo;t want to interfere with any other authorization mechanisms that are in use in the environment. So, instead of putting our signature in the authorization header, we will create a Digest header (line 38).</li>
+<li>Our OPA policy wasn&rsquo;t evaluating any real authorization rules. So we will always set the <code>allowed</code> variable to true (line 36).</li>
+<li>We could implement this as a <strong>service mesh sidecar</strong> to sign all outbound requests on behalf of an application.</li>
+<li>In a <strong>front proxy</strong> use case, we most likely would have run other rules before signing the request and forwarding it to it&rsquo;s ultimate destination.</li>
+</ul>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span>allow = {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span>  <span style="color:#009c00">&#34;allowed&#34;</span>: <span style="color:#00f">true</span>, # Outbound requests are always allowed. This policy simply signs the request
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span>  <span style="color:#009c00">&#34;headers&#34;</span>: {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span>    <span style="color:#009c00">&#34;Digest&#34;</span>: digestHeader
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>  }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span>}
+</code></pre></div><p></strong><br></p>
+<h3 id="tests-for-the-signing-policy">Tests for the signing policy</h3>
+<p>Link to <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/09_sign_validate_request/sign/policy_test.rego">signing policy tests</a></span></p>
+<p>The signatures should work equally well whether each of the fields we are signing is present and populated, present but empty or missing entirely. This will ensure that if a field is optional, the signature will still be created and if a fake value is inserted it can still be detected.</p>
+<p>For each of these use cases we the precalculated the hashes for a given input.</p>
+<ul>
+<li>The <code>fullyPopulated</code> variable (line 5) is used to simulate the input received from Envoy.</li>
+<li>The <code>fullyPopulatedJws</code> variable  (line 6) is the precalculated JWS token that represents our signature.</li>
+<li>We can directly refer to variables in our main REGO policy from their associated tests.</li>
+<li>On lines 11, 15 and 19 we test to see if those variables contain our expected results.</li>
+<li>This same pattern is repeated for the &lsquo;empty&rsquo; and &lsquo;missing&rsquo; use cases.</li>
+</ul>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">package</span> envoy.authz
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>fullyPopulated = { ... }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>fullyPopulatedJws = {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#009c00">&#34;bodyDigest&#34;</span>: <span style="color:#009c00">&#34;60009cec5b535270a0b8389cea67c894fae9549c17b2ceef8f824cde3a10b14e&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#009c00">&#34;headerDigest&#34;</span>: <span style="color:#009c00">&#34;87329ba8383ff39b40746aa22e8d4ee58facc5ac470cac410efb6e549f7574fb&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>}
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span># Fully populated request
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>test_fully_populated_req_bodyHash_matches {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    bodyHash   == fullyPopulatedJws.bodyDigest   <span style="color:#00f">with</span> input as fullyPopulated
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>}
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>test_fully_populated_req_headerHash_matches {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>    headerHash == fullyPopulatedJws.headerDigest <span style="color:#00f">with</span> input as fullyPopulated
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>}
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>test_fully_populated_req_allowed {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>    allow.allowed <span style="color:#00f">with</span> input as fullyPopulated
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>}
+</code></pre></div><p></strong><br></p>
+<h2 id="validating-the-signature-upon-receipt">Validating the signature upon Receipt</h2>
+<p>Link to <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/09_sign_validate_request/verify/policy.rego">signature verification policy</a></span></p>
+<h3 id="extracting-the-signature-from-the-request">Extracting the signature from the request</h3>
+<p>The first part of the policy:</p>
+<ul>
+<li>Extracts the digest from the incoming request header</li>
+<li>Validates the JWS Digest token</li>
+<li>Places the contents of the validated token in a variable for other rules</li>
+</ul>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">package</span> envoy.authz
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span style="color:#00f">import</span> input.attributes.request.http as http_request
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span style="color:#00f">import</span> input.attributes.request.http.headers[<span style="color:#009c00">&#34;digest&#34;</span>] as digest
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>jwks = <span style="color:#009c00">`{...}`</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>verified_digest = v {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>  [isValid, _, payload ] := io.jwt.decode_verify( digest, 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>  { 
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>      <span style="color:#009c00">&#34;cert&#34;</span>: jwks,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>      <span style="color:#009c00">&#34;aud&#34;</span>: <span style="color:#009c00">&#34;apigateway.example.com&#34;</span>  <span style="color:#f00;font-style:italic">// &lt;-- Required since the token contains an `aud` claim in the payload
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span style="color:#f00;font-style:italic"></span>  })
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>  v := {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>    <span style="color:#009c00">&#34;isValid&#34;</span>: isValid,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>    <span style="color:#009c00">&#34;payload&#34;</span>: payload
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>  }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>}
+</code></pre></div></strong>
+<ul>
+<li>Line 4: Extracts the request&rsquo;s signature token from the Digest header</li>
+<li>Line 8: If validated, sets a variable to hold the decoded token payload</li>
+<li>Line 9: Decodes and validates the token using the <code>io.jwt.decode_verify()</code> built-in function</li>
+<li>Line 11: Provides the decode function the public keys it needs to validate the signature</li>
+<li>Line 12: We must provide an expected audience claim when the token contains an audience claim.  The audience claim is an array. If any member of that array matches the supplied audience then that validation rule will pass.</li>
+<li>Line 14: Assigns the decoded token to named properties in an object that in turn is assigned to the <code>verified_digest</code></li>
+</ul>
+<br>
+<h3 id="comparing-the-request-to-the-validated-token">Comparing the request to the validated token</h3>
+<p>Now we can do the important part and compare the values in the request with what was preserved in the JWS token.</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>headersMatch {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>  headerHash == verified_digest.payload.headerDigest
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>}
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>bodiesMatch {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>  bodyHash == verified_digest.payload.bodyDigest
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>}
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>hostsMatch {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>  http_request.host == verified_digest.payload.host
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span>}
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>methodsMatch {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>  http_request.method == verified_digest.payload.method
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>}
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span>pathsMatch {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span>  http_request.path == verified_digest.payload.path
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span>}
+</span></code></pre></div></strong>
+<ul>
+<li>Line 20: The list of critical headers from the JWS token is used to filter the request&rsquo;s headers and calculate a hash using the same statements that were used in the signing process (not shown). If they match then <code>headersMatch</code> is set to true.</li>
+<li>Line 23: The request&rsquo;s body is extracted and used to calculate a hash using the same statements that were used in the signing process (not shown).  If they match then <code>bodiesMatch</code> is set to true.</li>
+<li>Lines 26, 29 &amp; 32: Since these values are captured directly in the token, no special processing is required. They are simply compared to see if they have been altered.</li>
+</ul>
+<br>
+<h3 id="checking-request-recency">Checking Request Recency</h3>
+<p>We don&rsquo;t want to leave an unbounded amount of time for a request to be processed. The next section of the policy checks to see if the request was initiated recently enough.</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span>requestDuration = time.now_ns() - verified_digest.payload.created
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span>withinRecencyWindow {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span>  requestDuration &lt; 34159642955430000
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span>}
+</span></code></pre></div></strong>
+<ul>
+<li>Line 34: uses the built-in function <code>time.now_ns()</code> to calculate the time passed since the request was initiated.</li>
+<li>Line 37: Uses the calculated request duration and compares it to our business rule</li>
+</ul>
+<br>
+<h3 id="generating-rule-failure-messages">Generating Rule Failure Messages</h3>
+<p>An this side of the connection our messages need 2 conditions to properly know which rules failed.</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>messages[ msg ]{
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span>  verified_digest.isValid
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span>	not headersMatch
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>  msg := {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span>    <span style="color:#009c00">&#34;id&#34;</span>  : <span style="color:#009c00">&#34;7&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span>    <span style="color:#009c00">&#34;priority&#34;</span>  : <span style="color:#009c00">&#34;5&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45</span>    <span style="color:#009c00">&#34;message&#34;</span> : <span style="color:#009c00">&#34;Critical request headers do not match signature&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46</span>  }
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47</span>}
+</span></code></pre></div></strong>
+<ul>
+<li>Line 40: If the digest token is simply missing or corrupt, we don&rsquo;t want to return messages for every single rule that failed. If the signature token is missing entirely, the issue isn&rsquo;t really that the headers don&rsquo;t match. The real issue is that the signature token is missing. So, this guard rule makes sure that we at least had a valid signature token before we check to see if the headers didn&rsquo;t match.</li>
+<li>Line 41: If the headers don&rsquo;t match then we return message indicating that.</li>
+<li>Numerous other similar rules are in the full policy file (not shown here) testing for similar conditions.</li>
+</ul>
+<br>
+<h3 id="calculating-the-final-decision-on-the-validity-of-the-request">Calculating the final decision on the validity of the request</h3>
+<p>Lines 49 through 55 below calculate the final decision on the validity of the request. When we name our rules intuitively, the decision logic is pretty intuitive as well. In this case the methods, paths, hosts, headers and bodies must all</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48</span><span style="color:#00f">default</span> decision = <span style="color:#00f">false</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49</span>decision {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50</span>  methodsMatch
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51</span>  pathsMatch
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52</span>  hostsMatch
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53</span>  headersMatch
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54</span>  bodiesMatch
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55</span>  withinRecencyWindow
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56</span>}
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58</span><span style="color:#00f">default</span> headerValue = <span style="color:#009c00">&#34;false&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59</span>headerValue = h {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60</span>  decision
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61</span>  h := <span style="color:#009c00">&#34;true&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62</span>}
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64</span>allow = {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65</span>  <span style="color:#009c00">&#34;allowed&#34;</span>: decision,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66</span>  <span style="color:#009c00">&#34;headers&#34;</span>: {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67</span>    <span style="color:#009c00">&#34;Valid-Request&#34;</span>: headerValue
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68</span>  },
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69</span>  <span style="color:#009c00">&#34;body&#34;</span> : json.marshal({ <span style="color:#009c00">&#34;Authorization-Failures&#34;</span>: messages })
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70</span>}
+</span></code></pre></div></strong>
+<p>Line 69: OPA&rsquo;s built-in function <code>json.marshal()</code> converts all of the rule failures into a string for sending back to the caller.
+The other statements should be familiar from our previous discussion of Envoy&rsquo;s external authorization contract. So, we won&rsquo;t break that down again.</p>
+<br>
+<p>The <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/09_sign_validate_request/verify/policy_test.rego">signature verification policy tests</a></span> are more complicated than the tests for the signing process due to increased complexity of the policy.</p>
+<h1 id="congratulations">Congratulations</h1>
+<p>We have completed our example to demonstrate how to sign and validate HTTP requests. This capability is very powerful and effective and protecting the integrity of transactions. The best part about this approach is that this powerful capability can be added to any application in your portfolio without requiring code changes to every system.</p>
+
+    </div>
+    <footer>
+      <ul class="stats">
+  <li class="categories">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/categories/cloud/">cloud</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/observability/">observability</a></li>
+        
+          <li><a class="article-terms-link" href="/categories/service-mesh/">service mesh</a></li>
+        
+      
+    
+    </ul>
+  </li>
+  <li class="tags">
+    <ul>
+    
+      
+        
+          <li><a class="article-terms-link" href="/tags/logs/">logs</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/taps/">taps</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/traces/">traces</a></li>
+        
+          <li><a class="article-terms-link" href="/tags/envoy/">envoy</a></li>
+        
+      
+    
+    </ul>
+  </li>
+</ul>
+
+    </footer>
+  </article>
+  
+
+  <div class="pagination">
+  
+    <a href="/blog/envoy_opa_8_logs_taps_and_traces/" class="button"><div class="previous"><div>Configuring Envoy Logs, Taps and Traces</div></div></a>
+  
+  
+</div>
+
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>Recent posts</h1>
+      </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_9_sign_verify/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_9_sign_verify/">Signing HTTP Requests</a></h2>
+          <time class="published" datetime="">October 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_8_logs_taps_and_traces/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_8_logs_taps_and_traces/">Configuring Envoy Logs, Taps and Traces</a></h2>
+          <time class="published" datetime="">September 10, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_7_app_contracts/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_7_app_contracts/">Putting It All Together with Composite Authorization</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_6_envoy_jws/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-GJao3ZTX9gU-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_6_envoy_jws/">JWS Signature Validation with Envoy</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_5_opa_jws/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/08/jws-signatures-XQaqV5qYcXg-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Token Validation with OPA</a></h2>
+          <time class="published" datetime="">September 7, 2020</time>
+        </header>
+      </article>
+      
+      
+        <footer>
+          <a href="/blog/" class="button">See more</a>
+        </footer>
+      
+    </section>
+  
+
+  
+    
+      <section id="categories">
+        <header>
+          <h1><a href="/categories">Categories</a></h1>
+        </header>
+        <ul>
+          
+            
+          
+          
+          <li>
+            
+              <a href="/categories/cloud/">cloud<span class="count">9</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/security/">security<span class="count">5</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/service-mesh/">service-mesh<span class="count">5</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">4</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/authentication/">authentication<span class="count">3</span></a>
+            
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>About</h1>
+      </header>
+      <p>Sharing perspectives.</p>
+      <footer>
+        <a href="/about" class="button">Learn More</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/helpfulBadger" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+  
+  <p class="copyright">
+    
+      &copy; 2020
+      
+        Helpful Badger&#39;s Blog
+      
+    . <br>
+    Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://gohugo.io/' title='0.74.3' target='_blank' rel='noopener'>Hugo</a>
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="/js/bundle.min.a130f793c5bbd8f5902d41386b68a11988891ebc5f9a990f2176557ef014e758.js" integrity="sha256-oTD3k8W72PWQLUE4a2ihGYiJHrxfmpkPIXZVfvAU51g="></script>
+    <script src="/js/add-on.js"></script>
+    </div>
+  </body>
+</html>

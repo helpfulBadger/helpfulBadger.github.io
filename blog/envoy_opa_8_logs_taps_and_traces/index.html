@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to configure Envoy&#39;s access logs, taps for capturing full requests &amp; responses and traces">
 <meta itemprop="datePublished" content="2020-09-10T10:36:36-04:00" />
 <meta itemprop="dateModified" content="2020-09-10T10:36:36-04:00" />
-<meta itemprop="wordCount" content="2175">
+<meta itemprop="wordCount" content="2180">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg">
 
 
@@ -285,10 +285,11 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS tokens with Open Policy Agent">JWS Token Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS tokens natively with Envoy">JWS Token Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs, taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/" title="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests">Sign / Verify HTTP Requests</a></span></li>
 </ol>
 <h2 id="introduction">Introduction</h2>
 <p>In this example we are going to use both a Front Proxy deployment and a service mesh deployment to centralize log configuration, capture full requests and responses with taps and to inject trace information. Logs and taps can be done transparently without the knowledge nor cooperation from our applications. However, for traces there cooperation from our app is required to forward the trace headers to the next link in the chain.</p>
@@ -317,6 +318,7 @@
 </ul>
 <p>Elastic common schema was introduced to make it easier to analyze logs across applications. <span style="color:blue"><a href="https://www.elastic.co/blog/introducing-the-elastic-common-schema">This article on the elastic.co web site</a></span> is a good read and explains it in more detail. The <span style="color:blue"><a href="https://www.elastic.co/guide/en/ecs/current/index.html">reference for elastic common schema</a></span> provides names for many typical deployment environments, and cloud environments etc.</p>
 <p>Below is the abbreviation envoy.yaml configuration that shows how to specify our logging configuration. The explanation of the configuration follows.</p>
+<strong>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">static_resources</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#00f">listeners</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  ...
@@ -361,7 +363,8 @@
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>                ...
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span>  <span style="color:#00f">clusters</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span><span style="color:#00f">admin</span>:
-</code></pre></div><p>The <code>access_log</code> configuration section is part of the HTTP Connection Manager Configuration and at the same nesting level as the <code>route_config</code> and <code>http_filters</code> sections.</p>
+</code></pre></div></strong>
+<p>The <code>access_log</code> configuration section is part of the HTTP Connection Manager Configuration and at the same nesting level as the <code>route_config</code> and <code>http_filters</code> sections.</p>
 <ul>
 <li>We use a typed config <code>type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog</code> in version 3 of the configuration API</li>
 <li>The file path is set to standard out to so that log aggregation can be managed by docker.</li>
@@ -382,6 +385,7 @@
 <li>We have match configuration that allows us to selectively target what we tap and what we don&rsquo;t.</li>
 <li>The output configuration section is where we specify where the taps should be sent. For the <code>file_per_tap</code> sink, remember to add the trailing slash to the path otherwise no files will be written. Additionally, the file path can&rsquo;t be set to standard out due to the expectation that new files will be opened under the subdirectory that is specified.</li>
 </ul>
+<strong>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">static_resources</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#00f">listeners</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  ...
@@ -412,7 +416,8 @@
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>  ...
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span style="color:#00f">admin</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>...
-</code></pre></div><blockquote>
+</code></pre></div></strong>
+<blockquote>
 <p>NOTE: The tap filter is experimental and is currently under active development. There is currently a very limited set of match conditions, output configuration, output sinks, etc. Capabilities will be expanded over time and the configuration structures are likely to change.</p>
 </blockquote>
 <h2 id="enabling-traces">Enabling Traces</h2>
@@ -436,6 +441,7 @@
 <li>We have set up zipkin as the output format with jaegar as the configured destination. HTTP and gRPC are both supported. The example uses HTTP protocol for transmitting the traces.</li>
 <li>Our trace configuration refers to a cluster that we have named jaeger. So, we need to add a cluster configuration for it in the clusters section of the configuration file. Lines 28 through 40 points Envoy to our all-in-one jaeger container and port 9411 on that container.</li>
 </ul>
+<strong>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#00f">static_resources</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#00f">listeners</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  - <span style="color:#00f">address</span>:
@@ -478,7 +484,8 @@
 </span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span>                <span style="color:#00f">port_value</span>: 9411
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span><span style="color:#00f">admin</span>:
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>  ...
-</code></pre></div><h1 id="running-the-solution">Running the Solution</h1>
+</code></pre></div></strong>
+<h1 id="running-the-solution">Running the Solution</h1>
 <p>There is a bash script in the <code>08_log_taps_traces</code> directory that demonstrates the completed example. Just run <code>./demonstrate_log_tap_and_trace.sh</code> The script does the following:</p>
 <ol>
 <li>It cleans up any left over files from a previous run.</li>
@@ -561,6 +568,8 @@
     <a href="/blog/envoy_opa_7_app_contracts/" class="button"><div class="previous"><div>Putting It All Together with Composite Authorization</div></div></a>
   
   
+    <a href="/blog/envoy_opa_9_sign_verify/" class="button"><div class="next"><div>Signing HTTP Requests</div></div></a>
+  
 </div>
 
 
@@ -571,6 +580,23 @@
       <header>
         <h1>Recent posts</h1>
       </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_9_sign_verify/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_9_sign_verify/">Signing HTTP Requests</a></h2>
+          <time class="published" datetime="">October 7, 2020</time>
+        </header>
+      </article>
       
       <article class="mini-post">
         <section>
@@ -635,25 +661,8 @@
 
         </section>
         <header>
-          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
+          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Token Validation with OPA</a></h2>
           <time class="published" datetime="">September 7, 2020</time>
-        </header>
-      </article>
-      
-      <article class="mini-post">
-        <section>
-          
-  <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
-    
-  </a>
-
-
-        </section>
-        <header>
-          <h2><a href="/blog/envoy_opa_4_opa_cli/">Using the Open Policy Agent CLI</a></h2>
-          <time class="published" datetime="">September 2, 2020</time>
         </header>
       </article>
       
@@ -678,7 +687,7 @@
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">8</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">9</span></a>
             
           
           <li>
@@ -688,17 +697,17 @@
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">4</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">5</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">4</span></a>
             
           
           <li>
             
               <a href="/categories/authentication/">authentication<span class="count">3</span></a>
-            
-          
-          <li>
-            
-              <a href="/categories/observability/">observability<span class="count">3</span></a>
             
           
           </li>

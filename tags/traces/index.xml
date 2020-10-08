@@ -6,10 +6,20 @@
     <description>Recent content in traces on Helpful Badger&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 10 Sep 2020 10:36:36 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 07 Oct 2020 09:30:44 -0400</lastBuildDate>
     
 	<atom:link href="https://helpfulbadger.github.io/tags/traces/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Signing HTTP Requests</title>
+      <link>https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/</link>
+      <pubDate>Wed, 07 Oct 2020 09:30:44 -0400</pubDate>
+      
+      <guid>https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/</guid>
+      <description>Photo by Vanna Phon on Unsplash
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 09 &amp;mdash; Learn how to use Envoy &amp;amp; OPA to sign and validate HTTP Requests This is the 9th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
+    </item>
     
     <item>
       <title>Configuring Envoy Logs, Taps and Traces</title>

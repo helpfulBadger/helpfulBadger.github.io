@@ -32,13 +32,13 @@ Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 06 &amp;mdash
     </item>
     
     <item>
-      <title>JWS Signature Validation with OPA</title>
+      <title>JWS Token Validation with OPA</title>
       <link>https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/</link>
       <pubDate>Mon, 07 Sep 2020 12:10:17 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/</guid>
       <description>Photo by SkillScouter on Unsplash
-Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 05 &amp;mdash; JWS Signature Validation with OPA This is the 5th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
+Getting Started with Envoy &amp;amp; Open Policy Agent &amp;mdash; 05 &amp;mdash; JWS Token Validation with OPA This is the 5th Envoy &amp;amp; Open Policy Agent Getting Started Guide. Each guide is intended to explore a single feature and walk through a simple implementation. Each guide builds on the concepts explored in the previous guide with the end goal of building a very powerful authorization service by the end of the series.</description>
     </item>
     
     <item>

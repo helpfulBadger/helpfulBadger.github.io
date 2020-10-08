@@ -6,7 +6,7 @@
     <description>Recent content in Categories on Helpful Badger&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 10 Sep 2020 10:36:36 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 07 Oct 2020 09:30:44 -0400</lastBuildDate>
     
 	<atom:link href="https://helpfulbadger.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>cloud</title>
       <link>https://helpfulbadger.github.io/categories/cloud/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      <pubDate>Wed, 07 Oct 2020 09:30:44 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/categories/cloud/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>Observability</title>
       <link>https://helpfulbadger.github.io/categories/observability/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      <pubDate>Wed, 07 Oct 2020 09:30:44 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/categories/observability/</guid>
       <description></description>
@@ -32,7 +32,7 @@
     <item>
       <title>service mesh</title>
       <link>https://helpfulbadger.github.io/categories/service-mesh/</link>
-      <pubDate>Thu, 10 Sep 2020 10:36:36 -0400</pubDate>
+      <pubDate>Wed, 07 Oct 2020 09:30:44 -0400</pubDate>
       
       <guid>https://helpfulbadger.github.io/categories/service-mesh/</guid>
       <description></description>

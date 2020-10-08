@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to Implement Application Specific Authorization Rules">
 <meta itemprop="datePublished" content="2020-09-07T22:37:37-04:00" />
 <meta itemprop="dateModified" content="2020-09-07T22:37:37-04:00" />
-<meta itemprop="wordCount" content="3732">
+<meta itemprop="wordCount" content="3980">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/app-authorization-A6qNzfJXRGQ-unsplash.jpg">
 
 
@@ -214,7 +214,7 @@
     </time>
     <span class="author">Helpful Badger</span>
     
-      <p>18 minute read</p>
+      <p>19 minute read</p>
     
   </div>
 </header>
@@ -285,10 +285,11 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS tokens with Open Policy Agent">JWS Token Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS tokens natively with Envoy">JWS Token Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs, taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/" title="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests">Sign / Verify HTTP Requests</a></span></li>
 </ol>
 <h2 id="introduction">Introduction</h2>
 <p>In this example we are going to simulate an ecommerce company called <code>Example.com</code> that has a published set of APIs and multiple client applications. Each client application has:</p>
@@ -300,17 +301,18 @@
 <p>There are a lot of other rules that we will eventually be interested in implementing. However, this set of rules is complex enough to demonstrate how we can put together what we have learned so far into a little authorization system.</p>
 <h3 id="examplecoms-apis">Example.com&rsquo;s APIs</h3>
 <p>Here are Example.com&rsquo;s published APIs.</p>
-<pre><code>/<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*
-/<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/account/*
-/<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/messages/*
-/<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/order/*
-/<span style="color:brown"><strong>api</strong></span>/<span style="color:blue"><strong>customer</strong></span>/*/paymentcard/*
-/<span style="color:brown"><strong>api</strong></span>/featureFlags
-/<span style="color:brown"><strong>api</strong></span>/<span style="color:green"><strong>order</strong></span>/*
-/<span style="color:brown"><strong>api</strong></span>/<span style="color:green"><strong>order</strong></span>/*/payment/*
-/<span style="color:brown"><strong>api</strong></span>/product/*
-/<span style="color:brown"><strong>api</strong></span>/shipment/*
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>/api/customer/<span style="color:#009c00">&#39;{id}&#39;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>/api/customer/<span style="color:#009c00">&#39;{id}&#39;</span>/account/<span style="color:#009c00">&#39;{id}&#39;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>/api/customer/<span style="color:#009c00">&#39;{id}&#39;</span>/messages/<span style="color:#009c00">&#39;{id}&#39;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>/api/customer/<span style="color:#009c00">&#39;{id}&#39;</span>/order/<span style="color:#009c00">&#39;{id}&#39;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>/api/customer/<span style="color:#009c00">&#39;{id}&#39;</span>/paymentcard/<span style="color:#009c00">&#39;{id}&#39;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>/api/featureFlags
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>/api/order/<span style="color:#009c00">&#39;{id}&#39;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>/api/order/<span style="color:#009c00">&#39;{id}&#39;</span>/payment/<span style="color:#009c00">&#39;{id}&#39;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>/api/product/<span style="color:#009c00">&#39;{id}&#39;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>/api/shipment/<span style="color:#009c00">&#39;{id}&#39;</span>
+</code></pre></div></strong>
 <ul>
 <li>The customer API, <code>/api/customer/*</code>, allows users manage customer profiles in our customer system of record.</li>
 <li>The accounts API, <code>/api/customer/*/account/*</code>, allows users to manage accounts for a specific customer in the system of record for accounts.</li>
@@ -325,41 +327,44 @@
 </ul>
 <h3 id="api-endpoint-definition">API Endpoint Definition</h3>
 <p>As the basis for our security policies we need a data structure that contains all of possible actions that a user and client application can take. For this example, we define a URI pattern and a method being attempted on that URI as an <code>endpoint</code>. The <code>id</code> field uniquely identifies each endpoint and will be used in the process of actually specifying what endpoints an application has access to.</p>
-<pre><code>[
-    {<span style="color:blue"><strong>"id"</strong></span>:"001",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer"},
-    {<span style="color:blue"><strong>"id"</strong></span>:"002",<span style="color:blue"><strong>"method"</strong></span>:"POST",  <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer"},
-    {<span style="color:blue"><strong>"id"</strong></span>:"003",<span style="color:blue"><strong>"method"</strong></span>:"DELETE",<span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
-    {<span style="color:blue"><strong>"id"</strong></span>:"004",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
-    {<span style="color:blue"><strong>"id"</strong></span>:"005",<span style="color:blue"><strong>"method"</strong></span>:"POST",  <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
-    {<span style="color:blue"><strong>"id"</strong></span>:"006",<span style="color:blue"><strong>"method"</strong></span>:"PUT",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*"},
-    {<span style="color:blue"><strong>"id"</strong></span>:"007",<span style="color:blue"><strong>"method"</strong></span>:"GET",   <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*/account"},
-    {<span style="color:blue"><strong>"id"</strong></span>:"008",<span style="color:blue"><strong>"method"</strong></span>:"POST",  <span style="color:blue"><strong>"pattern"</strong></span>:"/api/customer/*/account"},
-...
-]
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>[
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;001&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;GET&#34;</span>,   &#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer&#34;</span>},
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;002&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;POST&#34;</span>,  &#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer&#34;</span>},
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;003&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;DELETE&#34;</span>,&#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer/*&#34;</span>},
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;004&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;GET&#34;</span>,   &#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer/*&#34;</span>},
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;005&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;POST&#34;</span>,  &#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer/*&#34;</span>},
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;006&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;PUT&#34;</span>,   &#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer/*&#34;</span>},
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;007&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;GET&#34;</span>,   &#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer/*/account&#34;</span>},
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    {&#34;id&#34;:<span style="color:#009c00">&#34;008&#34;</span>,&#34;method&#34;:<span style="color:#009c00">&#34;POST&#34;</span>,  &#34;pattern&#34;:<span style="color:#009c00">&#34;/api/customer/*/account&#34;</span>},
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>...
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>]
+</span></code></pre></div></strong>
 <h3 id="client-application-api-contracts">Client Application API Contracts</h3>
 <p>The next piece of data that we need to build our example authorization solution is a mapping between each client application and the endponts that it is allowed to access. The data structure below holds that information. The unique ID for each application is a <code>key</code> in this data structure and the value is an array of all of the endpoint IDs that the application has access to.</p>
-<pre><code>apiPermissions = {
-  <span style="color:blue"><strong>"app_123456"</strong></span>: [ <span style="color:green"><strong>
-      "001","004","007","010","012","015","018","021","024","027","031","034","037","040","043","046","049","052","055" </strong></span>
-      ],
-  <span style="color:blue"><strong>"app_000123"</strong></span>:[ <span style="color:green"><strong>
-    "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", 
-    "011", "012", "013", "014", "015", "016", "017", "018", "019", "020",
-    "021", "022", "023", "024", "025", "026", "027", "028", "029", "030",
-    "031", "032", "033", "034", "035", "036", "037", "038", "039", "040",
-    "041", "042", "043", "044", "045", "046", "047", "048", "049", "050",
-    "051", "052", "053", "054", "055", "056", "057" </strong></span>
-  ]
-}
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>apiPermissions = {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  &#34;app_123456&#34;: [ 
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>      <span style="color:#009c00">&#34;001&#34;</span>,<span style="color:#009c00">&#34;004&#34;</span>,<span style="color:#009c00">&#34;007&#34;</span>,<span style="color:#009c00">&#34;010&#34;</span>,<span style="color:#009c00">&#34;012&#34;</span>,<span style="color:#009c00">&#34;015&#34;</span>,<span style="color:#009c00">&#34;018&#34;</span>,<span style="color:#009c00">&#34;021&#34;</span>,<span style="color:#009c00">&#34;024&#34;</span>,<span style="color:#009c00">&#34;027&#34;</span>,<span style="color:#009c00">&#34;031&#34;</span>,<span style="color:#009c00">&#34;034&#34;</span>,<span style="color:#009c00">&#34;037&#34;</span>,<span style="color:#009c00">&#34;040&#34;</span>,<span style="color:#009c00">&#34;043&#34;</span>,<span style="color:#009c00">&#34;046&#34;</span>,<span style="color:#009c00">&#34;049&#34;</span>,<span style="color:#009c00">&#34;052&#34;</span>,<span style="color:#009c00">&#34;055&#34;</span> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>      ],
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>  &#34;app_000123&#34;:[ 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#009c00">&#34;001&#34;</span>, <span style="color:#009c00">&#34;002&#34;</span>, <span style="color:#009c00">&#34;003&#34;</span>, <span style="color:#009c00">&#34;004&#34;</span>, <span style="color:#009c00">&#34;005&#34;</span>, <span style="color:#009c00">&#34;006&#34;</span>, <span style="color:#009c00">&#34;007&#34;</span>, <span style="color:#009c00">&#34;008&#34;</span>, <span style="color:#009c00">&#34;009&#34;</span>, <span style="color:#009c00">&#34;010&#34;</span>, 
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>    <span style="color:#009c00">&#34;011&#34;</span>, <span style="color:#009c00">&#34;012&#34;</span>, <span style="color:#009c00">&#34;013&#34;</span>, <span style="color:#009c00">&#34;014&#34;</span>, <span style="color:#009c00">&#34;015&#34;</span>, <span style="color:#009c00">&#34;016&#34;</span>, <span style="color:#009c00">&#34;017&#34;</span>, <span style="color:#009c00">&#34;018&#34;</span>, <span style="color:#009c00">&#34;019&#34;</span>, <span style="color:#009c00">&#34;020&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    <span style="color:#009c00">&#34;021&#34;</span>, <span style="color:#009c00">&#34;022&#34;</span>, <span style="color:#009c00">&#34;023&#34;</span>, <span style="color:#009c00">&#34;024&#34;</span>, <span style="color:#009c00">&#34;025&#34;</span>, <span style="color:#009c00">&#34;026&#34;</span>, <span style="color:#009c00">&#34;027&#34;</span>, <span style="color:#009c00">&#34;028&#34;</span>, <span style="color:#009c00">&#34;029&#34;</span>, <span style="color:#009c00">&#34;030&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#009c00">&#34;031&#34;</span>, <span style="color:#009c00">&#34;032&#34;</span>, <span style="color:#009c00">&#34;033&#34;</span>, <span style="color:#009c00">&#34;034&#34;</span>, <span style="color:#009c00">&#34;035&#34;</span>, <span style="color:#009c00">&#34;036&#34;</span>, <span style="color:#009c00">&#34;037&#34;</span>, <span style="color:#009c00">&#34;038&#34;</span>, <span style="color:#009c00">&#34;039&#34;</span>, <span style="color:#009c00">&#34;040&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#009c00">&#34;041&#34;</span>, <span style="color:#009c00">&#34;042&#34;</span>, <span style="color:#009c00">&#34;043&#34;</span>, <span style="color:#009c00">&#34;044&#34;</span>, <span style="color:#009c00">&#34;045&#34;</span>, <span style="color:#009c00">&#34;046&#34;</span>, <span style="color:#009c00">&#34;047&#34;</span>, <span style="color:#009c00">&#34;048&#34;</span>, <span style="color:#009c00">&#34;049&#34;</span>, <span style="color:#009c00">&#34;050&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#009c00">&#34;051&#34;</span>, <span style="color:#009c00">&#34;052&#34;</span>, <span style="color:#009c00">&#34;053&#34;</span>, <span style="color:#009c00">&#34;054&#34;</span>, <span style="color:#009c00">&#34;055&#34;</span>, <span style="color:#009c00">&#34;056&#34;</span>, <span style="color:#009c00">&#34;057&#34;</span> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>  ]
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>}
+</span></code></pre></div></strong>
 <h3 id="authorized-end-user-identity-providers--jws-issuers-for-each-client-application">Authorized End User Identity Providers / JWS Issuers for each Client Application</h3>
 <p>Just for fun and simplicity we want to make sure that a hacker has not found a way to use or simulate using an application that is intended for another type of user. So, the data structure below lists the identity providers that are permitted for each application. So, the data structure below means that <code>app_123456</code> is only allowed to be used by external customers. <code>app_000123</code> is intended only for use by employees and contractors of example.com (i.e. the workforce). This is a more powerful application that can take action on behalf of the company and on behalf of any of the company&rsquo;s customer. This is very coarse grained security. In a real application we would also put in a lot of user specific rights and access controls. In a later getting started guide we will show how we can start to layer OPA Policies, getting volatile data from external sources and other techniques to implement more realistic security policies.</p>
-<pre><code>idProviderPermissions = {
-  <span style="color:blue"><strong>"app_123456"</strong></span>:["customerIdentity.example.com"],
-  <span style="color:blue"><strong>"app_000123"</strong></span>:["workforceIdentity.example.com"]
-}
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>idProviderPermissions = {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>  &#34;app_123456&#34;: [ <span style="color:#009c00">&#34;customerIdentity.example.com&#34;</span> ],
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>  &#34;app_000123&#34;: [ <span style="color:#009c00">&#34;workforceIdentity.example.com&#34;</span> ]
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>}
+</code></pre></div></strong>
 <h2 id="our-environment">Our Environment</h2>
 <p>In this example we have replaced our HTTPBin container as our ultimate destination with Hoverfly. <span style="color:blue"><a href="https://hoverfly.io/">Hoverfly</a></span> is a light-weight, super fast API mocking server that is API driven and highly extensible. This is used to simulate all of the APIs that we defined above. The API Mocks are defined in the <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/compose/hoverfly/config.json">config.json</a></span> file in the <code>compose\hoverfly</code> directory.</p>
 <p>The other change that we have made is a much more sophisticated and comprehensive set of tests using Newman. <span style="color:blue"><a href="https://learning.postman.com/docs/running-collections/using-newman-cli/command-line-integration-with-newman/">Newman</a></span> is a command line driven postman collection runner. Postman has a testing capability. This feature runs tests that are expressed in Javascript and uses a built in library of test functions. The <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/data/Envoy_OPA.postman_collection.json">Postman collection for Getting Started #7</a></span> with tests is included in this example in the data directory that</p>
@@ -377,20 +382,21 @@
 <p>The configuration snippet below is how we express this logic:</p>
 <ul>
 <li>The <code>match</code> object specifies that any URI must meet the requirements in the <code>requires</code> object</li>
-<li>The <code>requires</code> object specifies that a request must have:  <pre><code>(<span style="color:red"><u>a Gateway issued system identity token</u></span>) <strong>AND a user with</strong> ( <span style="color:blue"><u>a workforce Identity token</u></span> <strong>OR</strong> <span style="color:blue"><u>a Consumer Identity Token</u></span> ))</code></pre> NOTE: Scroll right as needed. The color coding above matches the translation to YAML configuration below.</li>
+<li>The <code>requires</code> object specifies that a request must have:  <pre><code><strong>(<span style="color:green"><u>a Gateway issued system identity token</u></span>) <span style="color:red">AND a user with</span> ( <span style="color:green"><u>a workforce Identity token</u></span> <span style="color:red">OR</span> <span style="color:green"><u>a Consumer Identity Token</u></span> ))</strong></code></pre> NOTE: Scroll right as needed. The color coding above matches the translation to YAML configuration below.</li>
 </ul>
-<pre><code>                      rules:
-                        - match:
-                            prefix: /
-                          requires:
-                            <span style="color:red"><strong>requires_all</strong></span>:
-                              requirements:
-                                - <span style="color:red"><strong>provider_name</strong></span>: gateway_provider
-                                - <span style="color:blue"><strong>requires_any</strong></span>:
-                                    requirements:
-                                      - <span style="color:blue"><strong>provider_name</strong></span>: workforce_provider
-                                      - <span style="color:blue"><strong>provider_name</strong></span>: consumer_provider
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>                      <span style="color:#00f">rules</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                        - <span style="color:#00f">match</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>                            <span style="color:#00f">prefix</span>: /
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>                          <span style="color:#00f">requires</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>                            <span style="color:#00f">requires_all</span>:  <span style="color:#f00;font-style:italic"># AND</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>                              <span style="color:#00f">requirements</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span style="color:#009c00">&gt;                                - provider_name: gateway_provider</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>                                - <span style="color:#00f">requires_any</span>: <span style="color:#f00;font-style:italic"># OR</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>                                    <span style="color:#00f">requirements</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span style="color:#009c00">&gt;                                      - provider_name: workforce_provider</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span style="color:#009c00">&gt;                                      - provider_name: consumer_provider</span>
+</span></code></pre></div></strong>
 <ul>
 <li>The <code>requires_all</code> object specifies that all of the requirements in the <code>requirements</code> array must be true to pass.</li>
 <li>The <code>requirements</code> array contains a <code>provider_name</code> and a <code>requires_any</code> clause. If there were 3 or 4 elements in the array then all of the requirements would need to be true to pass. In this example we only have 2 requirements and one of those has sub-requirements.</li>
@@ -398,100 +404,105 @@
 </ul>
 <h4 id="passing-envoys-dynamic-meta-data-to-opa">Passing Envoy&rsquo;s Dynamic Meta data to OPA</h4>
 <p>We can pass the validated JWS token body to Open Policy Agent by adding a couple of tags to Envoy&rsquo;s configuration. In the token definition section, we add the <code>payload_in_metadata</code> property and give the token a name. In the example below we&rsquo;ve given the token the name <code>actor_token</code>. See below for the configuration snippet.</p>
-<pre><code>                        workforce_provider:
-                          issuer: workforceIdentity.example.com
-                          audiences:
-                          - apigateway.example.com
-                          from_headers:
-                          - name: "actor-token"
-                            value_prefix: ""
-                          forward: true
-                          <span style="color:blue"><strong>payload_in_metadata: "actor_token"</strong></span>
-                          local_jwks:
-                            inline_string: "{\"keys\":[...]}" 
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>                        <span style="color:#00f">workforce_provider</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                          <span style="color:#00f">issuer</span>: workforceIdentity.example.com
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>                          <span style="color:#00f">audiences</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>                          - apigateway.example.com
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>                          <span style="color:#00f">from_headers</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>                          - <span style="color:#00f">name</span>: <span style="color:#009c00">&#34;actor-token&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>                            <span style="color:#00f">value_prefix</span>: <span style="color:#009c00">&#34;&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>                          <span style="color:#00f">forward</span>: <span style="color:#00f">true</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span style="color:#009c00">&gt;                          payload_in_metadata: &#34;actor_token&#34;</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>                          <span style="color:#00f">local_jwks</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>                            <span style="color:#00f">inline_string</span>: <span style="color:#009c00">&#34;{\&#34;keys\&#34;:[...]}&#34;</span> 
+</span></code></pre></div><p></strong  ></p>
 <p>To pass this data to Open Policy Agent, in the <code>envoy.filters.http.ext_authz</code> section, add the array named <code>metadata_context_namespaces</code>. This array specifies the names of the Envoy dynamic metadata namespaces to forward to the OPA Authorization Service. See the configuration change highlighted in blue below.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>                  - <span style="color:#00f">name</span>: envoy.filters.http.ext_authz
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                    <span style="color:#00f">typed_config</span>:
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>                      <span style="color:#00f">&#34;@type&#34;: </span>type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>                      <span style="color:#00f">failure_mode_allow</span>: <span style="color:#00f">false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>                      <span style="color:#00f">grpc_service</span>:
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>                        <span style="color:#00f">google_grpc</span>:
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>                          <span style="color:#00f">target_uri</span>: opa:9191
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>                          <span style="color:#00f">stat_prefix</span>: ext_authz
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>                        <span style="color:#00f">timeout</span>: 0.5s
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>                      <span style="color:#00f">include_peer_certificate</span>: <span style="color:#00f">true</span>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>                  - <span style="color:#00f">name</span>: envoy.filters.http.ext_authz
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>                    <span style="color:#00f">typed_config</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>                      <span style="color:#00f">&#34;@type&#34;: </span>type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>                      <span style="color:#00f">failure_mode_allow</span>: <span style="color:#00f">false</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>                      <span style="color:#00f">grpc_service</span>:
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>                        <span style="color:#00f">google_grpc</span>:
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>                          <span style="color:#00f">target_uri</span>: opa:9191
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>                          <span style="color:#00f">stat_prefix</span>: ext_authz
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>                        <span style="color:#00f">timeout</span>: 0.5s
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>                      <span style="color:#00f">include_peer_certificate</span>: <span style="color:#00f">true</span>
 <span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span style="color:#009c00">&gt;                      metadata_context_namespaces:</span>
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span style="color:#009c00">&gt;                      - envoy.filters.http.jwt_authn</span>
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                  - <span style="color:#00f">name</span>: envoy.filters.http.router
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                    <span style="color:#00f">typed_config</span>: {}
-</code></pre></div><p>These changes add some data to the <code>metadata_context</code>. For each dynamic metadata namespace added, it will add it&rsquo;s data under a key that matches the namespace name in the <code>filter_metadata</code> object. For this example it adds each token&rsquo;s payload in the <code>envoy.filters.http.jwt_authn</code> object underneath the <code>fields</code> object. As you can see from the example below, it adds a lot of extra hierarchy via nested objects that express data types to the original object. So, it may not be worth it to have Envoy forward the validated payload. For us configuring Envoy to forward the token and simply reading the token payload directly is less complicated.</p>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span style="color:#009c00">&gt;                      - envoy.filters.http.jwt_authn</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                  - <span style="color:#00f">name</span>: envoy.filters.http.router
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                    <span style="color:#00f">typed_config</span>: {}
+</code></pre></div><p></strong  ></p>
+<p>These changes add some data to the <code>metadata_context</code>. For each dynamic metadata namespace added, it will add it&rsquo;s data under a key that matches the namespace name in the <code>filter_metadata</code> object. For this example it adds each token&rsquo;s payload in the <code>envoy.filters.http.jwt_authn</code> object underneath the <code>fields</code> object. As you can see from the example below, it adds a lot of extra hierarchy via nested objects that express data types to the original object. So, it may not be worth it to have Envoy forward the validated payload. For us configuring Envoy to forward the token and simply reading the token payload directly is less complicated.</p>
 <p>See the resultant <code>metadata_context</code> below for an example.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>  <span style="color:#00f">&#34;input&#34;: </span>{
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#00f">&#34;attributes&#34;: </span>{
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>      <span style="color:#00f">&#34;destination&#34;: </span>{ <span style="color:#009c00">&#34;...&#34;</span>:<span style="color:#009c00">&#34;...&#34;</span> },
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>      <span style="color:#00f">&#34;metadata_context&#34;: </span>{
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>  <span style="color:#00f">&#34;input&#34;: </span>{
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#00f">&#34;attributes&#34;: </span>{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>      <span style="color:#00f">&#34;destination&#34;: </span>{ <span style="color:#009c00">&#34;...&#34;</span>:<span style="color:#009c00">&#34;...&#34;</span> },
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>      <span style="color:#00f">&#34;metadata_context&#34;: </span>{
 <span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span style="color:#009c00">&gt;        &#34;filter_metadata&#34;: {</span>
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>          <span style="color:#00f">&#34;envoy.filters.http.jwt_authn&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>            <span style="color:#00f">&#34;fields&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>              <span style="color:#00f">&#34;workforce_provider&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>                <span style="color:#00f">&#34;Kind&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>                  <span style="color:#00f">&#34;StructValue&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>                    <span style="color:#00f">&#34;fields&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>                      <span style="color:#00f">&#34;aud&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                        <span style="color:#00f">&#34;Kind&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                          <span style="color:#00f">&#34;ListValue&#34;: </span>{
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>                            <span style="color:#00f">&#34;values&#34;: </span>[
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>                              { <span style="color:#00f">&#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;apigateway.example.com&#34;</span>} },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>                              { <span style="color:#00f">&#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;protected-stuff.example.com&#34;</span> } }
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>                            ]
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>                          }
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>                        }
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>                      },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>                      <span style="color:#00f">&#34;auth_time&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>1597676718 } },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>                      <span style="color:#00f">&#34;azp&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;app_123456&#34;</span> } },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>                      <span style="color:#00f">&#34;exp&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>2735689600 } },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>                      <span style="color:#00f">&#34;iat&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>1597676718 } },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>                      <span style="color:#00f">&#34;iss&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;workforceIdentity.example.com&#34;</span> } },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span>                      <span style="color:#00f">&#34;jti&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;mPPdwJ7Jrr2MQzS&#34;</span> } },
-</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>                      <span style="color:#00f">&#34;sub&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;workforceIdentity:406319&#34;</span> } }
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>                    }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>                  }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span>                }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span>              }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span>            }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span>          }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span>        }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span>      },
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span>      <span style="color:#00f">&#34;request&#34;: {&#34;...&#34;: </span><span style="color:#009c00">&#34;...&#34;</span>},
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span>      <span style="color:#00f">&#34;source&#34;:  {&#34;...&#34;: </span><span style="color:#009c00">&#34;...&#34;</span>}
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>    },
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span>    <span style="color:#00f">&#34;parsed_body&#34;: </span><span style="color:#00f">null</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span>    <span style="color:#00f">&#34;parsed_path&#34;: </span>[<span style="color:#009c00">&#34;...&#34;</span>],
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>    <span style="color:#00f">&#34;parsed_query&#34;: </span>{},
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span>    <span style="color:#00f">&#34;truncated_body&#34;: </span><span style="color:#00f">false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span>  }
-</code></pre></div><h3 id="authorization-stage-2---open-policy-agent-policies">Authorization Stage 2 - Open Policy Agent Policies</h3>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>          <span style="color:#00f">&#34;envoy.filters.http.jwt_authn&#34;: </span>{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>            <span style="color:#00f">&#34;fields&#34;: </span>{
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>              <span style="color:#00f">&#34;workforce_provider&#34;: </span>{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>                <span style="color:#00f">&#34;Kind&#34;: </span>{
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>                  <span style="color:#00f">&#34;StructValue&#34;: </span>{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>                    <span style="color:#00f">&#34;fields&#34;: </span>{
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>                      <span style="color:#00f">&#34;aud&#34;: </span>{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                        <span style="color:#00f">&#34;Kind&#34;: </span>{
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                          <span style="color:#00f">&#34;ListValue&#34;: </span>{
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>                            <span style="color:#00f">&#34;values&#34;: </span>[
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>                              { <span style="color:#00f">&#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;apigateway.example.com&#34;</span>} },
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>                              { <span style="color:#00f">&#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;protected-stuff.example.com&#34;</span> } }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>                            ]
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>                          }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>                        }
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>                      },
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>                      <span style="color:#00f">&#34;auth_time&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>1597676718 } },
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>                      <span style="color:#00f">&#34;azp&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;app_123456&#34;</span> } },
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>                      <span style="color:#00f">&#34;exp&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>2735689600 } },
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>                      <span style="color:#00f">&#34;iat&#34;: { &#34;Kind&#34;: { &#34;NumberValue&#34;: </span>1597676718 } },
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>                      <span style="color:#00f">&#34;iss&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;workforceIdentity.example.com&#34;</span> } },
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span>                      <span style="color:#00f">&#34;jti&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;mPPdwJ7Jrr2MQzS&#34;</span> } },
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span>                      <span style="color:#00f">&#34;sub&#34;: { &#34;Kind&#34;: { &#34;StringValue&#34;: </span><span style="color:#009c00">&#34;workforceIdentity:406319&#34;</span> } }
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>                    }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>                  }
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span>                }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span>              }
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span>            }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span>          }
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span>        }
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span>      },
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span>      <span style="color:#00f">&#34;request&#34;: {&#34;...&#34;: </span><span style="color:#009c00">&#34;...&#34;</span>},
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span>      <span style="color:#00f">&#34;source&#34;:  {&#34;...&#34;: </span><span style="color:#009c00">&#34;...&#34;</span>}
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span>    },
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span>    <span style="color:#00f">&#34;parsed_body&#34;: </span><span style="color:#00f">null</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span>    <span style="color:#00f">&#34;parsed_path&#34;: </span>[<span style="color:#009c00">&#34;...&#34;</span>],
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span>    <span style="color:#00f">&#34;parsed_query&#34;: </span>{},
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span>    <span style="color:#00f">&#34;truncated_body&#34;: </span><span style="color:#00f">false</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span>  }
+</code></pre></div></strong>
+<h3 id="authorization-stage-2---open-policy-agent-policies">Authorization Stage 2 - Open Policy Agent Policies</h3>
 <h4 id="extracting-the-jws-token-payloads">Extracting the JWS Token Payloads</h4>
 <p>Since we also have the configuration setting <code>forward: true</code>, we can simply use OPA&rsquo;s built in capabilities to more easily access the data that we need from the tokens.</p>
 <ul>
-<li>The REGO snippets below show how we pull the tokens that we need out of the <code>actor-token</code> header and <code>app-token</code> header.</li>
-<li>Since we won&rsquo;t get to this point unless Envoy successfully validated the tokens, we can simply decode the payload. The <code>io.jwt.decode()</code> functions do that for us.</li>
-<li>We don&rsquo;t need the header and signature values so we tell OPA to discard those with underscores in the destructuring fragment <code>[ _, p, _ ]</code></li>
+<li>The REGO snippets below show how we pull the tokens that we need out of the <code>actor-token</code> header and <code>app-token</code> header (lines 1 &amp; 6).</li>
+<li>Since we won&rsquo;t get to this point unless Envoy successfully validated the tokens, we can simply decode the payload. The <code>io.jwt.decode()</code> functions do that for us (lines 3 &amp; 8).</li>
+<li>We don&rsquo;t need the header and signature values so we tell OPA to discard those with underscores using destructuring assignment <code>[ _, p, _ ]</code></li>
 <li>The payload is then stored in the <code>actor</code> and <code>app</code> variables</li>
 </ul>
 <p>See below for the REGO code.</p>
-<pre><code>import input.attributes.request.http.headers["actor-token"] as <span style="color:blue"><strong>actorToken</strong></span>
-import input.attributes.request.http.headers["app-token"] as <span style="color:red"><strong>appToken</strong></span>
-
-<span style="color:blue"><strong>actor</strong></span> = p {
-  [ _, p, _ ] := io.jwt.decode(<span style="color:blue"><strong>actorToken</strong></span>)	
-}
-
-<span style="color:red"><strong>app</strong></span>  = p {
-  [ _, p, _ ] :=  io.jwt.decode(<span style="color:red"><strong>appToken</strong></span>)
-}
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#00f">import</span> input.attributes.request.http.headers[<span style="color:#009c00">&#34;actor-token&#34;</span>] as actorToken
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>actor = p {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>  [ _, p, _ ] := io.jwt.decode( actorToken )	
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>}
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span style="color:#00f">import</span> input.attributes.request.http.headers[<span style="color:#009c00">&#34;app-token&#34;</span>] as appToken
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span>app = p {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span>  [ _, p, _ ] :=  io.jwt.decode( appToken )
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9</span>}
+</span></code></pre></div></strong>
 <h4 id="making-the-authorization-decision">Making the Authorization Decision</h4>
 <p>Next, we will move over to the punchline, the REGO rule that makes our authorization decision. As we can see from the rule below our rule defaults to <code>false</code> a.k.a. <code>deny</code> access. The next part of the rule says:</p>
 <ul>
@@ -499,65 +510,96 @@ import input.attributes.request.http.headers["app-token"] as <span style="color:
 <li>AND the type of user is appropriate for the client app</li>
 <li>THEN set the decision to <code>true</code> a.k.a. <code>allow</code> the request to flow through.</li>
 </ul>
-<pre><code>default decision = false
-decision {
-  <span style="color:blue"><strong>apiPermittedForClient</strong></span>
-  <span style="color:red"><strong>userTypeAppropriateForClient</strong></span>
-}
-</code></pre>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#00f">default</span> decision = <span style="color:#00f">false</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>decision {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>  apiPermittedForClient
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>  userTypeAppropriateForClient
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>}
+</span></code></pre></div></strong>
 <h4 id="how-do-we-determine-if-the-api-is-permitted-for-the-client-application">How do we determine if the API is Permitted for the Client Application?</h4>
-<p>Now lets work backwards to see how we determine if these two conditions are true.</p>
-<p>Let&rsquo;s look at how <code>apiPermittedForClient</code> is defined. Its default value is false. To see if it should override this default value:</p>
+<p>Now lets work backwards to see how we determine if these two conditions are true. Let&rsquo;s look at how <code>apiPermittedForClient</code> is defined. This section determines that the API call is permitted for the client application if the endpoint ID that we are calling is found in the array endpoints that are permitted for the calling app.</p>
 <ul>
-<li>The first section says that the API is permitted for the client application if the endpoint ID that we are calling is found in the array endpoints that our app is allowed to access.</li>
-<li><code>apiPermissions[ app.client_id ][_] == endpointID</code> means take every <code>[_]</code> element in the permissions array that matches our Client App&rsquo;s ID and see if it equals our endpointID.</li>
+<li>The default value is set to false (line 1).</li>
+<li>Line 3:
+<ul>
+<li>Takes the calling Client App&rsquo;s permissions list <code>apiPermissions[ app.client_id ]</code></li>
+<li>and by using the <code>[_]</code> syntax, compares every element in the API permissions array to the called endpointID.</li>
 </ul>
-<p>Determining our endpoint with our endpoint rule is a little more complicated:</p>
+</li>
+</ul>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#00f">default</span> apiPermittedForClient = <span style="color:#00f">false</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>apiPermittedForClient {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>  apiPermissions[ app.client_id ][_] == endpointID
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>}
+</code></pre></div><p></strong><br></p>
+<h4 id="how-do-we-determine-which-api-endpoint-was-called">How do we determine which API endpoint was called?</h4>
+<p>Determining which endpoint was called with our endpoint rule is a little more complicated:</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>endpointID = epID {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>  some i
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>  endpoints[i].method == http_request.method
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>  p := trim_right( http_request.path, <span style="color:#009c00">&#34;/&#34;</span>)  <span style="color:#f00;font-style:italic">// strip trailing slash if present
+</span><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span style="color:#f00;font-style:italic"></span>  glob.match( lower(endpoints[i].pattern), [<span style="color:#009c00">&#34;/&#34;</span>], lower(p) )
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>  epID := endpoints[i].id
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span>} <span style="color:#00f">else</span> = <span style="color:#009c00">&#34;none&#34;</span>
+</span></code></pre></div></strong>
+<p>This series of rules acts as a progressive set of filters that reduces the search space.</p>
+<p>Line 1: <code>endpointID = epID {</code></p>
 <ul>
-<li>The series of rules effectively acts as progressive filters that reduces the search space with each statement</li>
-<li><code>some i</code> is used when we need to match a specific element in a dataset with some other specific value. This just declares our iterator and names it.</li>
-<li><code>endpoints[i].method == http_request.method</code> searches for a value for i where the method property of that array element equals the request method that we are decisioning. This statement effectively discards ~75% of our reference data and only keeps the array elements that match our request method.</li>
-<li><code>p := trim_right( http_request.path, &quot;/&quot;)  #strip trailing slash if present</code> sets <code>p</code> equal to the request path with any trailing slashes removed</li>
+<li>This statement overrides the default REGO behavior of setting rule results to either <code>true</code>, <code>false</code> or <code>undefined</code>.</li>
+<li>Instead it looks inside the rule body and extracts the epID variable and sets endpointID to that value.</li>
+</ul>
+<p>Line 2: <code>some i</code></p>
+<ul>
+<li>The keyword some is used when we need to match a specific element in one dataset with some other specific value. This line just declares our iterator and names it.</li>
+</ul>
+<p>Line 3: <code>endpoints[i].method == http_request.method</code></p>
+<ul>
+<li>searches for all values for i</li>
+<li>where the method property of the ith element equals the request method</li>
+<li>The statement effectively filters out ~75% of our reference data and only keeps the array elements that match our request method.</li>
+</ul>
+<p>Line 4: <code>p := trim_right( http_request.path, &quot;/&quot;)</code></p>
+<ul>
+<li>sets <code>p</code> equal to the request path with any trailing slashes removed. This normalizes our data for comparing against the API reference dta.</li>
 <li>With the path now normalized, it should work in our REGEX expression search.</li>
-<li><code>glob.match( lower(endpoints[i].pattern), [&quot;/&quot;], lower(p) )</code> takes the lower case pattern from our reference data and the lower case path from our request and looks for any patterns in our reference array that match. Since the statement above discards ~75% of the reference array to satisfy that match criteria, this statement searches that space for any values of i where this statement is true too.</li>
-<li>Our magic variable i should only represent a single value at this point.</li>
-<li>So, now we want to pull back the endpoint id from the only reference data object that should match the statement <code>epID := endpoints[i].id</code> does this for us.</li>
 </ul>
-<p>See the REGO code below for how this section fits together.</p>
-<pre><code>default <span style="color:blue"><strong>apiPermittedForClient</strong></span> = false
-<span style="color:blue"><strong>apiPermittedForClient</strong></span> {
-  apiPermissions[ app.client_id ][_] == <span style="color:blue"><strong>endpointID</strong></span>
-}
-
-<span style="color:blue"><strong>endpointID</strong></span> = epID {
-  some i
-  endpoints[i].method == http_request.method
-  p := trim_right( http_request.path, "/")  #strip trailing slash if present
-  glob.match( lower(endpoints[i].pattern), ["/"], lower(p) )
-  epID := endpoints[i].id
-} else = "none"
-</code></pre>
+<p>Line 5: <code>glob.match(lower(endpoints[i].pattern), [&quot;/&quot;], lower(p))</code></p>
+<ul>
+<li>takes the lower case pattern from our reference data</li>
+<li>and the lower case path from our request</li>
+<li>and looks for any patterns in our reference array that match.</li>
+<li>Since the statement on line 3 discards ~75% of the reference array to satisfy it&rsquo;s match criteria, the statement on line 5 searches the remaining 25% for any values of i where this statement is true too.</li>
+<li>Our magic variable i should only represent a single value at this point.</li>
+</ul>
+<p>Line 6: <code>epID := endpoints[i].id</code></p>
+<ul>
+<li>So, now <code>i</code> should be a single value or <code>undefined</code></li>
+<li>This statement extracts the endpoint id or leaves epID as undefined.</li>
+</ul>
+<p>Line 7: <code>} else = &quot;none&quot;</code></p>
+<ul>
+<li>if epID is still undefined by this point, it sets epID to the string value of <code>none</code></li>
+</ul>
 <h4 id="how-do-we-determine-if-the-type-of-user-is-permitted-for-the-client-application">How do we determine if the Type of User is Permitted for the Client Application?</h4>
-<p>Now, let&rsquo;s look at how <code>userTypeAppropriateForClient</code> is defined. Its default value is false. To see if it should override this default value:</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#00f">default</span> userTypeAppropriateForClient = <span style="color:#00f">false</span>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>userTypeAppropriateForClient {
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>  idProviderPermissions[ app.client_id ][_] == actor.iss
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>}
+</code></pre></div></strong>
+<p>Line 1: Now, let&rsquo;s look at how <code>userTypeAppropriateForClient</code> is defined. This line sets its default value to false.</p>
+<p>Line 3: To see if it should override this default value:</p>
 <ul>
 <li>It uses our reference data object, <code>idProviderPermissions</code></li>
 <li>By using the client ID from the app token, <code>app.client_id</code>, it narrows down the dataset search</li>
 <li>The <code>[_]</code> fragment says: for any element in the array, see if one of the equals the issuer that we have in the actor token <code>actor.iss</code>.</li>
 </ul>
-<pre><code>default <span style="color:red"><strong>userTypeAppropriateForClient</strong></span> = false
-<span style="color:red"><strong>userTypeAppropriateForClient</strong></span> {
-  idProviderPermissions[ app.client_id ][_] == actor.iss
-}
-</code></pre>
 <h4 id="if-we-dont-have-a-match-how-do-we-communicate-reject-reasons">If we don&rsquo;t have a match, how do we communicate reject reasons?</h4>
-<p>Whether rejection reasons are returned to the user or not depends on the circumstances and security risks posed by providing this transparency. However, it still makes sense to log the reject reasons. This example shows you how to report back which rules failed and resulted in a denial of access.</p>
-<ul>
-<li>We do this by defining multiple messages array rules.</li>
-<li>For each occurrence, we put a single rule reference and statically define a message describes a matching failure reason. This is another reason why we defined single condition rules above. It allows us to test each individual rule to determine what the rejection reason was.</li>
-<li>In this first messages block we look for <code>not apiPermittedForClient</code>, this will result in a value of true if <code>apiPermittedForClient</code> is either <code>false</code> or <code>undefined</code>. It then adds the message defined in this block to the messages array.</li>
-<li>The same is true for the second messages rule block.</li>
-<li>This section will result in a messages array that has either 0, 1 or 2 elements.</li>
-</ul>
+<p>Whether rejection reasons are returned to the user or not depends on the circumstances and security risks posed by providing this transparency. However, it still makes sense to log the reject reasons. This example shows you how to report back which rules failed and resulted in a denial of access. We do this by defining multiple messages rules.</p>
+<strong>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>messages[ msg ]{
 <span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  not apiPermittedForClient
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  msg := {
@@ -575,35 +617,68 @@ decision {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>    <span style="color:#009c00">&#34;message&#34;</span> : <span style="color:#009c00">&#34;The authenticated user type is not allowed for the client application&#34;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>  }
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>}
-</code></pre></div><h4 id="now-lets-return-the-results-to-envoy">Now let&rsquo;s return the results to Envoy</h4>
-<p>Envoy is looking for results of the <code>allow</code> rule. The structure of our response is defined by the Envoy external authorization API contract. OPA is also a little bit finicky when assigning values. So we were very careful to make sure that there was no way that any of the variables in this section could end up as undefined. If anything is undefined in the object that we are trying to return, then this rule will fail and the entire result returned to Envoy will be undefined.</p>
+</code></pre></div></strong>
 <ul>
-<li>Since we have setup a default value for the decision variable, it will always be either true or false</li>
-<li>Since Envoy validated our JWS tokens before our policy executed, the User and App tokens will always be valid. So, we hard coded the value of these headers to the string &ldquo;true&rdquo;. The header contract states that all headers must have strings as keys and strings as values.</li>
-<li>The endpointID has a default value of the string &ldquo;none&rdquo;. Since all of the IDs in our reference data are already strings, if there is a match in the reference data, the result here will always be a string.</li>
-<li>The body value must also be a string. So, we can&rsquo;t return any of the other mock data that we have here as an object. So first we declare it as an anonymous object then immediately pass it to the json marshaller. This will return a string. The json marshaller should be able to handle any numeric, null or undefined values for us and always return a string.</li>
-<li>With these guarantees, we can be confident that this block will always return a defined result to Envoy</li>
+<li>For each messages rule, we use a single logic statement that tests each authorization rule that we want to create a message for.
+<ul>
+<li>If we have multiple rules, then we won&rsquo;t know which reason code to enter.</li>
+<li>For each authorization rule that did not pass (lines 2 and 11), a new <code>msg</code> object is added to the messages array.</li>
+<li>Each <code>msg</code> should be statically defined to describe the appropriate failure reason. Inserting a variable that has some possibility of not being defined will cause message insertion to fail.</li>
 </ul>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>allow = response {
+</li>
+<li>The phrasing of the statement <code>not apiPermittedForClient</code>, is important. When a rule is evaluated, the result can be one of 3 conditions: <code>true</code>, <code>false</code> or <code>undefined</code>. Using the <code>not</code> keyword ensures that if the result of rule firing is either <code>false</code> or <code>undefined</code> then both conditions will properly cause our error message to be populated.</li>
+<li>This section will result in a messages array that has either 0, 1 or 2 elements.</li>
+</ul>
+<h4 id="now-lets-return-the-results-to-envoy">Now let&rsquo;s return the results to Envoy</h4>
+<p>The structure of our response is defined by the Envoy external authorization API contract. Envoy is looking for results of the <code>envoy.authz.allow</code> rule. The contract requires:</p>
+<ul>
+<li>A boolean decision <code>allowed</code></li>
+<li>A <code>headers</code> map of keys of type string with values that are also a string</li>
+<li>A <code>body</code> of type string</li>
+</ul>
+<p><strong>Note</strong>: OPA is a little bit finicky when assigning values. So we must be very careful to make sure that there is no way any of the variables in this contract can end up in an undefined state. If variable assignment attempts to put an undefined value into the object then this rule will fail and the entire result returned to Envoy will be undefined.</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>allow = response {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  response := {
 <span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#009c00">&#34;allowed&#34;</span>: decision,
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#009c00">&#34;headers&#34;</span>: {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>      <span style="color:#009c00">&#34;X-Authenticated-User&#34;</span>: <span style="color:#009c00">&#34;true&#34;</span>, 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>      <span style="color:#009c00">&#34;X-Authenticated-App&#34;</span>: <span style="color:#009c00">&#34;true&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>      <span style="color:#009c00">&#34;Endpoint-ID&#34;</span>: endpointID,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>      <span style="color:#009c00">&#34;Content-Type&#34;</span>: <span style="color:#009c00">&#34;application/json&#34;</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>      <span style="color:#009c00">&#34;Endpoint-ID&#34;</span>: endpointID,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>      <span style="color:#009c00">&#34;Content-Type&#34;</span>: <span style="color:#009c00">&#34;application/json&#34;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    },
-<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#009c00">&#34;body&#34;</span> : json.<span style="color:#c34e00">marshal</span>(
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>                      {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>                        <span style="color:#009c00">&#34;Authorized-User-Type&#34;</span>: userTypeAppropriateForClient,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                        <span style="color:#009c00">&#34;Authorized-Endpoint&#34;</span>: apiPermittedForClient,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>                        <span style="color:#009c00">&#34;Authorization-Failures&#34;</span> : messages,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>                        <span style="color:#009c00">&#34;Requested-Path&#34;</span>: http_request.path,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>                        <span style="color:#009c00">&#34;Requested-Method&#34;</span>: http_request.method
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>                      })
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#009c00">&#34;body&#34;</span> : json.marshal(
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>      {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>        <span style="color:#009c00">&#34;Authorized-User-Type&#34;</span>: userTypeAppropriateForClient,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>        <span style="color:#009c00">&#34;Authorized-Endpoint&#34;</span>: apiPermittedForClient,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>        <span style="color:#009c00">&#34;Authorization-Failures&#34;</span> : messages,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>        <span style="color:#009c00">&#34;Requested-Path&#34;</span>: http_request.path,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>        <span style="color:#009c00">&#34;Requested-Method&#34;</span>: http_request.method
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>      })
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>  }
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>} 
-</code></pre></div><p>With that explanation behind us, you can <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/policy.rego">read through the entire policy in context on github</a></span>.</p>
+</code></pre></div></strong>
+<p>Line 3:</p>
+<ul>
+<li>Since we have setup a default value for the <code>decision</code> variable, it will always be either true or false and will not cause the response to become undefined.</li>
+</ul>
+<p>Line 5 &amp; 6:</p>
+<ul>
+<li>Since Envoy validated our JWS tokens before our policy executed, the User and App tokens will always be valid. So, we can hard coded the value of these headers to the &ldquo;true&rdquo; as a string.</li>
+</ul>
+<p>Line 7:</p>
+<ul>
+<li>The endpointID has a default string value of &ldquo;none&rdquo;. Since all of the IDs in our API reference data are already, when there is a match in the reference data, the result here will always be a string.</li>
+</ul>
+<p>Line 10:</p>
+<ul>
+<li>The body must be a string. So, we can&rsquo;t return any of the other mock data that we have listed here as an object.</li>
+<li>So, first we declare the data that we want to return as an anonymous object.</li>
+<li>Then we immediately pass it to the JSON marshaller. The JSON marshaller can deal with <code>undefined</code> and <code>null</code> values.</li>
+<li>The JSON marshaller will then always returns a string.</li>
+<li>With these guarantees, we can be confident that this block will always return a defined result to Envoy</li>
+</ul>
+<p>With that explanation behind us, you can <span style="color:blue"><a href="https://github.com/helpfulBadger/envoy_getting_started/blob/master/07_opa_validate_method_uri/policy.rego">read through the entire policy in context on github</a></span>.</p>
 <h2 id="running-our-example-through-its-paces">Running our Example Through Its Paces</h2>
 <p>We use Postman and Newman to setup the tests for this getting started guide. There are some great tutorials on the Postman site that describe how to write test scripts.</p>
 <ol>
@@ -623,16 +698,20 @@ decision {
 We have created folder level scripts to set up data for our templates.</p>
 <p><strong>Folder level Pre-Request Script</strong></p>
 <p>The pre-request script simply sets the templated values for the request port and JWS tokens for the User and application. These statically defined values use the &ldquo;super app&rdquo; that has permission for all endpoints. The postman library provides the <code>pm.environment.set</code> command to set values in our template.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>pm.environment.set(<span style="color:#009c00">&#34;port&#34;</span>, <span style="color:#009c00">&#34;8080&#34;</span>);
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>pm.environment.set(<span style="color:#009c00">&#34;ActorToken&#34;</span>, <span style="color:#009c00">&#34;...&#34;</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>pm.environment.set(<span style="color:#009c00">&#34;AppToken&#34;</span>, <span style="color:#009c00">&#34;...&#34;</span>);
-</code></pre></div><p><strong>Folder level Test Script</strong></p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>pm.environment.set(<span style="color:#009c00">&#34;port&#34;</span>, <span style="color:#009c00">&#34;8080&#34;</span>);
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>pm.environment.set(<span style="color:#009c00">&#34;ActorToken&#34;</span>, <span style="color:#009c00">&#34;...&#34;</span>)
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>pm.environment.set(<span style="color:#009c00">&#34;AppToken&#34;</span>, <span style="color:#009c00">&#34;...&#34;</span>);
+</span></code></pre></div></strong>
+<p><strong>Folder level Test Script</strong></p>
 <p>The test script simply checks for a successful response.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>pm.test(<span style="color:#009c00">&#34;response should be okay&#34;</span>, <span style="color:#00f">function</span> () {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>      pm.response.to.be.success;
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>      pm.response.to.not.be.error;
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>});
-</code></pre></div><h3 id="iteration-data-based-tests">Iteration Data Based Tests</h3>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>pm.test(<span style="color:#009c00">&#34;response should be okay&#34;</span>, <span style="color:#00f">function</span> () {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>      pm.response.to.be.success;
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>      pm.response.to.not.be.error;
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>});
+</code></pre></div></strong>
+<h3 id="iteration-data-based-tests">Iteration Data Based Tests</h3>
 <p>Postman / Newman loads each record in the array in our test data file into the template variables in our Postman collection. Each record has the following properties:</p>
 <ul>
 <li>Test case ID</li>
@@ -647,25 +726,29 @@ We have created folder level scripts to set up data for our templates.</p>
 <li>The expected result</li>
 </ul>
 <p>An example is shown below.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>{
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  &#34;id&#34;: <span style="color:#009c00">&#34;001&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  &#34;App&#34;: <span style="color:#009c00">&#34;app_000123&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>  &#34;ActorToken&#34;: <span style="color:#009c00">&#34;...&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>  &#34;AppToken&#34;: <span style="color:#009c00">&#34;...&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>  &#34;host&#34;: <span style="color:#009c00">&#34;localhost&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>  &#34;port&#34;: <span style="color:#009c00">&#34;8080&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>  &#34;method&#34;: <span style="color:#009c00">&#34;GET&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>  &#34;uri&#34;: <span style="color:#009c00">&#34;/api/customer&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>  &#34;pattern&#34;: <span style="color:#009c00">&#34;/api/customer&#34;</span>,
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>  &#34;expect&#34;: 200
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>}
-</code></pre></div><p>The post execution test only needs one piece of data from the record for our completion test. That is the <code>expect</code> value from the record. We get that using the <code>pm.iterationData.get</code> command.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#00f">var</span> expect = pm.iterationData.get(<span style="color:#009c00">&#34;expect&#34;</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>pm.test(<span style="color:#009c00">&#34;GET response have return status: &#34;</span> + expect, <span style="color:#00f">function</span> () {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>      pm.response.to.have.status( Number( expect) )
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>});
-</code></pre></div><p>There are 4 sets of templates and data files. You can run them all to test our permissions with the following command &hellip;</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>{
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  &#34;id&#34;: <span style="color:#009c00">&#34;001&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>  &#34;App&#34;: <span style="color:#009c00">&#34;app_000123&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>  &#34;ActorToken&#34;: <span style="color:#009c00">&#34;...&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>  &#34;AppToken&#34;: <span style="color:#009c00">&#34;...&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>  &#34;host&#34;: <span style="color:#009c00">&#34;localhost&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>  &#34;port&#34;: <span style="color:#009c00">&#34;8080&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>  &#34;method&#34;: <span style="color:#009c00">&#34;GET&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>  &#34;uri&#34;: <span style="color:#009c00">&#34;/api/customer&#34;</span>,
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>  &#34;pattern&#34;: <span style="color:#009c00">&#34;/api/customer&#34;</span>,
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>  &#34;expect&#34;: 200
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>}
+</code></pre></div></strong>
+<p>The post execution test only needs one piece of data from the record for our completion test. That is the <code>expect</code> value from the record. We get that using the <code>pm.iterationData.get</code> command.</p>
+<strong>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-javascript" data-lang="javascript"><span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#00f">var</span> expect = pm.iterationData.get(<span style="color:#009c00">&#34;expect&#34;</span>)
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>pm.test(<span style="color:#009c00">&#34;GET response have return status: &#34;</span> + expect, <span style="color:#00f">function</span> () {
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>      pm.response.to.have.status( Number( expect) )
+<span style="display:block;width:100%;background-color:#e5e5e5"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>});
+</span></code></pre></div></strong>
+<p>There are 4 sets of templates and data files. You can run them all to test our permissions with the following command &hellip;</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">./demonstrate_user_and_api_contracts.sh
 </code></pre></div><p>&hellip;in the example&rsquo;s based directory <code>07_opa_validate_method_uri</code>.</p>
 <h1 id="congratulations">Congratulations</h1>
@@ -733,6 +816,23 @@ We have created folder level scripts to set up data for our templates.</p>
       <article class="mini-post">
         <section>
           
+  <a href="/blog/envoy_opa_9_sign_verify/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_9_sign_verify/">Signing HTTP Requests</a></h2>
+          <time class="published" datetime="">October 7, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+        <section>
+          
   <a href="/blog/envoy_opa_8_logs_taps_and_traces/" class="image featured">
     
       <img src="https://helpfulbadger.github.io/img/2020/08/tap-dPr7uyrFMXo-unsplash.jpg" alt="">
@@ -793,25 +893,8 @@ We have created folder level scripts to set up data for our templates.</p>
 
         </section>
         <header>
-          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
+          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Token Validation with OPA</a></h2>
           <time class="published" datetime="">September 7, 2020</time>
-        </header>
-      </article>
-      
-      <article class="mini-post">
-        <section>
-          
-  <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
-    
-  </a>
-
-
-        </section>
-        <header>
-          <h2><a href="/blog/envoy_opa_4_opa_cli/">Using the Open Policy Agent CLI</a></h2>
-          <time class="published" datetime="">September 2, 2020</time>
         </header>
       </article>
       
@@ -836,7 +919,7 @@ We have created folder level scripts to set up data for our templates.</p>
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">8</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">9</span></a>
             
           
           <li>
@@ -846,17 +929,17 @@ We have created folder level scripts to set up data for our templates.</p>
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">4</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">5</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">4</span></a>
             
           
           <li>
             
               <a href="/categories/authentication/">authentication<span class="count">3</span></a>
-            
-          
-          <li>
-            
-              <a href="/categories/observability/">observability<span class="count">3</span></a>
             
           
           </li>

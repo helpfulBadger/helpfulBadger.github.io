@@ -10,7 +10,7 @@
 <meta itemprop="description" content="Learn how to use Open Policy Agent Command Line Interface">
 <meta itemprop="datePublished" content="2020-09-02T07:48:50-04:00" />
 <meta itemprop="dateModified" content="2020-09-02T07:48:50-04:00" />
-<meta itemprop="wordCount" content="1998">
+<meta itemprop="wordCount" content="2012">
 <meta itemprop="image" content="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png">
 
 
@@ -284,10 +284,11 @@
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_2_adding_observability/" title="Learn how to add ElasticSearch and Kibana to your Envoy front proxy environment">Adding Observability Tools</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_3_adding_open_policy_agent/" title="Learn how to use Open Policy Agent with Envoy for more powerful authorization rules">Plugging Open Policy Agent into Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_4_opa_cli/" title="Learn how to use Open Policy Agent Command Line Interface">Using the Open Policy Agent CLI</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS signatures with Open Policy Agent">JWS Signature Validation with OPA</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS signatures natively with Envoy">JWS Signature Validation with Envoy</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_5_opa_jws/" title="Learn how to validate JWS tokens with Open Policy Agent">JWS Token Validation with OPA</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_6_envoy_jws/" title="Learn how to validate JWS tokens natively with Envoy">JWS Token Validation with Envoy</a></span></li>
 <li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_7_app_contracts/" title="Learn how to Implement Application Specific Authorization Rules">Putting It All Together with Composite Authorization</a></span></li>
-<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_8_logs_taps_and_traces/" title="Learn how to configure Envoy's access logs, taps for capturing full requests &amp; responses and traces">Configuring Envoy Logs Taps and Traces</a></span></li>
+<li><span style="color:blue"><a href="https://helpfulbadger.github.io/blog/envoy_opa_9_sign_verify/" title="Learn how to use Envoy &amp; OPA to sign and validate HTTP Requests">Sign / Verify HTTP Requests</a></span></li>
 </ol>
 <h2 id="installing-open-policy-agent-locally">Installing Open Policy Agent Locally</h2>
 <p>Intalling Open Policy Agent (OPA) is pretty simple. It is a very small executable and is entirely self contained with no other files required. Depending on your operating system, the command to install OPA is slightly different:</p>
@@ -362,39 +363,17 @@
 <h3 id="using-the-api-interactively-to-develop-policies">Using the API Interactively to Develop Policies</h3>
 <p>OPA policy agent also supports running as a service and accessing it via REST APIs. <span style="color:blue"><a href="https://www.openpolicyagent.org/docs/latest/rest-api/">Detailed API information</a></span> can be found on the Open Policy Agent web site. Here is a summary of the APIs.</p>
 <p><strong>Policy API for Creating, Updating or Deleting Policies</strong></p>
-<ul>
-<li>
-<pre><code>GET    /v1/policies      #--- List Policies </code></pre> 
-</li>
-<li>
-<pre><code>GET    /v1/policies/&ltid&gt #--- Get a specific Policy </code></pre> 
-</li>
-<li>
-<pre><code>PUT    /v1/policies/&ltid&gt #--- Create or Update a Policy </code></pre> 
-</li>
-<li>
-<pre><code>DELETE /v1/policies/&ltid&gt #--- Delete a policy </code></pre> 
-</li>
-</ul>
-<p><strong>Data API for Creating, Updating or Deleting Data and Getting Decisions</strong></p>
-<ul>
-<li>
-<pre><code>GET    /v1/data/{path:.+} #---  Get a Document </code></pre> 
-</li>
-<li>
-<pre><code>POST   /v1/data/{path:.+} #---  Get a Document (with Input e.g. get a decision). The input document `{ "input": ... }` is passed in the request body</code></pre> 
-</li>
-<li>
-<pre><code>PUT    /v1/data/{path:.+} #---  Create or Overwrite a Document </code></pre> 
-</li>
-<li>
-<pre><code>PATCH  /v1/data/{path:.+} #---  Patch a Document </code></pre> 
-</li>
-<li>
-<pre><code>DELETE /v1/data/{path:.+} #---  Delete a Document </code></pre> 
-</li>
-</ul>
-<p><strong>Tips when using the API</strong></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-markdown" data-lang="markdown"><span style="color:#00f">*</span> GET    /v1/policies      #--- List Policies  
+<span style="color:#00f">*</span> GET    /v1/policies/&amp;ltid&amp;gt #--- Get a specific Policy  
+<span style="color:#00f">*</span> PUT    /v1/policies/&amp;ltid&amp;gt #--- Create or Update a Policy  
+<span style="color:#00f">*</span> DELETE /v1/policies/&amp;ltid&amp;gt #--- Delete a policy  
+</code></pre></div><p><strong>Data API for Creating, Updating or Deleting Data and Getting Decisions</strong></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-markdown" data-lang="markdown"><span style="color:#00f">*</span> GET    /v1/data/{path:.+} #---  Get a Document  
+<span style="color:#00f">*</span> POST   /v1/data/{path:.+} #---  Get a Document (with Input e.g. get a decision). The input document <span style="color:#009c00">`{ &#34;input&#34;: ... }`</span> is passed in the request body 
+<span style="color:#00f">*</span> PUT    /v1/data/{path:.+} #---  Create or Overwrite a Document  
+<span style="color:#00f">*</span> PATCH  /v1/data/{path:.+} #---  Patch a Document  
+<span style="color:#00f">*</span> DELETE /v1/data/{path:.+} #---  Delete a Document  
+</code></pre></div><p><strong>Tips when using the API</strong></p>
 <ul>
 <li>It is important to understand how the OPA document model works. The <span style="color:blue"><a href="https://www.openpolicyagent.org/docs/latest/philosophy/#how-does-opa-work">document model</a></span> is described on the Open Policy Agent web site.</li>
 <li>Attempting to delete everything by supplying the root path for the policy or data endpoint doesn&rsquo;t delete everything. This makes sense after thinking about it. It would be very easy to accidentally clear out an entire OPA engine and un-intentionally cause an outage if that was done in production.</li>
@@ -478,7 +457,7 @@
     <a href="/blog/envoy_opa_3_adding_open_policy_agent/" class="button"><div class="previous"><div>Plugging Open Policy Agent into Envoy</div></div></a>
   
   
-    <a href="/blog/envoy_opa_5_opa_jws/" class="button"><div class="next"><div>JWS Signature Validation with OPA</div></div></a>
+    <a href="/blog/envoy_opa_5_opa_jws/" class="button"><div class="next"><div>JWS Token Validation with OPA</div></div></a>
   
 </div>
 
@@ -490,6 +469,23 @@
       <header>
         <h1>Recent posts</h1>
       </header>
+      
+      <article class="mini-post">
+        <section>
+          
+  <a href="/blog/envoy_opa_9_sign_verify/" class="image featured">
+    
+      <img src="https://helpfulbadger.github.io/img/2020/10/lock-key-hRXIKdxoaPo-unsplash.jpg" alt="">
+    
+  </a>
+
+
+        </section>
+        <header>
+          <h2><a href="/blog/envoy_opa_9_sign_verify/">Signing HTTP Requests</a></h2>
+          <time class="published" datetime="">October 7, 2020</time>
+        </header>
+      </article>
       
       <article class="mini-post">
         <section>
@@ -554,25 +550,8 @@
 
         </section>
         <header>
-          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Signature Validation with OPA</a></h2>
+          <h2><a href="/blog/envoy_opa_5_opa_jws/">JWS Token Validation with OPA</a></h2>
           <time class="published" datetime="">September 7, 2020</time>
-        </header>
-      </article>
-      
-      <article class="mini-post">
-        <section>
-          
-  <a href="/blog/envoy_opa_4_opa_cli/" class="image featured">
-    
-      <img src="https://helpfulbadger.github.io/img/2020/08/OPA_CLI.png" alt="">
-    
-  </a>
-
-
-        </section>
-        <header>
-          <h2><a href="/blog/envoy_opa_4_opa_cli/">Using the Open Policy Agent CLI</a></h2>
-          <time class="published" datetime="">September 2, 2020</time>
         </header>
       </article>
       
@@ -597,7 +576,7 @@
           
           <li>
             
-              <a href="/categories/cloud/">cloud<span class="count">8</span></a>
+              <a href="/categories/cloud/">cloud<span class="count">9</span></a>
             
           
           <li>
@@ -607,17 +586,17 @@
           
           <li>
             
-              <a href="/categories/service-mesh/">service-mesh<span class="count">4</span></a>
+              <a href="/categories/service-mesh/">service-mesh<span class="count">5</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/observability/">observability<span class="count">4</span></a>
             
           
           <li>
             
               <a href="/categories/authentication/">authentication<span class="count">3</span></a>
-            
-          
-          <li>
-            
-              <a href="/categories/observability/">observability<span class="count">3</span></a>
             
           
           </li>
